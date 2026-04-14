@@ -92,6 +92,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </div>
           <SidebarItem href="/admin/settings" icon="fas fa-cog" label="基础设置" />
           <SidebarItem href="/admin/pages" icon="fas fa-pager" label="页面管理" />
+          <SidebarItem href="/admin/config" icon="fas fa-key" label="密钥管理" />
           <div className="pt-4 pb-2 px-4">
             {!collapsed && <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest">内容运营</p>}
           </div>
