@@ -53,6 +53,8 @@ export interface Inquiry {
   message: string;
   date: string;
   status: string;
+  productType?: string;
+  attachment?: string;
 }
 
 export interface MaterialAsset {

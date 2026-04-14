@@ -5,10 +5,10 @@ import { useState } from 'react';
 import Layout from '../components/Layout';
 import PageHeader from '../components/PageHeader';
 import { useProducts } from '../context/ProductContext';
+import InquiryForm from '../components/InquiryForm';
 
 export default function ContactPage() {
   const { pages } = useProducts();
-  const [formData, setFormData] = useState({ name: '', email: '', message: '' });
 
   const fallbackContact = {
     title: "Start Your Industrial Partnership Today",
@@ -57,26 +57,10 @@ export default function ContactPage() {
           </div>
 
           <div className="bg-white p-12 md:p-16 rounded-[64px] border border-slate-100 shadow-2xl relative group">
-             <div className="absolute top-0 right-0 w-64 h-64 bg-blue-600/5 rounded-full translate-x-12 -translate-y-12 blur-[100px] group-hover:scale-110 transition-transform duration-1000"></div>
-             <form className="space-y-6 relative z-10">
-                <h3 className="text-[10px] font-black uppercase text-blue-600 tracking-[0.4em] mb-10">Direct Message</h3>
-                <input 
-                  type="text" 
-                  placeholder="YOUR FULL NAME" 
-                  className="w-full bg-slate-50 border-none rounded-[20px] px-8 py-5 font-black uppercase text-xs tracking-widest focus:ring-4 ring-blue-500/10 shadow-inner"
-                />
-                <input 
-                  type="email" 
-                  placeholder="BUSINESS EMAIL ADDRESS" 
-                  className="w-full bg-slate-50 border-none rounded-[20px] px-8 py-5 font-black uppercase text-xs tracking-widest focus:ring-4 ring-blue-500/10 shadow-inner"
-                />
-                <textarea 
-                  rows={5} 
-                  placeholder="SPECIFIC REQUIREMENTS..." 
-                  className="w-full bg-slate-50 border-none rounded-[32px] px-8 py-8 font-black uppercase text-xs tracking-widest focus:ring-4 ring-blue-500/10 shadow-inner"
-                ></textarea>
-                <button className="w-full bg-slate-900 text-white py-6 rounded-[32px] font-black uppercase tracking-widest text-xs shadow-2xl hover:bg-blue-600 hover:shadow-blue-500/30 transition-all active:scale-95">TRANSMIT TO FACTORY</button>
-             </form>
+              <div className="absolute top-0 right-0 w-64 h-64 bg-blue-600/5 rounded-full translate-x-12 -translate-y-12 blur-[100px] group-hover:scale-110 transition-transform duration-1000"></div>
+              <div className="relative z-10">
+                <InquiryForm />
+              </div>
           </div>
         </div>
       </main>

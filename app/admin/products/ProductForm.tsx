@@ -14,7 +14,47 @@ export default function ProductForm({ initialData }: { initialData?: Product }) 
     name: '', cat: '', img: '', gallery: [], spec: 'M6 - M36', description: '', price: '', stock: '', keywords: ['', '', '', '', ''], seoTitle: '', seoDescription: '', seoSlug: '', alt: ''
   });
   const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState<string | null>(null);
   const [showMatPicker, setShowMatPicker] = useState<{ active: boolean, target: 'main' | 'gallery' }>({ active: false, target: 'main' });
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, target: 'main' | 'gallery') => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(target);
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        if (target === 'main') {
+          setForm(prev => ({ ...prev, img: data.url }));
+        } else {
+          setForm(prev => ({ ...prev, gallery: [...(prev.gallery || []), data.url] }));
+        }
+        // 同时保存到素材库以便以后复用
+        await fetch('/api/materials', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: file.name, url: data.url, type: 'image' })
+        });
+        refreshData();
+      } else {
+        alert('上传失败，请检查网络或密钥配置');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('上传发生错误');
+    } finally {
+      setUploading(null);
+    }
+  };
 
   useEffect(() => {
     if (initialData) {
@@ -231,23 +271,30 @@ export default function ProductForm({ initialData }: { initialData?: Product }) 
                        <label className="text-[9px] font-black uppercase text-slate-400 tracking-[0.3em] ml-1">Featured Image</label>
                        <span className="text-[8px] font-black bg-blue-50 text-blue-600 px-3 py-1 rounded-full uppercase">Primary</span>
                     </div>
-                    <div 
-                      onClick={() => setShowMatPicker({ active: true, target: 'main' })}
-                      className="relative aspect-square rounded-[48px] overflow-hidden bg-slate-50 border-4 border-dashed border-slate-100 flex items-center justify-center cursor-pointer hover:border-blue-400 hover:bg-blue-50/20 transition-all group shadow-inner"
-                    >
-                       {form.img ? (
-                          <>
-                            <Image src={form.img} alt="" fill className="object-contain p-8 group-hover:scale-110 transition-transform duration-1000" />
-                            <div className="absolute inset-0 bg-slate-900/60 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
-                               <div className="bg-white px-8 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-2xl">CHANGE IMAGE</div>
-                            </div>
-                          </>
-                       ) : (
-                          <div className="text-center">
-                             <i className="fas fa-cloud-upload-alt text-4xl text-slate-200 mb-4 group-hover:text-blue-200 transition"></i>
-                             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Library Access</p>
-                          </div>
-                       )}
+                    <div className="flex gap-4">
+                       <div 
+                         onClick={() => setShowMatPicker({ active: true, target: 'main' })}
+                         className="relative flex-1 aspect-square rounded-[48px] overflow-hidden bg-slate-50 border-4 border-dashed border-slate-100 flex items-center justify-center cursor-pointer hover:border-blue-400 hover:bg-blue-50/20 transition-all group shadow-inner"
+                       >
+                          {form.img ? (
+                             <>
+                               <Image src={form.img} alt="" fill className="object-contain p-8 group-hover:scale-110 transition-transform duration-1000" />
+                               <div className="absolute inset-0 bg-slate-900/60 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
+                                  <div className="bg-white px-8 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-2xl">LIBRARY</div>
+                               </div>
+                             </>
+                          ) : (
+                             <div className="text-center">
+                                <i className="fas fa-layer-group text-3xl text-slate-200 mb-2 group-hover:text-blue-200 transition"></i>
+                                <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Library</p>
+                             </div>
+                          )}
+                       </div>
+                       <label className={`relative flex-1 aspect-square rounded-[48px] overflow-hidden bg-blue-600 border-4 border-blue-100 flex flex-col items-center justify-center cursor-pointer hover:bg-slate-900 hover:border-slate-800 transition-all shadow-xl shadow-blue-500/10 group ${uploading === 'main' ? 'animate-pulse opacity-70' : ''}`}>
+                          <i className={`fas ${uploading === 'main' ? 'fa-spinner fa-spin' : 'fa-cloud-upload-alt'} text-3xl text-white mb-2`}></i>
+                          <p className="text-[8px] font-black text-white uppercase tracking-widest">{uploading === 'main' ? 'Uploading' : 'Upload'}</p>
+                          <input type="file" className="hidden" accept="image/*" onChange={(e) => handleFileUpload(e, 'main')} />
+                       </label>
                     </div>
                  </div>
 
@@ -268,12 +315,18 @@ export default function ProductForm({ initialData }: { initialData?: Product }) 
                           </div>
                        ))}
                        {(!form.gallery || form.gallery.length < 6) && (
-                          <button 
-                            onClick={() => setShowMatPicker({ active: true, target: 'gallery' })}
-                            className="aspect-square rounded-[24px] border-4 border-dashed border-slate-50 flex items-center justify-center text-slate-200 hover:border-blue-200 hover:text-blue-200 transition-all hover:bg-slate-50"
-                          >
-                             <i className="fas fa-plus text-xl"></i>
-                          </button>
+                          <div className="contents">
+                             <button 
+                               onClick={() => setShowMatPicker({ active: true, target: 'gallery' })}
+                               className="aspect-square rounded-[24px] border-4 border-dashed border-slate-50 flex items-center justify-center text-slate-200 hover:border-blue-200 hover:text-blue-200 transition-all hover:bg-slate-50"
+                             >
+                                <i className="fas fa-layer-group text-lg"></i>
+                             </button>
+                             <label className={`aspect-square rounded-[24px] bg-blue-50 border-2 border-blue-100 flex items-center justify-center text-blue-400 hover:bg-blue-600 hover:text-white cursor-pointer transition-all ${uploading === 'gallery' ? 'animate-pulse' : ''}`}>
+                                <i className={`fas ${uploading === 'gallery' ? 'fa-spinner fa-spin' : 'fa-plus'} text-lg`}></i>
+                                <input type="file" className="hidden" accept="image/*" onChange={(e) => handleFileUpload(e, 'gallery')} />
+                             </label>
+                          </div>
                        )}
                     </div>
                  </div>

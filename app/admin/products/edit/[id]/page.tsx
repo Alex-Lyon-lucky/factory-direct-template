@@ -11,8 +11,8 @@ export default function EditProductPage() {
   const { products } = useProducts();
   const product = products.find(p => p.id === id);
 
-  if (!product && products.length > 0) return <div className="p-20 text-center font-black uppercase italic text-slate-300">产品未找到</div>;
-  if (products.length === 0) return <div className="p-20 text-center font-black uppercase italic text-slate-300">正在加载产品数据...</div>;
+  if (!product && products.length > 0) return <div className="p-20 text-center font-black uppercase text-slate-300">产品未找到</div>;
+  if (products.length === 0) return <div className="p-20 text-center font-black uppercase text-slate-300">正在加载产品数据...</div>;
 
   return <ProductForm initialData={product} />;
 }

@@ -8,6 +8,7 @@ import { useState, useEffect } from 'react';
 import { useProducts, Product } from '../../context/ProductContext';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
+import InquiryForm from '../../components/InquiryForm';
 
 export default function ProductDetailPage() {
   const { id } = useParams();
@@ -17,10 +18,6 @@ export default function ProductDetailPage() {
   const [activeImg, setActiveImg] = useState<string>('');
   const [activeTab, setActiveTab] = useState('overview');
   
-  // Inquiry form state
-  const [inquiry, setInquiry] = useState({ name: '', email: '', message: '' });
-  const [sending, setSending] = useState(false);
-
   useEffect(() => {
     const p = products.find(item => item.id.toString() === id || item.seoSlug === id);
     if (p) {
@@ -30,22 +27,6 @@ export default function ProductDetailPage() {
   }, [id, products]);
 
   if (!product) return <div className="min-h-screen flex items-center justify-center bg-white"><div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div></div>;
-
-  const handleInquiry = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!inquiry.email || !inquiry.message) return alert('Please fill in required fields.');
-    setSending(true);
-    const res = await fetch('/api/inquiry', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...inquiry, product: product.name })
-    });
-    if (res.ok) {
-      alert('Inquiry sent successfully! We will contact you shortly.');
-      setInquiry({ name: '', email: '', message: '' });
-    }
-    setSending(false);
-  };
 
   const schema = {
     "@context": "https://schema.org/",
@@ -272,41 +253,9 @@ export default function ProductDetailPage() {
                   </div>
                 </div>
               </div>
-              <form onSubmit={handleInquiry} className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <input 
-                    type="text" 
-                    placeholder="YOUR NAME" 
-                    required
-                    value={inquiry.name}
-                    onChange={e => setInquiry({...inquiry, name: e.target.value})}
-                    className="w-full bg-slate-50 border-none rounded-[28px] px-8 py-6 font-black uppercase text-xs tracking-widest focus:ring-4 ring-blue-500/10 transition-all shadow-inner" 
-                  />
-                  <input 
-                    type="email" 
-                    placeholder="BUSINESS EMAIL" 
-                    required
-                    value={inquiry.email}
-                    onChange={e => setInquiry({...inquiry, email: e.target.value})}
-                    className="w-full bg-slate-50 border-none rounded-[28px] px-8 py-6 font-black uppercase text-xs tracking-widest focus:ring-4 ring-blue-500/10 transition-all shadow-inner" 
-                  />
-                </div>
-                <textarea 
-                  rows={6} 
-                  placeholder="SPECIFICATIONS, QUANTITY, TARGET PRICE..." 
-                  required
-                  value={inquiry.message}
-                  onChange={e => setInquiry({...inquiry, message: e.target.value})}
-                  className="w-full bg-slate-50 border-none rounded-[40px] px-8 py-8 font-black uppercase text-xs tracking-widest focus:ring-4 ring-blue-500/10 transition-all shadow-inner"
-                ></textarea>
-                <button 
-                  type="submit" 
-                  disabled={sending}
-                  className="w-full bg-slate-900 text-white py-8 rounded-[40px] font-black uppercase tracking-[0.4em] text-xs shadow-2xl hover:bg-blue-600 hover:shadow-blue-500/30 transition-all active:scale-95 disabled:opacity-50"
-                >
-                  {sending ? 'TRANSMITTING...' : 'SEND MESSAGE TO FACTORY'}
-                </button>
-              </form>
+              <div className="bg-white p-12 md:p-16 rounded-[64px] border border-slate-100 shadow-2xl relative group">
+                <InquiryForm productType={`Inquiry for: ${product.name}`} />
+              </div>
             </div>
           </section>
         </div>
