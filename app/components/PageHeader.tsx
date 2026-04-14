@@ -10,7 +10,7 @@ interface PageHeaderProps {
     subtitle?: string;
     heroImg?: string;
     headerHeight?: number;
-    bgMode?: 'image' | 'color';
+    bgMode?: string; // 宽泛类型，解决部署时的严格匹配问题
     bgColor?: string;
   };
 }
