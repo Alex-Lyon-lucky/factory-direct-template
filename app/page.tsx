@@ -9,11 +9,14 @@ import Layout from './components/Layout';
 export default function Home() {
   const { pages } = useProducts();
 
-  const hero = pages?.home || {
+  const fallbackHome = {
     heroTitle: "Custom Fasteners For Global Trade",
     heroSubtitle: "Hangfan specializes in high-precision fasteners and custom hardware. We bridge the gap between quality manufacturing and international standards.",
-    advantages: ["8.8/10.9/12.9 GRADE SPECIALIST", "FULL SCALE OEM CAPABILITIES", "ISO 9001:2015 CERTIFIED"]
+    advantages: ["8.8/10.9/12.9 GRADE SPECIALIST", "FULL SCALE OEM CAPABILITIES", "ISO 9001:2015 CERTIFIED"],
+    heroImg: "https://images.unsplash.com/photo-1530124560677-bdaea024f061?auto=format&fit=crop&q=80&w=800"
   };
+
+  const hero = pages?.home ? { ...fallbackHome, ...pages.home } : fallbackHome;
 
   return (
     <Layout>

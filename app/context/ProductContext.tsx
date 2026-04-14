@@ -78,6 +78,7 @@ export interface PageContent {
     heroTitle: string;
     heroSubtitle: string;
     advantages: string[];
+    heroImg?: string;
   };
   about: {
     title: string;
@@ -95,6 +96,20 @@ export interface PageContent {
     bgColor?: string;
   };
   inquiry: {
+    title: string;
+    subtitle?: string;
+    headerHeight?: number;
+    bgMode?: string;
+    bgColor?: string;
+  };
+  products: {
+    title: string;
+    subtitle?: string;
+    headerHeight?: number;
+    bgMode?: string;
+    bgColor?: string;
+  };
+  news: {
     title: string;
     subtitle?: string;
     headerHeight?: number;

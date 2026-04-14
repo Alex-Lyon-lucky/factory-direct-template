@@ -26,13 +26,15 @@ export default function NewsPage() {
     }
   }, [searchTerm, news]);
 
-  const headerData = pages?.news || {
+  const fallbackNews = {
     title: "Factory Insights & Knowledge",
     subtitle: "Latest technical guides and industry trends for professionals.",
     headerHeight: 220,
     bgMode: "color",
     bgColor: "#0f172a"
   };
+
+  const headerData = pages?.news ? { ...fallbackNews, ...pages.news } : fallbackNews;
 
   return (
     <Layout>

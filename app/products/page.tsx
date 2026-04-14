@@ -42,13 +42,15 @@ export default function ProductsPage() {
   const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
   const currentItems = filteredProducts.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
-  const headerData = pages?.products || {
+  const fallbackProducts = {
     title: "Industrial Product Center",
     subtitle: "Global Standards, Direct From Handan Factory Floor.",
     headerHeight: 200,
     bgMode: "color",
     bgColor: "#0f172a"
   };
+
+  const headerData = pages?.products ? { ...fallbackProducts, ...pages.products } : fallbackProducts;
 
   return (
     <Layout>
