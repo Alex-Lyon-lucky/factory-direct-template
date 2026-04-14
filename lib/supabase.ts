@@ -9,7 +9,7 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 /**
  * Utility to map Supabase lowercase fields back to CamelCase for Frontend
  */
-export const mapToFrontend = (data: any) => {
+export const mapToFrontend = (data: any): any => {
   if (!data) return data;
   if (Array.isArray(data)) return data.map(item => mapToFrontend(item));
   
@@ -40,7 +40,7 @@ export const mapToFrontend = (data: any) => {
 /**
  * Utility to map Frontend CamelCase fields to lowercase for Supabase
  */
-export const mapToDB = (data: any) => {
+export const mapToDB = (data: any): any => {
   if (!data) return data;
   if (Array.isArray(data)) return data.map(item => mapToDB(item));
   
