@@ -82,10 +82,24 @@ export interface PageContent {
   about: {
     title: string;
     content: string;
+    heroImg?: string;
+    headerHeight?: number;
+    bgMode?: string;
+    bgColor?: string;
   };
   contact: {
     title: string;
     description: string;
+    headerHeight?: number;
+    bgMode?: string;
+    bgColor?: string;
+  };
+  inquiry: {
+    title: string;
+    subtitle?: string;
+    headerHeight?: number;
+    bgMode?: string;
+    bgColor?: string;
   };
 }
 

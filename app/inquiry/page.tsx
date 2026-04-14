@@ -35,13 +35,15 @@ export default function InquiryPage() {
     setSending(false);
   };
 
-  const headerData = pages?.inquiry || {
+  const fallbackInquiry = {
     title: "Direct Factory Quotation",
     subtitle: "Streamlined B2B Sourcing for Global Hardware Distributors.",
     headerHeight: 220,
     bgMode: "color",
     bgColor: "#0f172a"
   };
+
+  const headerData = pages?.inquiry ? { ...fallbackInquiry, ...pages.inquiry } : fallbackInquiry;
 
   return (
     <Layout>

@@ -9,7 +9,7 @@ import { useProducts } from '../context/ProductContext';
 export default function AboutPage() {
   const { pages } = useProducts();
   
-  const about = pages?.about || {
+  const fallbackAbout = {
     title: "A Legacy of Fastener Excellence",
     content: "Founded in 1998, High Fasteners has grown from a local workshop to a premier industrial fastener powerhouse. Our state-of-the-art facility in Handan produces over 5,000 tons of high-strength bolts and nuts annually for the global market.",
     heroImg: "https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?auto=format&fit=crop&q=80&w=800",
@@ -17,6 +17,8 @@ export default function AboutPage() {
     bgMode: "image",
     bgColor: "#0f172a"
   };
+
+  const about = pages?.about ? { ...fallbackAbout, ...pages.about } : fallbackAbout;
 
   return (
     <Layout>

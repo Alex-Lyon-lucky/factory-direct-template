@@ -10,13 +10,15 @@ export default function ContactPage() {
   const { pages } = useProducts();
   const [formData, setFormData] = useState({ name: '', email: '', message: '' });
 
-  const headerData = pages?.contact || {
+  const fallbackContact = {
     title: "Start Your Industrial Partnership Today",
     description: "Our dedicated engineering team is ready to discuss your specific requirements. We provide rapid prototyping and high-volume manufacturing solutions.",
     headerHeight: 200,
     bgMode: "color",
     bgColor: "#0f172a"
   };
+
+  const headerData = pages?.contact ? { ...fallbackContact, ...pages.contact } : fallbackContact;
 
   return (
     <Layout>
