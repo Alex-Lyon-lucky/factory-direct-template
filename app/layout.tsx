@@ -53,6 +53,7 @@ export const metadata: Metadata = {
 
 
 
+// Global layout for High Fasteners - Updated for Inquiry Flow & Media Uploads
 export default function RootLayout({
   children,
 }: Readonly<{
