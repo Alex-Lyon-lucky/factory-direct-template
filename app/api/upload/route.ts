@@ -2,7 +2,7 @@
 import { NextResponse } from 'next/server';
 import cloudinary from '@/lib/cloudinary';
 
-export async function POST(request: Request) {
+export async function POST(request: Request): Promise<NextResponse> {
   try {
     const formData = await request.formData();
     const file = formData.get('file') as File;
@@ -15,7 +15,7 @@ export async function POST(request: Request) {
     const buffer = Buffer.from(bytes);
 
     // Upload to Cloudinary
-    return new Promise((resolve, reject) => {
+    return new Promise<NextResponse>((resolve, reject) => {
       const uploadStream = cloudinary.uploader.upload_stream(
         { folder: 'highfasteners' },
         (error, result) => {
