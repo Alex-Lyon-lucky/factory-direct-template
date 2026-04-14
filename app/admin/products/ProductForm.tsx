@@ -76,14 +76,14 @@ export default function ProductForm({ initialData }: { initialData?: Product }) 
     <div className="max-w-7xl mx-auto space-y-10 animate-in slide-in-from-bottom-8 duration-700 pb-20">
       <div className="flex justify-between items-center px-6">
          <div>
-            <h2 className="text-5xl font-black italic uppercase tracking-tighter">{initialData ? 'EDIT PRODUCT' : 'NEW PRODUCT'}</h2>
-            <p className="text-slate-400 font-bold uppercase tracking-widest text-[9px] mt-2 italic tracking-[0.3em] flex items-center gap-2">
+            <h2 className="text-5xl font-black uppercase tracking-tighter">{initialData ? 'EDIT PRODUCT' : 'NEW PRODUCT'}</h2>
+            <p className="text-slate-400 font-bold uppercase tracking-widest text-[9px] mt-2 tracking-[0.3em] flex items-center gap-2">
                <span className="w-1.5 h-1.5 rounded-full bg-blue-600"></span> ENGINE FOR GLOBAL HARDWARE DISTRIBUTION
             </p>
          </div>
          <div className="flex gap-4">
-            <button onClick={() => router.back()} className="px-8 py-4 rounded-2xl font-black uppercase text-[10px] italic text-slate-400 hover:text-slate-900 transition tracking-widest">CANCEL</button>
-            <button onClick={handleSubmit} disabled={loading} className="bg-blue-600 text-white px-12 py-5 rounded-[24px] font-black uppercase italic tracking-[0.2em] text-xs shadow-2xl shadow-blue-500/20 hover:bg-slate-900 transition-all active:scale-95 disabled:opacity-50">
+            <button onClick={() => router.back()} className="px-8 py-4 rounded-2xl font-black uppercase text-[10px] text-slate-400 hover:text-slate-900 transition tracking-widest">CANCEL</button>
+            <button onClick={handleSubmit} disabled={loading} className="bg-blue-600 text-white px-12 py-5 rounded-[24px] font-black uppercase tracking-[0.2em] text-xs shadow-2xl shadow-blue-500/20 hover:bg-slate-900 transition-all active:scale-95 disabled:opacity-50">
               {loading ? 'PROCESSING...' : (initialData ? 'SAVE CHANGES' : 'PUBLISH PRODUCT')}
             </button>
          </div>
@@ -116,7 +116,7 @@ export default function ProductForm({ initialData }: { initialData?: Product }) 
                     }
                     setForm({...form, ...updates});
                   }}
-                  className="w-full bg-slate-50 border-none rounded-[28px] px-10 py-6 font-black text-3xl uppercase italic focus:ring-4 ring-blue-500/10 transition-all tracking-tight" 
+                  className="w-full bg-slate-50 border-none rounded-[28px] px-10 py-6 font-black text-3xl uppercase focus:ring-4 ring-blue-500/10 transition-all tracking-tight" 
                   placeholder="EX: DIN933 HEX BOLT..."
                 />
               </div>
@@ -127,7 +127,7 @@ export default function ProductForm({ initialData }: { initialData?: Product }) 
                      <select 
                        value={form.cat}
                        onChange={(e) => setForm({...form, cat: e.target.value})}
-                       className="w-full bg-slate-50 border-none rounded-[24px] px-8 py-5 font-black uppercase italic text-sm text-slate-700 appearance-none focus:ring-4 ring-blue-500/10"
+                       className="w-full bg-slate-50 border-none rounded-[24px] px-8 py-5 font-black uppercase text-sm text-slate-700 appearance-none focus:ring-4 ring-blue-500/10"
                      >
                        <option value="">SELECT CATEGORY</option>
                        {categories.map(c => <option key={c.id} value={c.value}>{c.name}</option>)}
@@ -139,7 +139,7 @@ export default function ProductForm({ initialData }: { initialData?: Product }) 
                        type="text" 
                        value={form.spec}
                        onChange={(e) => setForm({...form, spec: e.target.value})}
-                       className="w-full bg-slate-50 border-none rounded-[24px] px-8 py-5 font-black uppercase italic text-sm text-slate-700 focus:ring-4 ring-blue-500/10" 
+                       className="w-full bg-slate-50 border-none rounded-[24px] px-8 py-5 font-black uppercase text-sm text-slate-700 focus:ring-4 ring-blue-500/10" 
                        placeholder="M6 - M36, DIN 933"
                      />
                   </div>
@@ -170,7 +170,7 @@ export default function ProductForm({ initialData }: { initialData?: Product }) 
                  </div>
                  <div>
                     <label className="block text-[9px] font-black uppercase text-slate-400 mb-3 tracking-[0.3em] ml-1">Custom Slug</label>
-                    <input type="text" value={form.seoSlug} onChange={e => setForm({...form, seoSlug: e.target.value.toLowerCase().replace(/\s+/g, '-')})} className="w-full bg-slate-50 border-none rounded-2xl px-6 py-4 font-black italic tracking-widest text-xs text-blue-600" />
+                    <input type="text" value={form.seoSlug} onChange={e => setForm({...form, seoSlug: e.target.value.toLowerCase().replace(/\s+/g, '-')})} className="w-full bg-slate-50 border-none rounded-2xl px-6 py-4 font-black tracking-widest text-xs text-blue-600" />
                  </div>
               </div>
 
@@ -190,9 +190,9 @@ export default function ProductForm({ initialData }: { initialData?: Product }) 
                            value={form.keywords?.[i] || ''}
                            onChange={e => handleKeywordChange(i, e.target.value)}
                            placeholder={`Key ${i+1}`}
-                           className="w-full bg-slate-50 border-none rounded-xl px-5 py-4 font-black text-[10px] uppercase italic tracking-widest text-slate-900 focus:bg-white focus:ring-4 ring-blue-500/10 transition-all shadow-sm"
+                           className="w-full bg-slate-50 border-none rounded-xl px-5 py-4 font-black text-[10px] uppercase tracking-widest text-slate-900 focus:bg-white focus:ring-4 ring-blue-500/10 transition-all shadow-sm"
                           />
-                          <div className="absolute -top-2 -right-2 w-5 h-5 bg-slate-900 text-white rounded-full flex items-center justify-center text-[8px] font-black italic">{i+1}</div>
+                          <div className="absolute -top-2 -right-2 w-5 h-5 bg-slate-900 text-white rounded-full flex items-center justify-center text-[8px] font-black">{i+1}</div>
                        </div>
                     ))}
                  </div>
@@ -229,7 +229,7 @@ export default function ProductForm({ initialData }: { initialData?: Product }) 
                  <div>
                     <div className="flex justify-between items-center mb-6">
                        <label className="text-[9px] font-black uppercase text-slate-400 tracking-[0.3em] ml-1">Featured Image</label>
-                       <span className="text-[8px] font-black bg-blue-50 text-blue-600 px-3 py-1 rounded-full uppercase italic">Primary</span>
+                       <span className="text-[8px] font-black bg-blue-50 text-blue-600 px-3 py-1 rounded-full uppercase">Primary</span>
                     </div>
                     <div 
                       onClick={() => setShowMatPicker({ active: true, target: 'main' })}
@@ -239,7 +239,7 @@ export default function ProductForm({ initialData }: { initialData?: Product }) 
                           <>
                             <Image src={form.img} alt="" fill className="object-contain p-8 group-hover:scale-110 transition-transform duration-1000" />
                             <div className="absolute inset-0 bg-slate-900/60 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
-                               <div className="bg-white px-8 py-3 rounded-2xl font-black italic text-[10px] uppercase tracking-widest shadow-2xl">CHANGE IMAGE</div>
+                               <div className="bg-white px-8 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-2xl">CHANGE IMAGE</div>
                             </div>
                           </>
                        ) : (
@@ -255,7 +255,7 @@ export default function ProductForm({ initialData }: { initialData?: Product }) 
                  <div>
                     <div className="flex justify-between items-center mb-6">
                        <label className="text-[9px] font-black uppercase text-slate-400 tracking-[0.3em] ml-1">Image Gallery</label>
-                       <span className="text-[8px] font-black bg-slate-50 text-slate-400 px-3 py-1 rounded-full uppercase italic">{form.gallery?.length || 0} / 6</span>
+                       <span className="text-[8px] font-black bg-slate-50 text-slate-400 px-3 py-1 rounded-full uppercase">{form.gallery?.length || 0} / 6</span>
                     </div>
                     <div className="grid grid-cols-3 gap-4">
                        {form.gallery?.map((g, i) => (
@@ -280,7 +280,7 @@ export default function ProductForm({ initialData }: { initialData?: Product }) 
 
                  <div className="pt-6 border-t border-slate-50">
                     <label className="block text-[9px] font-black uppercase text-slate-400 mb-3 tracking-[0.3em] ml-1">Asset Alt Label (SEO)</label>
-                    <input type="text" value={form.alt} onChange={e => setForm({...form, alt: e.target.value})} className="w-full bg-slate-50 border-none rounded-2xl px-6 py-4 font-black italic text-xs text-slate-900 tracking-widest" placeholder="EX: STAINLESS STEEL BOLTS" />
+                    <input type="text" value={form.alt} onChange={e => setForm({...form, alt: e.target.value})} className="w-full bg-slate-50 border-none rounded-2xl px-6 py-4 font-black text-xs text-slate-900 tracking-widest" placeholder="EX: STAINLESS STEEL BOLTS" />
                  </div>
               </div>
            </div>
@@ -294,8 +294,8 @@ export default function ProductForm({ initialData }: { initialData?: Product }) 
                <div className="absolute top-0 right-0 w-96 h-96 bg-blue-600/5 rounded-full translate-x-32 -translate-y-32 blur-[100px]"></div>
                <div className="p-12 border-b border-slate-100 flex justify-between items-center relative z-10">
                   <div>
-                    <h3 className="text-4xl font-black italic uppercase text-slate-900 tracking-tighter leading-none">Global Asset Library</h3>
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em] mt-3 italic flex items-center gap-2">
+                    <h3 className="text-4xl font-black uppercase text-slate-900 tracking-tighter leading-none">Global Asset Library</h3>
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em] mt-3 flex items-center gap-2">
                        <span className="w-2 h-2 rounded-full bg-blue-600"></span> SELECT {showMatPicker.target === 'main' ? 'FEATURED' : 'GALLERY'} MEDIA
                     </p>
                   </div>
@@ -327,13 +327,13 @@ export default function ProductForm({ initialData }: { initialData?: Product }) 
                   ))}
                   <Link href="/admin/material" className="aspect-square rounded-[40px] border-4 border-dashed border-slate-200 flex flex-col items-center justify-center text-slate-300 hover:border-blue-400 hover:text-blue-600 hover:bg-white transition-all group">
                      <i className="fas fa-plus-circle text-4xl mb-4 group-hover:scale-110 transition"></i>
-                     <span className="text-[10px] font-black uppercase tracking-widest italic text-center px-4">Manage Library</span>
+                     <span className="text-[10px] font-black uppercase tracking-widest text-center px-4">Manage Library</span>
                   </Link>
                </div>
 
                <div className="p-12 border-t border-slate-100 flex justify-between items-center bg-white relative z-10">
-                  <div className="text-[10px] font-black uppercase tracking-widest text-slate-300 italic">{materials.length} ASSETS AVAILABLE</div>
-                  <button onClick={() => setShowMatPicker({ active: false, target: 'main' })} className="bg-slate-900 text-white px-16 py-6 rounded-[32px] font-black uppercase italic tracking-[0.4em] text-xs shadow-2xl shadow-slate-300 hover:bg-blue-600 transition-all active:scale-95">CONFIRM SELECTION</button>
+                  <div className="text-[10px] font-black uppercase tracking-widest text-slate-300">{materials.length} ASSETS AVAILABLE</div>
+                  <button onClick={() => setShowMatPicker({ active: false, target: 'main' })} className="bg-slate-900 text-white px-16 py-6 rounded-[32px] font-black uppercase tracking-[0.4em] text-xs shadow-2xl shadow-slate-300 hover:bg-blue-600 transition-all active:scale-95">CONFIRM SELECTION</button>
                </div>
             </div>
          </div>

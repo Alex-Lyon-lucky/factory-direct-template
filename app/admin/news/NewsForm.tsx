@@ -62,14 +62,14 @@ export default function NewsForm({ initialData }: { initialData?: NewsArticle })
     <div className="max-w-7xl mx-auto space-y-10 animate-in slide-in-from-bottom-8 duration-700 pb-20">
        <div className="flex justify-between items-center px-6">
          <div>
-            <h2 className="text-5xl font-black italic uppercase tracking-tighter">{initialData ? 'EDIT ARTICLE' : 'COMPOSE NEWS'}</h2>
-            <p className="text-slate-400 font-bold uppercase tracking-widest text-[9px] mt-2 italic tracking-[0.3em] flex items-center gap-2">
+            <h2 className="text-5xl font-black uppercase tracking-tighter">{initialData ? 'EDIT ARTICLE' : 'COMPOSE NEWS'}</h2>
+            <p className="text-slate-400 font-bold uppercase tracking-widest text-[9px] mt-2 tracking-[0.3em] flex items-center gap-2">
                <span className="w-1.5 h-1.5 rounded-full bg-blue-600"></span> CORPORATE INSIGHTS & GLOBAL HUB
             </p>
          </div>
          <div className="flex gap-4">
-            <button onClick={() => router.back()} className="px-8 py-4 rounded-2xl font-black uppercase text-[10px] italic text-slate-400 hover:text-slate-900 transition tracking-widest">CANCEL</button>
-            <button onClick={handleSubmit} disabled={loading} className="bg-blue-600 text-white px-12 py-5 rounded-[24px] font-black uppercase italic tracking-[0.2em] text-xs shadow-2xl shadow-blue-500/20 hover:bg-slate-900 transition-all active:scale-95 disabled:opacity-50">
+            <button onClick={() => router.back()} className="px-8 py-4 rounded-2xl font-black uppercase text-[10px] text-slate-400 hover:text-slate-900 transition tracking-widest">CANCEL</button>
+            <button onClick={handleSubmit} disabled={loading} className="bg-blue-600 text-white px-12 py-5 rounded-[24px] font-black uppercase tracking-[0.2em] text-xs shadow-2xl shadow-blue-500/20 hover:bg-slate-900 transition-all active:scale-95 disabled:opacity-50">
                {loading ? 'PUBLISHING...' : (initialData ? 'SAVE CHANGES' : 'PUBLISH NOW')}
             </button>
          </div>
@@ -98,7 +98,7 @@ export default function NewsForm({ initialData }: { initialData?: NewsArticle })
                       }
                       setForm({...form, ...updates});
                     }}
-                    className="w-full bg-slate-50 border-none rounded-[28px] px-10 py-6 font-black text-3xl uppercase italic focus:ring-4 ring-blue-500/10 transition-all tracking-tight" 
+                    className="w-full bg-slate-50 border-none rounded-[28px] px-10 py-6 font-black text-3xl uppercase focus:ring-4 ring-blue-500/10 transition-all tracking-tight" 
                     placeholder="ENTER HEADLINE..."
                   />
                 </div>
@@ -108,7 +108,7 @@ export default function NewsForm({ initialData }: { initialData?: NewsArticle })
                        <select 
                          value={form.category}
                          onChange={(e) => setForm({...form, category: e.target.value})}
-                         className="w-full bg-slate-50 border-none rounded-[24px] px-8 py-5 font-black uppercase italic text-sm text-slate-700 appearance-none focus:ring-4 ring-blue-500/10"
+                         className="w-full bg-slate-50 border-none rounded-[24px] px-8 py-5 font-black uppercase text-sm text-slate-700 appearance-none focus:ring-4 ring-blue-500/10"
                        >
                          <option>Industry Knowledge</option>
                          <option>Company Update</option>
@@ -122,7 +122,7 @@ export default function NewsForm({ initialData }: { initialData?: NewsArticle })
                          type="text" 
                          value={form.seoSlug}
                          onChange={(e) => setForm({...form, seoSlug: e.target.value.toLowerCase().replace(/\s+/g, '-')})}
-                         className="w-full bg-slate-50 border-none rounded-[24px] px-8 py-5 font-black uppercase italic text-xs tracking-widest text-blue-600 focus:ring-4 ring-blue-500/10" 
+                         className="w-full bg-slate-50 border-none rounded-[24px] px-8 py-5 font-black uppercase text-xs tracking-widest text-blue-600 focus:ring-4 ring-blue-500/10" 
                        />
                     </div>
                 </div>
@@ -167,7 +167,7 @@ export default function NewsForm({ initialData }: { initialData?: NewsArticle })
                         <>
                         <Image src={form.img} alt="" fill className="object-cover group-hover:scale-110 transition-transform duration-1000" />
                         <div className="absolute inset-0 bg-slate-900/60 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
-                            <div className="bg-white px-8 py-3 rounded-2xl font-black italic text-[10px] uppercase tracking-widest shadow-2xl">CHANGE COVER</div>
+                            <div className="bg-white px-8 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-2xl">CHANGE COVER</div>
                         </div>
                         </>
                     ) : (
@@ -199,8 +199,8 @@ export default function NewsForm({ initialData }: { initialData?: NewsArticle })
                <div className="absolute top-0 right-0 w-96 h-96 bg-blue-600/5 rounded-full translate-x-32 -translate-y-32 blur-[100px]"></div>
                <div className="p-12 border-b border-slate-100 flex justify-between items-center relative z-10">
                   <div>
-                    <h3 className="text-4xl font-black italic uppercase text-slate-900 tracking-tighter leading-none">Global Asset Library</h3>
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em] mt-3 italic flex items-center gap-2">
+                    <h3 className="text-4xl font-black uppercase text-slate-900 tracking-tighter leading-none">Global Asset Library</h3>
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em] mt-3 flex items-center gap-2">
                        <span className="w-2 h-2 rounded-full bg-blue-600"></span> SELECT FEATURED MEDIA
                     </p>
                   </div>
@@ -228,7 +228,7 @@ export default function NewsForm({ initialData }: { initialData?: NewsArticle })
                </div>
 
                <div className="p-12 border-t border-slate-100 flex justify-end items-center bg-white relative z-10">
-                  <button onClick={() => setShowMatPicker(false)} className="bg-slate-900 text-white px-16 py-6 rounded-[32px] font-black uppercase italic tracking-[0.4em] text-xs shadow-2xl shadow-slate-300 hover:bg-blue-600 transition-all active:scale-95">CONFIRM SELECTION</button>
+                  <button onClick={() => setShowMatPicker(false)} className="bg-slate-900 text-white px-16 py-6 rounded-[32px] font-black uppercase tracking-[0.4em] text-xs shadow-2xl shadow-slate-300 hover:bg-blue-600 transition-all active:scale-95">CONFIRM SELECTION</button>
                </div>
             </div>
          </div>

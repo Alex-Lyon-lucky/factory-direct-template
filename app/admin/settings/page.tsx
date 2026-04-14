@@ -31,19 +31,19 @@ export default function SiteSettingsPage() {
     setSaving(false);
   };
 
-  if (loading) return <div className="p-20 text-center font-black uppercase italic text-slate-300">正在载入系统配置...</div>;
+  if (loading) return <div className="p-20 text-center font-black uppercase text-slate-300">正在载入系统配置...</div>;
 
   return (
     <div className="max-w-5xl mx-auto animate-in slide-in-from-bottom-8 duration-700 pb-20">
       <div className="flex justify-between items-center mb-10 px-4">
         <div>
-           <h2 className="text-4xl font-black italic uppercase tracking-tighter text-slate-900 leading-none">基础设置</h2>
-           <p className="text-slate-400 font-bold uppercase tracking-widest text-[10px] mt-2 italic">Site Configuration & B2B Info</p>
+           <h2 className="text-4xl font-black uppercase tracking-tighter text-slate-900 leading-none">基础设置</h2>
+           <p className="text-slate-400 font-bold uppercase tracking-widest text-[10px] mt-2">Site Configuration & B2B Info</p>
         </div>
         <button 
           onClick={handleSave} 
           disabled={saving}
-          className="bg-blue-600 text-white px-10 py-5 rounded-3xl font-black uppercase italic tracking-widest text-sm shadow-xl shadow-blue-200 hover:bg-blue-700 transition disabled:opacity-50"
+          className="bg-blue-600 text-white px-10 py-5 rounded-3xl font-black uppercase tracking-widest text-sm shadow-xl shadow-blue-200 hover:bg-blue-700 transition disabled:opacity-50"
         >
           {saving ? '正在保存...' : '立即保存配置'}
         </button>
@@ -57,7 +57,7 @@ export default function SiteSettingsPage() {
           <div className="space-y-6">
             <div>
               <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">网站显示名称</label>
-              <input type="text" value={settings.siteName} onChange={e => setSettings({...settings, siteName: e.target.value})} className="w-full bg-slate-50 border-none rounded-2xl px-6 py-4 font-black text-xl uppercase italic focus:ring-2 ring-blue-500" />
+              <input type="text" value={settings.siteName} onChange={e => setSettings({...settings, siteName: e.target.value})} className="w-full bg-slate-50 border-none rounded-2xl px-6 py-4 font-black text-xl uppercase focus:ring-2 ring-blue-500" />
             </div>
             <div>
               <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">首页描述 (Slogan)</label>

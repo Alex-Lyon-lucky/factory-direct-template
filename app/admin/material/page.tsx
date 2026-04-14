@@ -75,12 +75,12 @@ export default function MaterialLibraryPage() {
     <div className="max-w-7xl mx-auto space-y-10 animate-in fade-in duration-500 pb-20">
       <div className="flex justify-between items-center px-4">
         <div>
-           <h2 className="text-4xl font-black italic uppercase tracking-tighter text-slate-900 leading-none mb-2">素材库中心</h2>
-           <p className="text-slate-400 font-bold uppercase tracking-widest text-[10px] mt-2 italic">Global Media Assets Management</p>
+           <h2 className="text-4xl font-black uppercase tracking-tighter text-slate-900 leading-none mb-2">素材库中心</h2>
+           <p className="text-slate-400 font-bold uppercase tracking-widest text-[10px] mt-2">Global Media Assets Management</p>
         </div>
         <button 
           onClick={() => setShowAddModal(true)}
-          className="bg-blue-600 text-white px-10 py-5 rounded-3xl font-black uppercase italic tracking-widest text-sm shadow-xl shadow-blue-200 hover:bg-blue-700 transition"
+          className="bg-blue-600 text-white px-10 py-5 rounded-3xl font-black uppercase tracking-widest text-sm shadow-xl shadow-blue-200 hover:bg-blue-700 transition"
         >
           + 上传新素材
         </button>
@@ -107,7 +107,7 @@ export default function MaterialLibraryPage() {
                 </div>
              </div>
              <div className="px-2">
-                <div className="text-[10px] font-black uppercase text-slate-900 truncate italic">{img.name}</div>
+                <div className="text-[10px] font-black uppercase text-slate-900 truncate">{img.name}</div>
                 <div className="text-[8px] font-bold text-slate-300 uppercase tracking-tighter mt-1">{img.type} 素材 | {img.date}</div>
              </div>
           </div>
@@ -126,7 +126,7 @@ export default function MaterialLibraryPage() {
         <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md z-[100] flex items-center justify-center p-4">
             <div className="bg-white w-full max-w-md rounded-[48px] p-12 shadow-2xl animate-in zoom-in duration-300">
                <div className="flex justify-between items-center mb-8">
-                  <h3 className="text-2xl font-black italic uppercase text-slate-900">新增素材资产</h3>
+                  <h3 className="text-2xl font-black uppercase text-slate-900">新增素材资产</h3>
                   <button onClick={() => setShowAddModal(false)} className="text-slate-300 hover:text-slate-900"><i className="fas fa-times"></i></button>
                </div>
                
@@ -153,13 +153,13 @@ export default function MaterialLibraryPage() {
                         {uploading ? (
                            <div className="flex flex-col items-center gap-4">
                               <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-                              <span className="text-[10px] font-black uppercase tracking-widest text-blue-600 italic">Uploading...</span>
+                              <span className="text-[10px] font-black uppercase tracking-widest text-blue-600">Uploading...</span>
                            </div>
                         ) : newMaterial.url ? (
                            <>
                               <Image src={newMaterial.url} alt="Preview" fill className="object-contain p-4" />
                               <div className="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
-                                 <span className="bg-white px-6 py-2 rounded-xl font-black text-[10px] uppercase italic tracking-widest">更换图片</span>
+                                 <span className="bg-white px-6 py-2 rounded-xl font-black text-[10px] uppercase tracking-widest">更换图片</span>
                               </div>
                            </>
                         ) : (
@@ -173,7 +173,7 @@ export default function MaterialLibraryPage() {
 
                      <div className="relative mt-6">
                         <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-slate-100"></div></div>
-                        <div className="relative flex justify-center text-[8px] font-black uppercase tracking-[0.4em] italic text-slate-300"><span className="bg-white px-4">或者输入 URL</span></div>
+                        <div className="relative flex justify-center text-[8px] font-black uppercase tracking-[0.4em] text-slate-300"><span className="bg-white px-4">或者输入 URL</span></div>
                      </div>
 
                      <input 
@@ -186,7 +186,7 @@ export default function MaterialLibraryPage() {
                   </div>
 
                   <div className="flex gap-4 pt-6">
-                     <button onClick={handleAdd} disabled={uploading} className="flex-1 bg-blue-600 text-white py-5 rounded-[24px] font-black uppercase italic text-xs tracking-widest shadow-xl shadow-blue-500/20 hover:bg-slate-900 transition-all disabled:opacity-50">确认发布至素材库</button>
+                     <button onClick={handleAdd} disabled={uploading} className="flex-1 bg-blue-600 text-white py-5 rounded-[24px] font-black uppercase text-xs tracking-widest shadow-xl shadow-blue-500/20 hover:bg-slate-900 transition-all disabled:opacity-50">确认发布至素材库</button>
                   </div>
                </div>
             </div>
@@ -197,7 +197,7 @@ export default function MaterialLibraryPage() {
       {editingMaterial && (
         <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md z-[100] flex items-center justify-center p-4">
             <div className="bg-white w-full max-w-md rounded-[48px] p-12 shadow-2xl animate-in zoom-in duration-300">
-               <h3 className="text-2xl font-black italic uppercase mb-8 text-slate-900">编辑素材信息</h3>
+               <h3 className="text-2xl font-black uppercase mb-8 text-slate-900">编辑素材信息</h3>
                <div className="space-y-6">
                   <div>
                      <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">素材名称</label>
@@ -218,8 +218,8 @@ export default function MaterialLibraryPage() {
                      />
                   </div>
                   <div className="flex gap-4 pt-6">
-                     <button onClick={() => setEditingMaterial(null)} className="flex-1 py-4 font-black uppercase italic text-xs text-slate-400 tracking-widest">取消</button>
-                     <button onClick={handleUpdate} className="flex-1 bg-slate-900 text-white py-4 rounded-2xl font-black uppercase italic text-xs tracking-widest shadow-xl shadow-slate-200">保存修改</button>
+                     <button onClick={() => setEditingMaterial(null)} className="flex-1 py-4 font-black uppercase text-xs text-slate-400 tracking-widest">取消</button>
+                     <button onClick={handleUpdate} className="flex-1 bg-slate-900 text-white py-4 rounded-2xl font-black uppercase text-xs tracking-widest shadow-xl shadow-slate-200">保存修改</button>
                   </div>
                </div>
             </div>
