@@ -1,0 +1,29 @@
+[
+  {
+    "name": "sadasd",
+    "price": "0.80",
+    "stock": "10000",
+    "cat": "Washer",
+    "description": "sdasdasda",
+    "img": "https://images.unsplash.com/photo-1530124560677-bdaea024f061",
+    "id": 1775801875990,
+    "spec": "m6-m30",
+    "seoTitle": "sadasdasd",
+    "seoDescription": "sdasdasda",
+    "seoSlug": "sadasd",
+    "keywords": [
+      "bolt",
+      "hot"
+    ]
+  },
+  {
+    "name": "sdasdasdasdasd",
+    "price": "0.80",
+    "stock": "10000",
+    "cat": "sasdasdasd",
+    "description": "sadsadasdasadasdasdasda",
+    "img": "https://images.unsplash.com/photo-1530124560677-bdaea024f061",
+    "spec": "Standard",
+    "id": 1775802434838
+  }
+]

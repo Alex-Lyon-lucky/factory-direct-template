@@ -1,0 +1,65 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: "Microsoft YaHei", "微软雅黑", "PingFang SC", "Hiragino Sans GB", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ==================== Backend Rich Text Styles ==================== */
+.backend-rich-text p {
+  color: #475569; /* slate-600 */
+  line-height: 2;
+  margin-bottom: 1.5rem;
+  font-size: 1.125rem;
+}
+
+.backend-rich-text h2 {
+  font-size: 2rem;
+  font-weight: 900;
+  margin-top: 3rem;
+  margin-bottom: 1.5rem;
+  text-transform: uppercase;
+  font-style: italic;
+  color: #0f172a; /* slate-900 */
+}
+
+.backend-rich-text img {
+  border-radius: 2rem;
+  margin: 3rem auto;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.05);
+  max-width: 100%;
+  height: auto;
+}
+
+.backend-rich-text ul, .backend-rich-text ol {
+  margin-bottom: 1.5rem;
+  padding-left: 1.5rem;
+}
+
+.backend-rich-text li {
+  color: #475569;
+  line-height: 1.8;
+  margin-bottom: 0.5rem;
+}

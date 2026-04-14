@@ -1,0 +1,26 @@
+[
+  {
+    "name": "sdasda",
+    "email": "sadasd@gmail.com",
+    "message": "asdasda",
+    "id": 1776065203559,
+    "time": "2026-04-13 07:26",
+    "status": "pending"
+  },
+  {
+    "id": 1,
+    "name": "Shakir SST Fasteners",
+    "email": "sstfasteners01@gmail.com",
+    "time": "2026-04-09 16:25",
+    "message": "需要 GB93 垫圈报价",
+    "status": "pending"
+  },
+  {
+    "id": 2,
+    "name": "PARSHWANATH CORPORATION",
+    "email": "psbheth20@gmail.com",
+    "time": "2026-04-04 15:03",
+    "message": "DIN933 螺栓样品请求",
+    "status": "pending"
+  }
+]

@@ -1,0 +1,56 @@
+{
+  "home": {
+    "heroTitle": "Engineered for Extreme Industrial Performance",
+    "heroSubtitle": "Leading Manufacturer of High-Strength Industrial Fasteners. Delivering Precision and Reliability to Global Infrastructure Projects.",
+    "advantages": [
+      "8.8/10.9/12.9 GRADE SPECIALIST",
+      "FULL SCALE OEM CAPABILITIES",
+      "GLOBAL LOGISTICS NETWORK",
+      "ISO 9001:2015 CERTIFIED"
+    ],
+    "heroImg": "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&q=80&w=1600",
+    "headerHeight": 500,
+    "bgMode": "image",
+    "bgColor": "#0f172a"
+  },
+  "about": {
+    "title": "A Legacy of Fastener Excellence",
+    "content": "Founded in 1998, High Fasteners has grown from a local workshop to a premier industrial fastener powerhouse. Our state-of-the-art facility in Handan produces over 5,000 tons of high-strength bolts and nuts annually for the global market.",
+    "heroImg": "https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?auto=format&fit=crop&q=80&w=800",
+    "headerHeight": 300,
+    "bgMode": "image",
+    "bgColor": "#0f172a"
+  },
+  "contact": {
+    "title": "Start Your Industrial Partnership Today",
+    "description": "Our dedicated engineering team is ready to discuss your specific requirements. We provide rapid prototyping and high-volume manufacturing solutions.",
+    "heroImg": "https://images.unsplash.com/photo-1534536281715-e28d76689b4d?auto=format&fit=crop&q=80&w=1600",
+    "headerHeight": 200,
+    "bgMode": "color",
+    "bgColor": "#0f172a"
+  },
+  "products": {
+    "title": "Industrial Product Center",
+    "subtitle": "Global Standards, Direct From Handan Factory Floor.",
+    "heroImg": "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&q=80&w=1600",
+    "headerHeight": 220,
+    "bgMode": "color",
+    "bgColor": "#0f172a"
+  },
+  "news": {
+    "title": "Factory Insights & Knowledge",
+    "subtitle": "Latest technical guides and industry trends for professionals.",
+    "heroImg": "https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?auto=format&fit=crop&q=80&w=1600",
+    "headerHeight": 220,
+    "bgMode": "color",
+    "bgColor": "#0f172a"
+  },
+  "inquiry": {
+    "title": "Direct Factory Quotation",
+    "subtitle": "Streamlined B2B Sourcing for Global Hardware Distributors.",
+    "heroImg": "https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?auto=format&fit=crop&q=80&w=1600",
+    "headerHeight": 220,
+    "bgMode": "color",
+    "bgColor": "#0f172a"
+  }
+}

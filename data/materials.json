@@ -1,0 +1,16 @@
+[
+  {
+    "id": 1,
+    "url": "https://images.unsplash.com/photo-1530124560677-bdaea024f061",
+    "name": "Factory Production Line",
+    "type": "image",
+    "date": "2026-04-13T10:00:00Z"
+  },
+  {
+    "id": 2,
+    "url": "https://images.unsplash.com/photo-1621905251189-08b45d6a269e",
+    "name": "Stainless Steel Bolts",
+    "type": "image",
+    "date": "2026-04-13T10:05:00Z"
+  }
+]
