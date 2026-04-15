@@ -20,7 +20,7 @@ export async function POST(request: Request) {
         { folder: 'highfasteners' },
         (error, result) => {
           if (error) {
-            console.error('Cloudinary upload error:', error);
+            console.error('Cloudinary upload error details:', error);
             reject(error);
           } else {
             resolve(result);
@@ -28,6 +28,8 @@ export async function POST(request: Request) {
         }
       );
       uploadStream.end(buffer);
+    }).catch(err => {
+      throw new Error(`Cloudinary Upload Failed: ${err.message || 'Unknown Error'}`);
     });
 
     return NextResponse.json({ 

@@ -37,7 +37,10 @@ export async function POST(request: Request) {
     if (isCloud) {
       const { error } = await supabase.from('products').insert([mapToDB(productWithId)]);
       if (!error) return NextResponse.json({ success: true, product: productWithId });
+      
+      // 如果云端失败，在线上环境直接返回错误，不退回到本地
       console.error('Supabase Products POST error:', error);
+      return NextResponse.json({ success: false, error: `Cloud Sync Failed: ${error.message}` }, { status: 500 });
     }
 
     const products = getLocalProducts();
