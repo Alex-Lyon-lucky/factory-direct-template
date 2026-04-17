@@ -289,7 +289,11 @@ export default function ProductDetailPage() {
                       </div>
                    </div>
                    <div className="bg-white p-12 md:p-16 rounded-[72px] shadow-2xl text-slate-900">
-                      <InquiryForm productType={`Inquiry for: ${product.name}`} />
+                      <InquiryForm 
+                        productName={product.name}
+                        productId={product.id}
+                        productType={`Inquiry for: ${product.name}`} 
+                      />
                    </div>
                 </div>
              </div>

@@ -5,10 +5,12 @@ import { useState } from 'react';
 
 interface InquiryFormProps {
   productType?: string;
+  productName?: string;
+  productId?: number | string;
   onSuccess?: () => void;
 }
 
-export default function InquiryForm({ productType: initialProductType, onSuccess }: InquiryFormProps) {
+export default function InquiryForm({ productType: initialProductType, productName, productId, onSuccess }: InquiryFormProps) {
   const [formData, setFormData] = useState({
     name: '', email: '', phone: '', company: '', message: '', productType: initialProductType || 'Standard Bolts'
   });
@@ -54,6 +56,8 @@ export default function InquiryForm({ productType: initialProductType, onSuccess
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...formData,
+          productName: productName || formData.productType,
+          productId: productId || null,
           attachment,
           date: new Date().toISOString(),
           status: 'New'

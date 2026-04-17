@@ -18,6 +18,8 @@ export async function POST(request: Request) {
       phone: body.phone || '',
       company: body.company || '',
       message: body.message || '',
+      product_name: body.productName || body.product_name || 'General',
+      product_id: body.productId || body.product_id || null,
       producttype: body.productType || body.producttype || 'General',
       attachment: body.attachment || null,
       status: 'New',

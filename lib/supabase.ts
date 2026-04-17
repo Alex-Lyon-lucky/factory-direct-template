@@ -28,6 +28,8 @@ export const mapToFrontend = (data: any): any => {
     seo_description: 'seoDescription',
     sort_order: 'sortOrder',
     product_type: 'productType',
+    product_name: 'productName',
+    product_id: 'productId',
     site_name: 'siteName',
     footer_text: 'footerText',
     // 兼容旧的可能存在的全小写
