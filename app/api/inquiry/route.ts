@@ -7,6 +7,13 @@ export async function POST(request: Request) {
     const body = await request.json();
     console.log(' [DEBUG] Incoming Data:', JSON.stringify(body));
 
+    // 核心修复：后端号码验证 (必须包含国家前缀且为数字)
+    const phone = body.phone || '';
+    const phoneRegex = /^\+[0-9]{7,20}$/;
+    if (!phoneRegex.test(phone)) {
+      return NextResponse.json({ success: false, error: 'Invalid phone format. Must start with "+" and digits only.' }, { status: 400 });
+    }
+
     // 核心修复：手动生成一个绝对唯一的 ID (使用当前毫秒级时间戳)
     // 这样可以彻底解决 "duplicate key value violates unique constraint" 错误
     const uniqueId = Date.now(); 

@@ -7,6 +7,14 @@ import { useProducts } from '../../context/ProductContext';
 export default function InquiryManagement() {
   const { inquiries, deleteInquiry } = useProducts();
   const [filterStatus, setFilterStatus] = useState('All');
+  const [selectedInquiry, setSelectedInquiry] = useState<any>(null);
+
+  const filteredInquiries = inquiries.filter(iq => {
+    if (filterStatus === 'All') return true;
+    if (filterStatus === 'Unread') return iq.status === 'New';
+    if (filterStatus === 'Processed') return iq.status === 'Processed';
+    return true;
+  });
 
   return (
     <div className="max-w-7xl mx-auto space-y-12 animate-in slide-in-from-bottom-8 duration-700 pb-20 px-4">
@@ -42,9 +50,9 @@ export default function InquiryManagement() {
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-50">
-            {inquiries.map(iq => (
+            {filteredInquiries.map(iq => (
               <tr key={iq.id} className="hover:bg-slate-50/50 transition-colors group">
-                <td className="px-10 py-10">
+                <td className="px-10 py-10 cursor-pointer" onClick={() => setSelectedInquiry(iq)}>
                    <div className="flex items-center gap-4">
                       <div className="w-12 h-12 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600 font-black text-xs">
                          {iq.name.charAt(0).toUpperCase()}
@@ -67,12 +75,21 @@ export default function InquiryManagement() {
                    {iq.createdAt || 'RECENTLY'}
                 </td>
                 <td className="px-10 py-10 text-right">
-                   <button 
-                     onClick={() => { if(confirm('确定永久删除此询盘记录？')) deleteInquiry(iq.id); }}
-                     className="w-12 h-12 bg-slate-50 text-slate-400 rounded-2xl flex items-center justify-center hover:bg-red-500 hover:text-white transition"
-                   >
-                      <i className="fas fa-trash-alt text-xs"></i>
-                   </button>
+                    <div className="flex justify-end gap-2">
+                      <button 
+                        onClick={() => setSelectedInquiry(iq)}
+                        className="w-12 h-12 bg-blue-600 text-white rounded-2xl flex items-center justify-center hover:bg-slate-900 transition shadow-lg shadow-blue-100"
+                        title="查看详情"
+                      >
+                         <i className="fas fa-eye text-xs"></i>
+                      </button>
+                      <button 
+                        onClick={() => { if(confirm('确定永久删除此询盘记录？')) deleteInquiry(iq.id); }}
+                        className="w-12 h-12 bg-slate-50 text-slate-400 rounded-2xl flex items-center justify-center hover:bg-red-500 hover:text-white transition"
+                      >
+                         <i className="fas fa-trash-alt text-xs"></i>
+                      </button>
+                    </div>
                 </td>
               </tr>
             ))}
@@ -86,6 +103,77 @@ export default function InquiryManagement() {
            </div>
         )}
       </div>
+
+      {/* Inquiry Detail Modal */}
+      {selectedInquiry && (
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md z-[100] flex items-center justify-center p-4">
+          <div className="bg-white w-full max-w-2xl rounded-[48px] overflow-hidden shadow-2xl animate-in zoom-in duration-300">
+            <div className="p-12 space-y-8">
+              <div className="flex justify-between items-start">
+                <div>
+                  <h3 className="text-3xl font-black uppercase text-slate-900">询盘详情</h3>
+                  <p className="text-slate-400 font-bold uppercase tracking-widest text-[10px] mt-2">Detailed Inquiry Information</p>
+                </div>
+                <button 
+                  onClick={() => setSelectedInquiry(null)}
+                  className="w-12 h-12 bg-slate-50 text-slate-400 rounded-2xl flex items-center justify-center hover:bg-slate-900 hover:text-white transition"
+                >
+                  <i className="fas fa-times"></i>
+                </button>
+              </div>
+
+              <div className="grid grid-cols-2 gap-8">
+                <div className="space-y-1">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">客户姓名</label>
+                  <div className="text-lg font-black text-slate-900 uppercase">{selectedInquiry.name}</div>
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">联系电话 (WhatsApp)</label>
+                  <div className="text-lg font-black text-blue-600">{selectedInquiry.phone || '未提供'}</div>
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">电子邮箱</label>
+                  <div className="text-lg font-black text-slate-900 lowercase">{selectedInquiry.email}</div>
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">公司名称</label>
+                  <div className="text-lg font-black text-slate-900 uppercase">{selectedInquiry.company || '未提供'}</div>
+                </div>
+                <div className="col-span-2 space-y-1 pt-4 border-t border-slate-50">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">询盘产品</label>
+                  <div className="flex items-center gap-3">
+                    <div className="px-4 py-2 bg-blue-50 text-blue-600 rounded-xl font-black text-xs uppercase">
+                      {selectedInquiry.productName || 'General'}
+                    </div>
+                    {selectedInquiry.productType && (
+                      <div className="px-4 py-2 bg-slate-50 text-slate-400 rounded-xl font-black text-xs uppercase">
+                        {selectedInquiry.productType}
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div className="col-span-2 space-y-1 pt-4 border-t border-slate-50">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">留言详情</label>
+                  <div className="bg-slate-50 p-6 rounded-3xl text-slate-600 text-sm font-medium leading-relaxed whitespace-pre-wrap">
+                    {selectedInquiry.message}
+                  </div>
+                </div>
+                <div className="col-span-2 flex justify-between items-center pt-8">
+                  <div className="text-[10px] font-black text-slate-300 uppercase tracking-widest">
+                    提交于: {selectedInquiry.createdAt}
+                  </div>
+                  <button 
+                    onClick={() => setSelectedInquiry(null)}
+                    className="bg-slate-900 text-white px-10 py-4 rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-blue-600 transition shadow-xl shadow-slate-200"
+                  >
+                    关闭窗口
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

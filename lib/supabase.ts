@@ -28,10 +28,12 @@ export const mapToFrontend = (data: any): any => {
     seo_description: 'seoDescription',
     sort_order: 'sortOrder',
     product_type: 'productType',
+    producttype: 'productType',
     product_name: 'productName',
     product_id: 'productId',
     site_name: 'siteName',
     footer_text: 'footerText',
+    created_at: 'createdAt',
     // 兼容旧的可能存在的全小写
     seoslug: 'seoSlug',
     seotitle: 'seoTitle',

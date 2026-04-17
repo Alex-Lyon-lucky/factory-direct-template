@@ -49,6 +49,14 @@ export default function InquiryForm({ productType: initialProductType, productNa
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // 电话号码验证：必须以 + 开头，且后续必须是数字，长度至少 7 位
+    const phoneRegex = /^\+[0-9]{7,20}$/;
+    if (!phoneRegex.test(formData.phone)) {
+      alert('Please enter a valid phone number with country prefix (e.g., +8613800000000). Only numbers after "+" are allowed.');
+      return;
+    }
+
     setSending(true);
     try {
       const res = await fetch('/api/inquiry', {
@@ -100,8 +108,18 @@ export default function InquiryForm({ productType: initialProductType, productNa
           <input required type="email" placeholder="BUSINESS EMAIL" value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} className="w-full bg-slate-50 border-none rounded-[20px] px-8 py-5 font-black lowercase text-[10px] focus:ring-4 ring-blue-500/10 shadow-inner" />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <input type="text" placeholder="WHATSAPP / PHONE" value={formData.phone} onChange={e => setFormData({ ...formData, phone: e.target.value })} className="w-full bg-slate-50 border-none rounded-[20px] px-8 py-5 font-black uppercase text-[10px] focus:ring-4 ring-blue-500/10 shadow-inner" />
-          <select value={formData.productType} onChange={e => setFormData({ ...formData, productType: e.target.value })} className="w-full bg-slate-50 border-none rounded-[20px] px-8 py-5 font-black uppercase text-[10px] focus:ring-4 ring-blue-500/10 shadow-inner appearance-none">
+          <div className="space-y-2">
+            <input 
+              required 
+              type="text" 
+              placeholder="WHATSAPP / PHONE (+86138...)" 
+              value={formData.phone} 
+              onChange={e => setFormData({ ...formData, phone: e.target.value })} 
+              className="w-full bg-slate-50 border-none rounded-[20px] px-8 py-5 font-black uppercase text-[10px] focus:ring-4 ring-blue-500/10 shadow-inner" 
+            />
+            <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest ml-4">* MUST INCLUDE COUNTRY PREFIX (E.G. +86...)</p>
+          </div>
+          <select value={formData.productType} onChange={e => setFormData({ ...formData, productType: e.target.value })} className="w-full bg-slate-50 border-none rounded-[20px] px-8 py-5 font-black uppercase text-[10px] focus:ring-4 ring-blue-500/10 shadow-inner appearance-none h-[58px]">
             <option>Standard Bolts</option>
             <option>High Strength Nuts</option>
             <option>Custom OEM Parts</option>
