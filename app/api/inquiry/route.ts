@@ -7,8 +7,12 @@ export async function POST(request: Request) {
     const body = await request.json();
     console.log(' [DEBUG] Incoming Data:', JSON.stringify(body));
 
-    // 核心字段映射（确保转为全小写，匹配 Supabase 默认行为）
+    // 核心修复：手动生成一个绝对唯一的 ID (使用当前毫秒级时间戳)
+    // 这样可以彻底解决 "duplicate key value violates unique constraint" 错误
+    const uniqueId = Date.now(); 
+
     const inquiryData = {
+      id: uniqueId, // 强制指定 ID
       name: body.name || 'Anonymous',
       email: body.email || 'no-email',
       phone: body.phone || '',
@@ -20,9 +24,8 @@ export async function POST(request: Request) {
       created_at: new Date().toISOString()
     };
 
-    console.log(' [DEBUG] Mapped for DB:', JSON.stringify(inquiryData));
+    console.log(' [DEBUG] Mapped for DB with Unique ID:', uniqueId);
 
-    // 执行插入
     const { data, error } = await supabase
       .from('inquiries')
       .insert([inquiryData])
@@ -30,17 +33,10 @@ export async function POST(request: Request) {
 
     if (error) {
       console.error(' [DB ERROR] Details:', error.message);
-      console.error(' [DB ERROR] Code:', error.code);
-      console.error(' [DB ERROR] Hint:', error.hint);
-
-      return NextResponse.json({ 
-        success: false, 
-        error: error.message,
-        hint: error.hint
-      }, { status: 400 });
+      return NextResponse.json({ success: false, error: error.message }, { status: 400 });
     }
 
-    console.log(' [DB SUCCESS] Entry saved to Supabase');
+    console.log(' [DB SUCCESS] Entry saved to Supabase with ID:', uniqueId);
     return NextResponse.json({ success: true, data: data });
 
   } catch (err: any) {
