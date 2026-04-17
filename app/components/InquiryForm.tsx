@@ -50,10 +50,11 @@ export default function InquiryForm({ productType: initialProductType, productNa
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // 电话号码验证：必须以 + 开头，且后续必须是数字，长度至少 7 位
-    const phoneRegex = /^\+[0-9]{7,20}$/;
-    if (!phoneRegex.test(formData.phone)) {
-      alert('Please enter a valid phone number with country prefix (e.g., +8613800000000). Only numbers after "+" are allowed.');
+    // 修正后的号码验证：允许可选的 + 号，后面必须全是数字（允许输入时带空格，我们会处理）
+    const cleanPhone = formData.phone.replace(/\s+/g, '');
+    const phoneRegex = /^\+?[0-9]{7,20}$/;
+    if (!phoneRegex.test(cleanPhone)) {
+      alert('Please enter a valid phone number (e.g., 86138... or +86138...). Only digits and optional "+" are allowed.');
       return;
     }
 
@@ -64,6 +65,7 @@ export default function InquiryForm({ productType: initialProductType, productNa
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...formData,
+          phone: cleanPhone,
           productName: productName || formData.productType,
           productId: productId || null,
           attachment,
@@ -112,12 +114,12 @@ export default function InquiryForm({ productType: initialProductType, productNa
             <input 
               required 
               type="text" 
-              placeholder="WHATSAPP / PHONE (+86138...)" 
+              placeholder="WHATSAPP / PHONE (e.g. 86138...)" 
               value={formData.phone} 
               onChange={e => setFormData({ ...formData, phone: e.target.value })} 
               className="w-full bg-slate-50 border-none rounded-[20px] px-8 py-5 font-black uppercase text-[10px] focus:ring-4 ring-blue-500/10 shadow-inner" 
             />
-            <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest ml-4">* MUST INCLUDE COUNTRY PREFIX (E.G. +86...)</p>
+            <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest ml-4">* INCLUDE COUNTRY CODE (E.G. 86...)</p>
           </div>
           <select value={formData.productType} onChange={e => setFormData({ ...formData, productType: e.target.value })} className="w-full bg-slate-50 border-none rounded-[20px] px-8 py-5 font-black uppercase text-[10px] focus:ring-4 ring-blue-500/10 shadow-inner appearance-none h-[58px]">
             <option>Standard Bolts</option>

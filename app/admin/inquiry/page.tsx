@@ -136,22 +136,36 @@ export default function InquiryManagement() {
                   <div className="text-lg font-black text-slate-900 lowercase">{selectedInquiry.email}</div>
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">公司名称</label>
-                  <div className="text-lg font-black text-slate-900 uppercase">{selectedInquiry.company || '未提供'}</div>
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">访问 IP</label>
+                  <div className="text-lg font-black text-slate-400">{selectedInquiry.ipAddress || 'Unknown'}</div>
                 </div>
                 <div className="col-span-2 space-y-1 pt-4 border-t border-slate-50">
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">询盘产品</label>
-                  <div className="flex items-center gap-3">
-                    <div className="px-4 py-2 bg-blue-50 text-blue-600 rounded-xl font-black text-xs uppercase">
-                      {selectedInquiry.productName || 'General'}
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">询盘产品信息</label>
+                  <div className="flex items-center gap-4">
+                    <div className="px-4 py-2 bg-blue-50 text-blue-600 rounded-xl font-black text-[10px] uppercase">
+                      ID: {selectedInquiry.productId || 'N/A'}
+                    </div>
+                    <div className="px-4 py-2 bg-slate-50 text-slate-900 rounded-xl font-black text-[10px] uppercase">
+                      {selectedInquiry.productName || 'General Inquiry'}
                     </div>
                     {selectedInquiry.productType && (
-                      <div className="px-4 py-2 bg-slate-50 text-slate-400 rounded-xl font-black text-xs uppercase">
+                      <div className="px-4 py-2 bg-slate-50 text-slate-400 rounded-xl font-black text-[10px] uppercase">
                         {selectedInquiry.productType}
                       </div>
                     )}
                   </div>
                 </div>
+                {selectedInquiry.attachment && (
+                  <div className="col-span-2 pt-4">
+                    <a 
+                      href={selectedInquiry.attachment} 
+                      target="_blank" 
+                      className="flex items-center justify-center gap-3 w-full py-5 bg-emerald-50 text-emerald-600 rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-emerald-600 hover:text-white transition shadow-lg shadow-emerald-100"
+                    >
+                      <i className="fas fa-file-download text-lg"></i> View Technical Blueprint / Attachment
+                    </a>
+                  </div>
+                )}
                 <div className="col-span-2 space-y-1 pt-4 border-t border-slate-50">
                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">留言详情</label>
                   <div className="bg-slate-50 p-6 rounded-3xl text-slate-600 text-sm font-medium leading-relaxed whitespace-pre-wrap">

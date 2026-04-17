@@ -7,11 +7,17 @@ export async function POST(request: Request) {
     const body = await request.json();
     console.log(' [DEBUG] Incoming Data:', JSON.stringify(body));
 
-    // 核心修复：后端号码验证 (必须包含国家前缀且为数字)
-    const phone = body.phone || '';
-    const phoneRegex = /^\+[0-9]{7,20}$/;
-    if (!phoneRegex.test(phone)) {
-      return NextResponse.json({ success: false, error: 'Invalid phone format. Must start with "+" and digits only.' }, { status: 400 });
+    // 核心修复：捕获用户 IP
+    const forwarded = request.headers.get('x-forwarded-for');
+    const ip = forwarded ? forwarded.split(',')[0] : '127.0.0.1';
+
+    // 核心修复：后端号码验证 (允许可选的 + 号，后面必须是数字)
+    const rawPhone = body.phone || '';
+    const cleanPhone = rawPhone.replace(/\s+/g, '');
+    const phoneRegex = /^\+?[0-9]{7,20}$/;
+    
+    if (!phoneRegex.test(cleanPhone)) {
+      return NextResponse.json({ success: false, error: 'Invalid phone format. Must be digits (optional +).' }, { status: 400 });
     }
 
     // 核心修复：手动生成一个绝对唯一的 ID (使用当前毫秒级时间戳)
@@ -22,13 +28,14 @@ export async function POST(request: Request) {
       id: uniqueId, // 强制指定 ID
       name: body.name || 'Anonymous',
       email: body.email || 'no-email',
-      phone: body.phone || '',
+      phone: cleanPhone,
       company: body.company || '',
       message: body.message || '',
       product_name: body.productName || body.product_name || 'General',
       product_id: body.productId || body.product_id || null,
       producttype: body.productType || body.producttype || 'General',
       attachment: body.attachment || null,
+      ip_address: ip,
       status: 'New',
       created_at: new Date().toISOString()
     };

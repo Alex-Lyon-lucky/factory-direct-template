@@ -34,6 +34,7 @@ export const mapToFrontend = (data: any): any => {
     site_name: 'siteName',
     footer_text: 'footerText',
     created_at: 'createdAt',
+    ip_address: 'ipAddress',
     // 兼容旧的可能存在的全小写
     seoslug: 'seoSlug',
     seotitle: 'seoTitle',
