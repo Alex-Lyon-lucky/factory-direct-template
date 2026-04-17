@@ -1,11 +1,15 @@
 // lib/supabase.ts
 import { createClient } from '@supabase/supabase-js';
 
-// 提供默认的占位符，防止 Vercel 在构建时因为变量缺失而崩溃 (supabaseUrl is required 错误)
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder-url.supabase.co';
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-anon-key';
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// 关键逻辑：如果是服务器端，优先使用 SERVICE_ROLE_KEY 以获得最高权限
+const isServer = typeof window === 'undefined';
+const supabaseKey = (isServer ? process.env.SUPABASE_SERVICE_ROLE_KEY : null) || 
+                    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 
+                    'placeholder-anon-key';
+
+export const supabase = createClient(supabaseUrl, supabaseKey);
 
 /**
  * Utility to map Supabase lowercase fields back to CamelCase for Frontend
