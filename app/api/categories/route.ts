@@ -31,17 +31,67 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    const categories = await request.json();
+    const newCategory = await request.json();
+    // 确保有 ID
+    const categoryWithId = { ...newCategory, id: newCategory.id || Date.now() };
 
     if (isCloud) {
-      const { error } = await supabase.from('categories').upsert(categories);
-      if (!error) return NextResponse.json({ success: true, categories });
+      const { data, error } = await supabase.from('categories').insert([categoryWithId]).select();
+      if (!error) return NextResponse.json({ success: true, category: data[0] });
       console.error('Supabase Categories POST error:', error);
+      return NextResponse.json({ success: false, error: error.message }, { status: 500 });
     }
 
+    const categories = getLocalCategories();
+    categories.push(categoryWithId);
     saveLocalCategories(categories);
-    return NextResponse.json({ success: true, categories });
+    return NextResponse.json({ success: true, category: categoryWithId });
   } catch (error) {
-    return NextResponse.json({ success: false, error: 'Failed to save categories' }, { status: 500 });
+    return NextResponse.json({ success: false, error: 'Failed to add category' }, { status: 500 });
+  }
+}
+
+export async function PUT(request: Request) {
+  try {
+    const updatedCategory = await request.json();
+    if (!updatedCategory.id) return NextResponse.json({ success: false, error: 'ID is required' }, { status: 400 });
+
+    if (isCloud) {
+      const { data, error } = await supabase
+        .from('categories')
+        .update({ name: updatedCategory.name, value: updatedCategory.value })
+        .eq('id', updatedCategory.id)
+        .select();
+      if (!error) return NextResponse.json({ success: true, category: data[0] });
+      console.error('Supabase Categories PUT error:', error);
+      return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    }
+
+    let categories = getLocalCategories();
+    categories = categories.map((c: any) => c.id === updatedCategory.id ? updatedCategory : c);
+    saveLocalCategories(categories);
+    return NextResponse.json({ success: true, category: updatedCategory });
+  } catch (error) {
+    return NextResponse.json({ success: false, error: 'Failed to update category' }, { status: 500 });
+  }
+}
+
+export async function DELETE(request: Request) {
+  try {
+    const { id } = await request.json();
+
+    if (isCloud) {
+      const { error } = await supabase.from('categories').delete().eq('id', id);
+      if (!error) return NextResponse.json({ success: true });
+      console.error('Supabase Categories DELETE error:', error);
+      return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    }
+
+    let categories = getLocalCategories();
+    categories = categories.filter((c: any) => c.id !== id);
+    saveLocalCategories(categories);
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    return NextResponse.json({ success: false, error: 'Failed to delete category' }, { status: 500 });
   }
 }
