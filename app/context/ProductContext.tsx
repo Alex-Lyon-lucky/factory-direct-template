@@ -28,6 +28,8 @@ export interface Product {
   sortOrder?: number;
   summary?: string;
   specs?: { key: string; value: string }[];
+  companyProfile?: string;
+  technicalDrawings?: string;
 }
 
 export interface NewsArticle {

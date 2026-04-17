@@ -16,6 +16,7 @@ export default function ProductDetailPage() {
   const { products } = useProducts();
   const [product, setProduct] = useState<Product | null>(null);
   const [activeImg, setActiveImg] = useState<string>('');
+  const [activeTab, setActiveTab] = useState<'details' | 'drawings' | 'company'>('details');
   
   useEffect(() => {
     const p = products.find(item => item.seoSlug === slug || item.id.toString() === slug);
@@ -156,17 +157,82 @@ export default function ProductDetailPage() {
 
           {/* 第二部分：详细展示区 (全宽，位于下方) */}
           <div className="border-t-2 border-slate-50 pt-24">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-24">
+            
+            {/* 核心切换标签 (Roadmap Phase 5) */}
+            <div className="flex flex-wrap gap-4 md:gap-8 mb-16 border-b border-slate-100 pb-8">
+               {[
+                 { id: 'details', label: 'Product Details', icon: 'fa-file-alt' },
+                 { id: 'drawings', label: 'Technical Drawings', icon: 'fa-drafting-compass' },
+                 { id: 'company', label: 'Company Profile', icon: 'fa-building' }
+               ].map((tab) => (
+                 <button 
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id as any)}
+                  className={`flex items-center gap-3 px-8 py-4 rounded-[20px] font-black uppercase tracking-widest text-[10px] transition-all duration-500 ${
+                    activeTab === tab.id 
+                    ? 'bg-slate-900 text-white shadow-2xl shadow-slate-300 -translate-y-1' 
+                    : 'bg-white text-slate-400 border border-slate-100 hover:border-blue-200 hover:text-slate-900'
+                  }`}
+                 >
+                   <i className={`fas ${tab.icon} ${activeTab === tab.id ? 'text-blue-400' : ''}`}></i>
+                   {tab.label}
+                 </button>
+               ))}
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-20">
               
-              {/* 左侧：长篇大论详情 (8列) */}
-              <div className="lg:col-span-8">
-                <div className="flex items-center gap-6 mb-16">
-                   <div className="w-12 h-12 rounded-[20px] bg-slate-900 flex items-center justify-center text-white text-lg"><i className="fas fa-file-alt"></i></div>
-                   <h2 className="text-3xl font-black uppercase tracking-tighter">Product Deep Dive</h2>
-                </div>
-                <article className="prose prose-slate max-w-none backend-rich-text prose-img:rounded-[48px] prose-headings:font-black prose-headings:uppercase prose-p:text-slate-500 prose-p:leading-loose">
-                  <div dangerouslySetInnerHTML={{ __html: product.description }} />
-                </article>
+              {/* 左侧：内容动态渲染区 (8列) */}
+              <div className="lg:col-span-8 animate-in fade-in slide-in-from-left-4 duration-700">
+                {activeTab === 'details' && (
+                  <>
+                    <div className="flex items-center gap-4 mb-12">
+                       <div className="w-10 h-10 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600 text-xs"><i className="fas fa-info-circle"></i></div>
+                       <h2 className="text-2xl font-black uppercase tracking-tighter text-slate-900">Essential Overview</h2>
+                    </div>
+                    <article className="prose prose-slate max-w-none backend-rich-text prose-img:rounded-[40px] prose-headings:font-black prose-headings:uppercase prose-p:text-slate-500 prose-p:leading-loose">
+                      <div dangerouslySetInnerHTML={{ __html: product.description }} />
+                    </article>
+                  </>
+                )}
+
+                {activeTab === 'drawings' && (
+                  <>
+                    <div className="flex items-center gap-4 mb-12">
+                       <div className="w-10 h-10 rounded-2xl bg-orange-50 flex items-center justify-center text-orange-600 text-xs"><i className="fas fa-drafting-compass"></i></div>
+                       <h2 className="text-2xl font-black uppercase tracking-tighter text-slate-900">Engineering Schematics</h2>
+                    </div>
+                    {product.technicalDrawings ? (
+                      <article className="prose prose-slate max-w-none backend-rich-text prose-img:rounded-[40px] prose-headings:font-black prose-headings:uppercase">
+                        <div dangerouslySetInnerHTML={{ __html: product.technicalDrawings }} />
+                      </article>
+                    ) : (
+                      <div className="bg-slate-50 rounded-[40px] p-20 text-center border-2 border-dashed border-slate-200">
+                         <i className="fas fa-lock text-4xl text-slate-200 mb-6"></i>
+                         <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-300">Technical drawings are confidential. Please contact sales for access.</p>
+                      </div>
+                    )}
+                  </>
+                )}
+
+                {activeTab === 'company' && (
+                  <>
+                    <div className="flex items-center gap-4 mb-12">
+                       <div className="w-10 h-10 rounded-2xl bg-emerald-50 flex items-center justify-center text-emerald-600 text-xs"><i className="fas fa-building"></i></div>
+                       <h2 className="text-2xl font-black uppercase tracking-tighter text-slate-900">Manufacturer Credentials</h2>
+                    </div>
+                    {product.companyProfile ? (
+                      <article className="prose prose-slate max-w-none backend-rich-text prose-img:rounded-[40px] prose-headings:font-black prose-headings:uppercase">
+                        <div dangerouslySetInnerHTML={{ __html: product.companyProfile }} />
+                      </article>
+                    ) : (
+                      <div className="bg-slate-50 rounded-[40px] p-20 text-center border-2 border-dashed border-slate-200">
+                         <i className="fas fa-industry text-4xl text-slate-200 mb-6"></i>
+                         <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-300">Company history and manufacturing capability report.</p>
+                      </div>
+                    )}
+                  </>
+                )}
               </div>
 
               {/* 右侧：技术参数表 (4列) - 吸顶 */}

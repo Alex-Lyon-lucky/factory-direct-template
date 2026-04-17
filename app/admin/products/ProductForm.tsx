@@ -27,14 +27,18 @@ export default function ProductForm({ initialData }: { initialData?: Product }) 
     alt: '',
     sortOrder: 0,
     summary: '',
-    specs: []
+    specs: [],
+    companyProfile: '',
+    technicalDrawings: ''
   });
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState<string | null>(null);
-  const [showMatPicker, setShowMatPicker] = useState<{ active: boolean, target: 'main' | 'gallery' | 'editor' }>({ active: false, target: 'main' });
+  const [showMatPicker, setShowMatPicker] = useState<{ active: boolean, target: 'main' | 'gallery' | 'editor' | 'drawings' | 'company' }>({ active: false, target: 'main' });
   const [lastSelectedEditorImg, setLastSelectedEditorImg] = useState<string | null>(null);
+  const [lastSelectedDrawingsImg, setLastSelectedDrawingsImg] = useState<string | null>(null);
+  const [lastSelectedCompanyImg, setLastSelectedCompanyImg] = useState<string | null>(null);
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, target: 'main' | 'gallery' | 'editor') => {
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, target: 'main' | 'gallery' | 'editor' | 'drawings' | 'company') => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
 
@@ -77,6 +81,12 @@ export default function ProductForm({ initialData }: { initialData?: Product }) 
       } else if (target === 'editor') {
         setLastSelectedEditorImg(successfulUploads[0]);
         setTimeout(() => setLastSelectedEditorImg(null), 100);
+      } else if (target === 'drawings') {
+        setLastSelectedDrawingsImg(successfulUploads[0]);
+        setTimeout(() => setLastSelectedDrawingsImg(null), 100);
+      } else if (target === 'company') {
+        setLastSelectedCompanyImg(successfulUploads[0]);
+        setTimeout(() => setLastSelectedCompanyImg(null), 100);
       }
       refreshData();
     } catch (err) {
@@ -339,6 +349,36 @@ export default function ProductForm({ initialData }: { initialData?: Product }) 
                   />
               </div>
             </div>
+
+            {/* 产品图纸 */}
+            <div className="bg-white p-12 rounded-[56px] shadow-sm border border-slate-100">
+              <h3 className="text-[10px] font-black uppercase text-blue-600 tracking-[0.3em] mb-12 flex items-center gap-4">
+                 <div className="w-10 h-10 rounded-2xl bg-blue-50 flex items-center justify-center"><i className="fas fa-drafting-compass"></i></div> 产品详细图纸 (Technical Drawings)
+              </h3>
+              <div className="border-4 border-slate-50 rounded-[40px] overflow-hidden focus-within:border-blue-100 transition shadow-inner">
+                  <TiptapEditor 
+                    content={form.technicalDrawings || ''} 
+                    onChange={(html) => setForm({...form, technicalDrawings: html})} 
+                    onOpenLibrary={() => setShowMatPicker({ active: true, target: 'drawings' })}
+                    lastSelectedImage={lastSelectedDrawingsImg || undefined}
+                  />
+              </div>
+            </div>
+
+            {/* 公司介绍 */}
+            <div className="bg-white p-12 rounded-[56px] shadow-sm border border-slate-100">
+              <h3 className="text-[10px] font-black uppercase text-blue-600 tracking-[0.3em] mb-12 flex items-center gap-4">
+                 <div className="w-10 h-10 rounded-2xl bg-blue-50 flex items-center justify-center"><i className="fas fa-building"></i></div> 公司介绍 (Company Profile)
+              </h3>
+              <div className="border-4 border-slate-50 rounded-[40px] overflow-hidden focus-within:border-blue-100 transition shadow-inner">
+                  <TiptapEditor 
+                    content={form.companyProfile || ''} 
+                    onChange={(html) => setForm({...form, companyProfile: html})} 
+                    onOpenLibrary={() => setShowMatPicker({ active: true, target: 'company' })}
+                    lastSelectedImage={lastSelectedCompanyImg || undefined}
+                  />
+              </div>
+            </div>
           </div>
 
           <div className="lg:col-span-4 space-y-10">
@@ -383,7 +423,13 @@ export default function ProductForm({ initialData }: { initialData?: Product }) 
                    <div>
                      <h3 className="text-4xl font-black uppercase text-slate-900 tracking-tighter leading-none">全局素材中心库</h3>
                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em] mt-3 flex items-center gap-2">
-                        <span className="w-2 h-2 rounded-full bg-blue-600"></span> 正在选择 {showMatPicker.target === 'main' ? '主图' : showMatPicker.target === 'gallery' ? '副图' : '富文本插图'}
+                        <span className="w-2 h-2 rounded-full bg-blue-600"></span> 正在选择 {
+                          showMatPicker.target === 'main' ? '主图' : 
+                          showMatPicker.target === 'gallery' ? '副图' : 
+                          showMatPicker.target === 'drawings' ? '图纸插图' :
+                          showMatPicker.target === 'company' ? '公司介绍插图' :
+                          '富文本插图'
+                        }
                      </p>
                    </div>
                    <button onClick={() => setShowMatPicker({ active: false, target: 'main' })} className="w-16 h-16 bg-slate-50 rounded-[28px] flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-50 transition shadow-sm"><i className="fas fa-times text-xl"></i></button>
@@ -403,12 +449,22 @@ export default function ProductForm({ initialData }: { initialData?: Product }) 
                              setLastSelectedEditorImg(mat.url);
                              setTimeout(() => setLastSelectedEditorImg(null), 100);
                              setShowMatPicker({ active: false, target: 'main' });
+                          } else if (showMatPicker.target === 'drawings') {
+                             setLastSelectedDrawingsImg(mat.url);
+                             setTimeout(() => setLastSelectedDrawingsImg(null), 100);
+                             setShowMatPicker({ active: false, target: 'main' });
+                          } else if (showMatPicker.target === 'company') {
+                             setLastSelectedCompanyImg(mat.url);
+                             setTimeout(() => setLastSelectedCompanyImg(null), 100);
+                             setShowMatPicker({ active: false, target: 'main' });
                           }
                        }}
                        className={`relative aspect-square rounded-[40px] overflow-hidden cursor-pointer border-4 transition-all duration-500 bg-white p-4 shadow-sm hover:shadow-2xl hover:-translate-y-2 ${
                           (showMatPicker.target === 'main' && form.img === mat.url) || 
                           (showMatPicker.target === 'gallery' && form.gallery?.includes(mat.url)) ||
-                          (showMatPicker.target === 'editor' && lastSelectedEditorImg === mat.url)
+                          (showMatPicker.target === 'editor' && lastSelectedEditorImg === mat.url) ||
+                          (showMatPicker.target === 'drawings' && lastSelectedDrawingsImg === mat.url) ||
+                          (showMatPicker.target === 'company' && lastSelectedCompanyImg === mat.url)
                           ? 'border-blue-600 ring-8 ring-blue-50' : 'border-white hover:border-blue-200'
                        }`}
                       >
