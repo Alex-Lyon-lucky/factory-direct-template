@@ -3,38 +3,35 @@ import { createClient } from '@supabase/supabase-js';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder-url.supabase.co';
 
-// 关键逻辑：如果是服务器端，优先使用 SERVICE_ROLE_KEY 以获得最高权限
+// 严格区分：服务端用 Service Role，客户端用 Anon
 const isServer = typeof window === 'undefined';
-const supabaseKey = (isServer ? process.env.SUPABASE_SERVICE_ROLE_KEY : null) || 
-                    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 
-                    'placeholder-anon-key';
+const supabaseKey = isServer 
+  ? (process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) 
+  : process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-export const supabase = createClient(supabaseUrl, supabaseKey);
+if (isServer && !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+  console.warn('[WARNING] SUPABASE_SERVICE_ROLE_KEY is missing. Writing to DB might fail!');
+}
 
-/**
- * Utility to map Supabase lowercase fields back to CamelCase for Frontend
- */
+export const supabase = createClient(supabaseUrl, supabaseKey || 'placeholder-key');
+
+/** 字段映射工具 */
 export const mapToFrontend = (data: any): any => {
   if (!data) return data;
   if (Array.isArray(data)) return data.map(item => mapToFrontend(item));
-  
   const mapped: any = {};
   const mapping: any = {
-    // Products & News
+    producttype: 'productType',
     seotitle: 'seoTitle',
     seodescription: 'seoDescription',
     seoslug: 'seoSlug',
-    // Inquiries
-    producttype: 'productType',
-    // Settings
     sitename: 'siteName',
     sitedescription: 'siteDescription',
     seokeywords: 'seoKeywords',
     contactemail: 'contactEmail',
     contactphone: 'contactPhone',
-    footertext: 'footerText'
+    footertext: 'footerText',
   };
-
   for (const key in data) {
     const newKey = mapping[key] || key;
     mapped[newKey] = data[key];
@@ -42,13 +39,9 @@ export const mapToFrontend = (data: any): any => {
   return mapped;
 };
 
-/**
- * Utility to map Frontend CamelCase fields to lowercase for Supabase
- */
 export const mapToDB = (data: any): any => {
   if (!data) return data;
   if (Array.isArray(data)) return data.map(item => mapToDB(item));
-  
   const mapped: any = {};
   for (const key in data) {
     mapped[key.toLowerCase()] = data[key];
