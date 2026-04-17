@@ -62,3 +62,38 @@ body {
   line-height: 1.8;
   margin-bottom: 0.5rem;
 }
+
+/* ==================== Tiptap Table Styles ==================== */
+.prose table, .backend-rich-text table {
+  border-collapse: collapse;
+  table-layout: fixed;
+  width: 100%;
+  margin: 2rem 0;
+  overflow: hidden;
+  border-radius: 1rem;
+  border: 1px solid #f1f5f9;
+}
+
+.prose td, .prose th, .backend-rich-text td, .backend-rich-text th {
+  min-width: 1em;
+  border: 1px solid #f1f5f9;
+  padding: 12px 16px;
+  vertical-align: top;
+  box-sizing: border-box;
+  position: relative;
+  font-size: 0.9rem;
+}
+
+.prose th, .backend-rich-text th {
+  font-weight: 900;
+  text-align: left;
+  background-color: #f8fafc;
+  text-transform: uppercase;
+  color: #0f172a;
+  font-size: 0.75rem;
+  tracking: 0.1em;
+}
+
+.prose p, .backend-rich-text p {
+  margin-bottom: 1.25rem;
+}

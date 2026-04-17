@@ -63,6 +63,7 @@ export default function RootLayout({
     <html
       lang="en"
       className="h-full antialiased scroll-smooth"
+      suppressHydrationWarning
     >
       <head>
         {/* Font Awesome 图标库 - 让所有 fas fa- 图标正常显示 */}

@@ -1,6 +1,8 @@
 // app/api/upload/route.ts
 import { NextResponse } from 'next/server';
 import cloudinary from '@/lib/cloudinary';
+import { supabase } from '@/lib/supabase';
+import crypto from 'crypto';
 
 export async function POST(request: Request) {
   try {
@@ -14,7 +16,24 @@ export async function POST(request: Request) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    // 使用 await 获取 promise 的值，避免直接返回 promise
+    // Phase 3: Hash detection for deduplication
+    const hash = crypto.createHash('sha256').update(buffer).digest('hex');
+    
+    // Check if this hash exists in Supabase
+    const { data: existing } = await supabase
+      .from('materials')
+      .select('url')
+      .eq('hash', hash)
+      .single();
+
+    if (existing) {
+      return NextResponse.json({ 
+        url: existing.url,
+        isDuplicate: true
+      });
+    }
+
+    // New file, upload to Cloudinary
     const result: any = await new Promise((resolve, reject) => {
       const uploadStream = cloudinary.uploader.upload_stream(
         { folder: 'highfasteners' },
@@ -34,7 +53,8 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ 
       url: result?.secure_url,
-      public_id: result?.public_id
+      public_id: result?.public_id,
+      hash: hash
     });
 
   } catch (error) {

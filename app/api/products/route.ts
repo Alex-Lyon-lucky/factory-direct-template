@@ -22,11 +22,24 @@ const saveLocalProducts = (products: any[]) => {
 
 export async function GET() {
   if (isCloud) {
-    const { data, error } = await supabase.from('products').select('*').order('created_at', { ascending: false });
+    const { data, error } = await supabase
+      .from('products')
+      .select('*')
+      .order('sort_order', { ascending: true })
+      .order('created_at', { ascending: false });
     if (!error) return NextResponse.json(mapToFrontend(data));
     console.error('Supabase Products GET error:', error);
   }
-  return NextResponse.json(getLocalProducts());
+  
+  // 本地模式也支持排序
+  const products = getLocalProducts();
+  products.sort((a: any, b: any) => {
+    if (a.sortOrder !== b.sortOrder) {
+      return (a.sortOrder || 0) - (b.sortOrder || 0);
+    }
+    return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime();
+  });
+  return NextResponse.json(products);
 }
 
 export async function POST(request: Request) {

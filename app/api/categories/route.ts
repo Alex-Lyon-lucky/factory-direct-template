@@ -22,18 +22,30 @@ const saveLocalCategories = (categories: any[]) => {
 
 export async function GET() {
   if (isCloud) {
-    const { data, error } = await supabase.from('categories').select('*').order('id', { ascending: true });
+    const { data, error } = await supabase
+      .from('categories')
+      .select('*')
+      .order('sort_order', { ascending: true });
     if (!error) return NextResponse.json(data);
     console.error('Supabase Categories GET error:', error);
   }
-  return NextResponse.json(getLocalCategories());
+  
+  const categories = getLocalCategories();
+  if (Array.isArray(categories)) {
+    categories.sort((a: any, b: any) => (a.sort_order || 0) - (b.sort_order || 0));
+  }
+  return NextResponse.json(categories);
 }
 
 export async function POST(request: Request) {
   try {
     const newCategory = await request.json();
     // 确保有 ID
-    const categoryWithId = { ...newCategory, id: newCategory.id || Date.now() };
+    const categoryWithId = { 
+      ...newCategory, 
+      id: newCategory.id || Date.now(),
+      sort_order: newCategory.sort_order || 0 
+    };
 
     if (isCloud) {
       const { data, error } = await supabase.from('categories').insert([categoryWithId]).select();
@@ -43,8 +55,10 @@ export async function POST(request: Request) {
     }
 
     const categories = getLocalCategories();
-    categories.push(categoryWithId);
-    saveLocalCategories(categories);
+    if (Array.isArray(categories)) {
+      categories.push(categoryWithId);
+      saveLocalCategories(categories);
+    }
     return NextResponse.json({ success: true, category: categoryWithId });
   } catch (error) {
     return NextResponse.json({ success: false, error: 'Failed to add category' }, { status: 500 });
@@ -59,7 +73,11 @@ export async function PUT(request: Request) {
     if (isCloud) {
       const { data, error } = await supabase
         .from('categories')
-        .update({ name: updatedCategory.name, value: updatedCategory.value })
+        .update({ 
+          name: updatedCategory.name, 
+          value: updatedCategory.value,
+          sort_order: updatedCategory.sort_order || 0
+        })
         .eq('id', updatedCategory.id)
         .select();
       if (!error) return NextResponse.json({ success: true, category: data[0] });
@@ -68,8 +86,10 @@ export async function PUT(request: Request) {
     }
 
     let categories = getLocalCategories();
-    categories = categories.map((c: any) => c.id === updatedCategory.id ? updatedCategory : c);
-    saveLocalCategories(categories);
+    if (Array.isArray(categories)) {
+      categories = categories.map((c: any) => c.id === updatedCategory.id ? updatedCategory : c);
+      saveLocalCategories(categories);
+    }
     return NextResponse.json({ success: true, category: updatedCategory });
   } catch (error) {
     return NextResponse.json({ success: false, error: 'Failed to update category' }, { status: 500 });

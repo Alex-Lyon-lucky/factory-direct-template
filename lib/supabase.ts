@@ -15,23 +15,27 @@ if (isServer && !process.env.SUPABASE_SERVICE_ROLE_KEY) {
 
 export const supabase = createClient(supabaseUrl, supabaseKey || 'placeholder-key');
 
-/** 字段映射工具 */
+/** 字段映射工具：处理数据库 snake_case 到前端 camelCase 的转换 */
 export const mapToFrontend = (data: any): any => {
   if (!data) return data;
   if (Array.isArray(data)) return data.map(item => mapToFrontend(item));
   const mapped: any = {};
+  
+  // 核心映射关系
   const mapping: any = {
-    producttype: 'productType',
-    seotitle: 'seoTitle',
-    seodescription: 'seoDescription',
+    seo_slug: 'seoSlug',
+    seo_title: 'seoTitle',
+    seo_description: 'seoDescription',
+    sort_order: 'sortOrder',
+    product_type: 'productType',
+    site_name: 'siteName',
+    footer_text: 'footerText',
+    // 兼容旧的可能存在的全小写
     seoslug: 'seoSlug',
-    sitename: 'siteName',
-    sitedescription: 'siteDescription',
-    seokeywords: 'seoKeywords',
-    contactemail: 'contactEmail',
-    contactphone: 'contactPhone',
-    footertext: 'footerText',
+    seotitle: 'seoTitle',
+    seodescription: 'seoDescription'
   };
+
   for (const key in data) {
     const newKey = mapping[key] || key;
     mapped[newKey] = data[key];
@@ -39,12 +43,22 @@ export const mapToFrontend = (data: any): any => {
   return mapped;
 };
 
+/** 字段映射工具：处理前端 camelCase 到数据库 snake_case 的转换 */
 export const mapToDB = (data: any): any => {
   if (!data) return data;
   if (Array.isArray(data)) return data.map(item => mapToDB(item));
   const mapped: any = {};
+  
+  // 转换 camelCase 为 snake_case
+  const toSnake = (str: string) => str.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
+
   for (const key in data) {
-    mapped[key.toLowerCase()] = data[key];
+    // 排除已手动处理的字段或保留原始 ID
+    if (key === 'id') {
+      mapped[key] = data[key];
+    } else {
+      mapped[toSnake(key)] = data[key];
+    }
   }
   return mapped;
 };

@@ -1,4 +1,4 @@
-// app/products/[id]/page.tsx
+// app/products/[slug]/page.tsx
 'use client';
 
 import { useParams, useRouter } from 'next/navigation';
@@ -11,20 +11,20 @@ import Footer from '../../components/Footer';
 import InquiryForm from '../../components/InquiryForm';
 
 export default function ProductDetailPage() {
-  const { id } = useParams();
+  const { slug } = useParams();
   const router = useRouter();
   const { products, settings } = useProducts();
   const [product, setProduct] = useState<Product | null>(null);
   const [activeImg, setActiveImg] = useState<string>('');
-  const [activeTab, setActiveTab] = useState('overview');
+  const [activeTab, setActiveTab] = useState('technical');
   
   useEffect(() => {
-    const p = products.find(item => item.id.toString() === id || item.seoSlug === id);
+    const p = products.find(item => item.seoSlug === slug || item.id.toString() === slug);
     if (p) {
       setProduct(p);
       setActiveImg(p.img);
     }
-  }, [id, products]);
+  }, [slug, products]);
 
   if (!product) return <div className="min-h-screen flex items-center justify-center bg-white"><div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div></div>;
 
@@ -64,98 +64,116 @@ export default function ProductDetailPage() {
             <span className="text-slate-900">{product.cat}</span>
           </nav>
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24 mb-32">
-            {/* Left: Gallery System */}
-            <div className="lg:col-span-7 space-y-8 animate-in slide-in-from-left-8 duration-700">
-              <div className="relative aspect-[4/3] rounded-[64px] overflow-hidden bg-slate-50 border border-slate-100 group shadow-2xl shadow-slate-200/50">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-20 mb-20">
+            {/* Left: Gallery System (Approx 40%) */}
+            <div className="lg:col-span-5 space-y-6 animate-in slide-in-from-left-8 duration-700">
+              <div className="relative aspect-square rounded-[48px] overflow-hidden bg-slate-50 border border-slate-100 group shadow-2xl shadow-slate-200/50">
                 <Image 
                   src={activeImg || product.img} 
                   alt={product.alt || product.name} 
                   fill 
-                  className="object-contain p-12 transition-all duration-1000 group-hover:scale-105"
+                  className="object-contain p-8 transition-all duration-1000 group-hover:scale-105"
                   priority
                 />
-                <div className="absolute top-10 right-10 bg-blue-600 text-white px-8 py-3 rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-2xl z-10">
+                <div className="absolute top-8 right-8 bg-blue-600 text-white px-6 py-2 rounded-xl font-black uppercase text-[9px] tracking-widest z-10">
                   FACTORY DIRECT
                 </div>
               </div>
               
-              <div className="grid grid-cols-6 gap-4 px-2">
+              <div className="grid grid-cols-5 gap-3 px-1">
                 <button 
                   onClick={() => setActiveImg(product.img)}
-                  className={`relative aspect-square rounded-3xl overflow-hidden bg-slate-50 border-4 transition-all ${activeImg === product.img ? 'border-blue-600 shadow-xl' : 'border-transparent opacity-60 hover:opacity-100'}`}
+                  className={`relative aspect-square rounded-2xl overflow-hidden bg-slate-50 border-2 transition-all ${activeImg === product.img ? 'border-blue-600 shadow-lg' : 'border-transparent opacity-60 hover:opacity-100'}`}
                 >
-                  <Image src={product.img} alt="" fill className="object-contain p-2" />
+                  <Image src={product.img} alt="" fill className="object-contain p-1.5" />
                 </button>
                 {product.gallery?.map((g, i) => (
                   <button 
                     key={i}
                     onClick={() => setActiveImg(g)}
-                    className={`relative aspect-square rounded-3xl overflow-hidden bg-slate-50 border-4 transition-all ${activeImg === g ? 'border-blue-600 shadow-xl' : 'border-transparent opacity-60 hover:opacity-100'}`}
+                    className={`relative aspect-square rounded-2xl overflow-hidden bg-slate-50 border-2 transition-all ${activeImg === g ? 'border-blue-600 shadow-lg' : 'border-transparent opacity-60 hover:opacity-100'}`}
                   >
-                    <Image src={g} alt="" fill className="object-contain p-2" />
+                    <Image src={g} alt="" fill className="object-contain p-1.5" />
                   </button>
                 ))}
               </div>
             </div>
 
-            {/* Right: Essential Info */}
-            <div className="lg:col-span-5 flex flex-col justify-center animate-in slide-in-from-right-8 duration-700">
-              <div className="inline-flex items-center gap-3 bg-blue-50 text-blue-600 px-6 py-2 rounded-full font-black uppercase text-[9px] tracking-[0.2em] mb-8 w-fit shadow-sm shadow-blue-100">
-                <span className="w-1.5 h-1.5 rounded-full bg-blue-600 animate-pulse"></span> {product.cat}
+            {/* Right: Essential Info (Approx 60%) */}
+            <div className="lg:col-span-7 flex flex-col justify-center animate-in slide-in-from-right-8 duration-700">
+              <div className="inline-flex items-center gap-3 bg-blue-50 text-blue-600 px-5 py-2 rounded-full font-black uppercase text-[9px] tracking-[0.2em] mb-6 w-fit shadow-sm shadow-blue-100">
+                <span className="w-1.5 h-1.5 rounded-full bg-blue-600"></span> {product.cat}
               </div>
               
-              <h1 className="text-6xl md:text-7xl font-black uppercase tracking-tighter text-slate-900 leading-[0.9] mb-8">
+              <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter text-slate-900 leading-tight mb-4">
                 {product.name}
               </h1>
 
+              {product.summary && (
+                <p className="text-xl text-slate-500 font-bold mb-8 leading-relaxed italic border-l-4 border-blue-600 pl-6">
+                  {product.summary}
+                </p>
+              )}
+
               {/* Core SEO Keywords Display */}
               {product.keywords && product.keywords.length > 0 && (
-                 <div className="flex flex-wrap gap-2 mb-10">
+                 <div className="flex flex-wrap gap-2 mb-8">
                     {product.keywords.map((kw, i) => (
-                       <span key={i} className="bg-slate-900 text-white px-4 py-1.5 rounded-xl font-black uppercase text-[8px] tracking-[0.2em] shadow-lg shadow-slate-200">
+                       <span key={i} className="bg-slate-100 text-slate-500 px-3 py-1 rounded-lg font-black uppercase text-[8px] tracking-[0.2em]">
                           #{kw}
                        </span>
                     ))}
                  </div>
               )}
 
-              <div className="grid grid-cols-2 gap-8 mb-12 border-y border-slate-100 py-10">
+              <div className="grid grid-cols-2 gap-8 mb-10 border-y border-slate-100 py-8">
                 <div>
-                  <h4 className="text-[10px] font-black uppercase text-slate-400 tracking-[0.3em] mb-3">Global Standard</h4>
-                  <p className="text-xl font-black uppercase text-slate-900">{product.spec}</p>
+                  <h4 className="text-[10px] font-black uppercase text-slate-400 tracking-[0.3em] mb-2">Global Standard</h4>
+                  <p className="text-lg font-black uppercase text-slate-900">{product.spec}</p>
                 </div>
                 <div>
-                  <h4 className="text-[10px] font-black uppercase text-slate-400 tracking-[0.3em] mb-3">Production Power</h4>
-                  <p className="text-xl font-black uppercase text-slate-900">1M+ PCS / Month</p>
+                  <h4 className="text-[10px] font-black uppercase text-slate-400 tracking-[0.3em] mb-2">Production Power</h4>
+                  <p className="text-lg font-black uppercase text-slate-900">1M+ PCS / Month</p>
                 </div>
               </div>
 
-              <div className="space-y-4 mb-12">
+              {/* Description Section - Moved here per User Request */}
+              <div className="mb-10 max-h-[400px] overflow-y-auto no-scrollbar pr-4 border-b border-slate-50 pb-8">
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="w-8 h-8 bg-blue-600 rounded-xl flex items-center justify-center text-white text-[10px]"><i className="fas fa-file-alt"></i></div>
+                  <h3 className="text-[10px] font-black uppercase text-slate-900 tracking-[0.3em]">Quick Specifications</h3>
+                </div>
+                <div 
+                  className="prose prose-slate max-w-none backend-rich-text text-base leading-relaxed"
+                  dangerouslySetInnerHTML={{ __html: product.description }}
+                />
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-4 mb-10">
                 <button 
                   onClick={() => {
                     const el = document.getElementById('inquiry-section');
                     el?.scrollIntoView({ behavior: 'smooth' });
                   }}
-                  className="w-full bg-blue-600 text-white py-6 rounded-[32px] font-black uppercase tracking-[0.3em] text-xs shadow-2xl shadow-blue-500/30 hover:bg-slate-900 hover:shadow-slate-300 transition-all active:scale-95 flex items-center justify-center gap-4 group"
+                  className="flex-1 bg-blue-600 text-white py-5 rounded-[24px] font-black uppercase tracking-[0.3em] text-[10px] shadow-xl shadow-blue-500/30 hover:bg-slate-900 transition-all flex items-center justify-center gap-4 group"
                 >
                   <i className="fas fa-paper-plane text-[10px] group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform"></i>
                   GET INSTANT QUOTATION
                 </button>
-                <div className="flex items-center justify-center gap-6 py-4 px-8 bg-slate-50 rounded-[28px] border border-slate-100">
-                  <div className="flex -space-x-3">
-                    {[1,2,3,4].map(i => <div key={i} className="w-10 h-10 rounded-2xl border-2 border-white bg-slate-200 overflow-hidden relative shadow-md"><Image src={`https://images.unsplash.com/photo-${1500000000000+i}?auto=format&fit=crop&q=80&w=100`} alt="" fill className="object-cover" /></div>)}
+                <div className="flex items-center gap-4 py-4 px-6 bg-slate-50 rounded-[24px] border border-slate-100">
+                  <div className="flex -space-x-2">
+                    {[1,2,3].map(i => <div key={i} className="w-8 h-8 rounded-xl border-2 border-white bg-slate-200 overflow-hidden relative shadow-sm"><Image src={`https://images.unsplash.com/photo-${1500000000000+i}?auto=format&fit=crop&q=80&w=100`} alt="" fill className="object-cover" /></div>)}
                   </div>
-                  <p className="text-[9px] font-black uppercase text-slate-400 tracking-[0.2em]">Trusted by 500+ Global Distributors</p>
+                  <p className="text-[8px] font-black uppercase text-slate-400 tracking-[0.1em]">500+ Distributors</p>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Detailed Content Tabs */}
+          {/* Detailed Content Tabs (Filtered) */}
           <div className="mb-32">
             <div className="flex flex-wrap gap-2 md:gap-4 mb-12 border-b border-slate-100 pb-8 overflow-x-auto no-scrollbar">
-              {['overview', 'technical', 'quality', 'logistics'].map(tab => (
+              {['technical', 'quality', 'logistics'].map(tab => (
                 <button 
                   key={tab}
                   onClick={() => setActiveTab(tab)}
@@ -167,30 +185,23 @@ export default function ProductDetailPage() {
             </div>
 
             <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 min-h-[400px]">
-              {activeTab === 'overview' && (
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
-                  <div className="prose prose-slate max-w-none prose-p:text-slate-500 prose-p:leading-loose prose-p:font-medium prose-p:text-lg" dangerouslySetInnerHTML={{ __html: product.description }}></div>
-                  <div className="space-y-10">
-                    <div className="bg-slate-50 p-10 rounded-[48px] border border-slate-100 shadow-inner">
-                      <h3 className="text-[11px] font-black uppercase text-blue-600 tracking-[0.4em] mb-8 flex items-center gap-4"><div className="w-8 h-8 rounded-xl bg-blue-100 flex items-center justify-center"><i className="fas fa-check"></i></div> PRODUCT ADVANTAGES</h3>
-                      <ul className="space-y-5 font-black uppercase text-[10px] tracking-widest text-slate-600">
-                        <li className="flex items-center gap-4"><span className="w-1.5 h-1.5 rounded-full bg-blue-600"></span> High-Precision CNC Machining</li>
-                        <li className="flex items-center gap-4"><span className="w-1.5 h-1.5 rounded-full bg-blue-600"></span> Anti-Corrosion Surface Treatment</li>
-                        <li className="flex items-center gap-4"><span className="w-1.5 h-1.5 rounded-full bg-blue-600"></span> Certified Raw Material Sources</li>
-                        <li className="flex items-center gap-4"><span className="w-1.5 h-1.5 rounded-full bg-blue-600"></span> 100% Inspection Guarantee</li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              )}
               {activeTab === 'technical' && (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-                   {['Material Grade', 'Thread Precision', 'Surface Finish', 'Tensile Strength', 'Hardness', 'Tolerance'].map(t => (
-                      <div key={t} className="p-8 border border-slate-100 rounded-[32px] hover:shadow-xl transition-all group">
-                         <h4 className="text-[10px] font-black uppercase text-slate-400 mb-2 tracking-[0.3em] group-hover:text-blue-600 transition-colors">{t}</h4>
-                         <p className="text-xl font-black uppercase text-slate-900">Industrial Standard</p>
-                      </div>
-                   ))}
+                   {product.specs && product.specs.length > 0 ? (
+                      product.specs.map((s, i) => (
+                        <div key={i} className="p-8 border border-slate-100 rounded-[32px] hover:shadow-xl transition-all group">
+                           <h4 className="text-[10px] font-black uppercase text-slate-400 mb-2 tracking-[0.3em] group-hover:text-blue-600 transition-colors">{s.key}</h4>
+                           <p className="text-xl font-black uppercase text-slate-900">{s.value}</p>
+                        </div>
+                      ))
+                   ) : (
+                      ['Material Grade', 'Thread Precision', 'Surface Finish', 'Tensile Strength', 'Hardness', 'Tolerance'].map(t => (
+                        <div key={t} className="p-8 border border-slate-100 rounded-[32px] hover:shadow-xl transition-all group">
+                           <h4 className="text-[10px] font-black uppercase text-slate-400 mb-2 tracking-[0.3em] group-hover:text-blue-600 transition-colors">{t}</h4>
+                           <p className="text-xl font-black uppercase text-slate-900">Industrial Standard</p>
+                        </div>
+                      ))
+                   )}
                 </div>
               )}
               {activeTab === 'quality' && (

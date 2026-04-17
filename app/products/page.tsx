@@ -115,7 +115,7 @@ export default function ProductsPage() {
                 currentItems.map((product) => (
                   <Link 
                     key={product.id} 
-                    href={`/products/${product.id}`}
+                    href={`/products/${product.seoSlug || product.id}`}
                     className="bg-white rounded-[40px] overflow-hidden border border-slate-100 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 flex flex-col group cursor-pointer relative"
                   >
                     {/* Square Image container - reduced padding for better fit */}

@@ -7,6 +7,7 @@ export interface Category {
   id: number;
   name: string;
   value: string;
+  sort_order?: number;
 }
 
 export interface Product {
@@ -24,6 +25,9 @@ export interface Product {
   seoDescription?: string;
   seoSlug?: string;
   alt?: string;
+  sortOrder?: number;
+  summary?: string;
+  specs?: { key: string; value: string }[];
 }
 
 export interface NewsArticle {
@@ -63,6 +67,8 @@ export interface MaterialAsset {
   name: string;
   type: string;
   date: string;
+  category?: string;
+  hash?: string;
 }
 
 export interface SiteSettings {

@@ -33,19 +33,45 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const newMaterial = await request.json();
+    
+    // 如果没有 hash，我们无法去重，但我们会尝试通过 URL 去重
+    if (isCloud) {
+      // 检查是否已存在相同 URL 或 Hash 的素材
+      const { data: existing } = await supabase
+        .from('materials')
+        .select('*')
+        .or(`url.eq.${newMaterial.url}${newMaterial.hash ? `,hash.eq.${newMaterial.hash}` : ''}`)
+        .maybeSingle();
+
+      if (existing) {
+        return NextResponse.json({ success: true, material: existing, isDuplicate: true });
+      }
+
+      const materialWithId = { 
+        ...newMaterial, 
+        id: newMaterial.id || Date.now(),
+        date: new Date().toISOString().split('T')[0]
+      };
+
+      const { error } = await supabase.from('materials').insert([materialWithId]);
+      if (!error) return NextResponse.json({ success: true, material: materialWithId });
+      console.error('Supabase POST error:', error);
+      return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    }
+
+    // 本地模式去重逻辑
+    const materials = getLocalMaterials();
+    const isLocalDuplicate = materials.find((m: any) => m.url === newMaterial.url || (newMaterial.hash && m.hash === newMaterial.hash));
+    
+    if (isLocalDuplicate) {
+      return NextResponse.json({ success: true, material: isLocalDuplicate, isDuplicate: true });
+    }
+
     const materialWithId = { 
       ...newMaterial, 
       id: newMaterial.id || Date.now(),
       date: new Date().toISOString().split('T')[0]
     };
-
-    if (isCloud) {
-      const { error } = await supabase.from('materials').insert([materialWithId]);
-      if (!error) return NextResponse.json({ success: true, material: materialWithId });
-      console.error('Supabase POST error:', error);
-    }
-
-    const materials = getLocalMaterials();
     materials.unshift(materialWithId);
     saveLocalMaterials(materials);
     return NextResponse.json({ success: true, material: materialWithId });
