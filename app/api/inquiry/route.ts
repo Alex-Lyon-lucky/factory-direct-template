@@ -1,83 +1,85 @@
 // app/api/inquiry/route.ts
 import { NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
-import { supabase, mapToFrontend, mapToDB } from '@/lib/supabase';
+import { createClient } from '@supabase/supabase-js';
+import { mapToDB, mapToFrontend } from '@/lib/supabase';
 
-const filePath = path.join(process.cwd(), 'data/inquiries.json');
+// 使用 service_role key（服务端专用，高权限，绕过 RLS）
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
-// 诊断信息：这会在 Vercel 的 Runtime Logs 中显示
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const isCloud = !!supabaseUrl && !supabaseUrl.includes('placeholder-url');
+const supabase = createClient(supabaseUrl, supabaseServiceKey, {
+  auth: {
+    autoRefreshToken: false,
+    persistSession: false,
+  },
+});
 
 export async function GET() {
-  if (isCloud) {
-    const { data, error } = await supabase.from('inquiries').select('*').order('created_at', { ascending: false });
-    if (!error) return NextResponse.json(mapToFrontend(data));
-    console.error(' [DB ERROR] GET /api/inquiry:', error.message);
+  console.log('[DB INFO] GET /api/inquiry - Fetching inquiries...');
+  const { data, error } = await supabase
+    .from('inquiries')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.error('[DB ERROR] GET /api/inquiry failed:', error.message);
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
-  
-  // 本地降级逻辑（仅限开发环境）
-  try {
-    const data = fs.readFileSync(filePath, 'utf8');
-    return NextResponse.json(JSON.parse(data));
-  } catch (error) {
-    return NextResponse.json([]);
-  }
+
+  return NextResponse.json(mapToFrontend(data) || []);
 }
 
 export async function POST(request: Request) {
   try {
     const newInquiry = await request.json();
-    const inquiryWithId = { ...newInquiry, id: newInquiry.id || Date.now() };
+    console.log('[DB INFO] POST /api/inquiry - Received inquiry from:', newInquiry.email);
 
-    console.log(' [DEBUG] Incoming Inquiry:', inquiryWithId.email);
+    // 关键修复：确保字段名转为小写以匹配 Supabase，同时添加时间戳
+    const inquiryToInsert = mapToDB({
+      ...newInquiry,
+      created_at: new Date().toISOString(),
+      status: newInquiry.status || 'New'
+    });
 
-    if (isCloud) {
-      console.log(' [DB INFO] Attempting Supabase Insert...');
-      const { error } = await supabase.from('inquiries').insert([mapToDB(inquiryWithId)]);
-      
-      if (!error) {
-        console.log(' [DB SUCCESS] Inquiry saved to Supabase');
-        return NextResponse.json({ success: true, inquiry: inquiryWithId });
-      }
+    const { data, error } = await supabase
+      .from('inquiries')
+      .insert([inquiryToInsert])
+      .select()
+      .single();
 
-      // 如果是云端报错，直接打印并返回
-      console.error(' [DB ERROR] Supabase Insert Failed:', error.message);
+    if (error) {
+      console.error('[DB ERROR] Supabase Insert Failed:', error.message);
       return NextResponse.json({ 
         success: false, 
-        error: `Database Error: ${error.message}`,
-        details: 'Check RLS policies or table schema.' 
+        error: error.message,
+        code: error.code 
       }, { status: 400 });
     }
 
-    // 本地开发环境逻辑
-    if (process.env.NODE_ENV === 'development') {
-      try {
-        const data = fs.readFileSync(filePath, 'utf8');
-        const inquiries = JSON.parse(data);
-        inquiries.unshift(inquiryWithId);
-        fs.writeFileSync(filePath, JSON.stringify(inquiries, null, 2));
-        return NextResponse.json({ success: true, inquiry: inquiryWithId });
-      } catch (e) {
-        console.error('Local save failed:', e);
-      }
-    }
+    console.log('[DB SUCCESS] Inquiry saved successfully, ID:', data.id);
+    return NextResponse.json({ success: true, inquiry: mapToFrontend(data) });
 
-    return NextResponse.json({ success: false, error: 'Cloud storage not configured' }, { status: 500 });
-
-  } catch (error) {
-    console.error(' [SERVER ERROR] POST /api/inquiry:', error);
-    return NextResponse.json({ success: false, error: 'Internal Server Error' }, { status: 500 });
+  } catch (error: any) {
+    console.error('[SERVER ERROR] POST /api/inquiry crashed:', error.message);
+    return NextResponse.json({ 
+      success: false, 
+      error: 'Internal Server Error',
+      details: error.message 
+    }, { status: 500 });
   }
 }
 
 export async function DELETE(request: Request) {
-  const { id } = await request.json();
-  if (isCloud) {
+  try {
+    const { id } = await request.json();
     const { error } = await supabase.from('inquiries').delete().eq('id', id);
-    if (!error) return NextResponse.json({ success: true });
-    console.error(' [DB ERROR] DELETE /api/inquiry:', error.message);
+
+    if (error) {
+      console.error('[DB ERROR] DELETE failed:', error.message);
+      return NextResponse.json({ success: false, error: error.message }, { status: 400 });
+    }
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    return NextResponse.json({ success: false, error: 'Delete failed' }, { status: 500 });
   }
-  return NextResponse.json({ success: false, error: 'Action not supported in this environment' }, { status: 400 });
 }
