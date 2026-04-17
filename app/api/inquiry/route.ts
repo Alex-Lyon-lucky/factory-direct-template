@@ -2,74 +2,55 @@
 import { NextResponse } from 'next/server';
 import { supabase, mapToDB, mapToFrontend } from '@/lib/supabase';
 
-export async function GET() {
-  const { data, error } = await supabase
-    .from('inquiries')
-    .select('*')
-    .order('created_at', { ascending: false });
-
-  if (error) {
-    console.error('[DB ERROR] GET /api/inquiry:', error.message);
-    return NextResponse.json({ error: error.message }, { status: 500 });
-  }
-
-  return NextResponse.json(mapToFrontend(data) || []);
-}
-
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    console.log('[DB INFO] Inquiry submission attempt from:', body.email);
+    console.log(' [DEBUG] Incoming Data:', JSON.stringify(body));
 
-    // 1. 数据映射
-    const inquiryData = mapToDB({
-      ...body,
-      created_at: new Date().toISOString(),
-      status: body.status || 'new',
-    });
+    // 核心字段映射（确保转为全小写，匹配 Supabase 默认行为）
+    const inquiryData = {
+      name: body.name || 'Anonymous',
+      email: body.email || 'no-email',
+      phone: body.phone || '',
+      company: body.company || '',
+      message: body.message || '',
+      producttype: body.productType || body.producttype || 'General',
+      attachment: body.attachment || null,
+      status: 'New',
+      created_at: new Date().toISOString()
+    };
 
-    // 诊断日志：查看实际要存的数据
-    console.log('[DB INFO] Attempting to insert mapped data:', inquiryData);
+    console.log(' [DEBUG] Mapped for DB:', JSON.stringify(inquiryData));
 
-    // 2. 插入数据库
+    // 执行插入
     const { data, error } = await supabase
       .from('inquiries')
       .insert([inquiryData])
-      .select()
-      .single();
+      .select();
 
     if (error) {
-      console.error('[DB ERROR] Insert failed:', error.message);
-      console.error('[DB ERROR] Code:', error.code);
-      console.error('[DB ERROR] Hint:', error.hint);
-      
-      return NextResponse.json({
-        success: false,
+      console.error(' [DB ERROR] Details:', error.message);
+      console.error(' [DB ERROR] Code:', error.code);
+      console.error(' [DB ERROR] Hint:', error.hint);
+
+      return NextResponse.json({ 
+        success: false, 
         error: error.message,
-        code: error.code,
+        hint: error.hint
       }, { status: 400 });
     }
 
-    console.log('[DB SUCCESS] Inquiry ID:', data.id);
-    return NextResponse.json({ success: true, data: mapToFrontend(data) });
+    console.log(' [DB SUCCESS] Entry saved to Supabase');
+    return NextResponse.json({ success: true, data: data });
 
   } catch (err: any) {
-    console.error('[SERVER ERROR] POST /api/inquiry crashed:', err.message);
-    return NextResponse.json({
-      success: false,
-      error: 'Internal Server Error',
-      details: err.message,
-    }, { status: 500 });
+    console.error(' [CRITICAL ERROR]:', err.message);
+    return NextResponse.json({ success: false, error: 'Internal Server Error' }, { status: 500 });
   }
 }
 
-export async function DELETE(request: Request) {
-  try {
-    const { id } = await request.json();
-    const { error } = await supabase.from('inquiries').delete().eq('id', id);
-    if (error) return NextResponse.json({ success: false, error: error.message }, { status: 400 });
-    return NextResponse.json({ success: true });
-  } catch (error) {
-    return NextResponse.json({ success: false, error: 'Delete failed' }, { status: 500 });
-  }
+export async function GET() {
+  const { data, error } = await supabase.from('inquiries').select('*').order('created_at', { ascending: false });
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  return NextResponse.json(mapToFrontend(data));
 }
