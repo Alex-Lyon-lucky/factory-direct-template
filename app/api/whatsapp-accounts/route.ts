@@ -1,50 +1,50 @@
 // app/api/whatsapp-accounts/route.ts
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
-import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
+import { supabase, mapToDB, mapToFrontend } from '@/lib/supabase';
 
 export async function GET() {
-  const supabase = createRouteHandlerClient({ cookies });
   const { data, error } = await supabase
     .from('whatsapp_accounts')
     .select('*')
     .order('created_at', { ascending: false });
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-  return NextResponse.json(data);
+  return NextResponse.json(mapToFrontend(data));
 }
 
 export async function POST(req: Request) {
-  const supabase = createRouteHandlerClient({ cookies });
-  const { phone, label } = await req.json();
+  const body = await req.json();
+  const dbData = mapToDB(body);
 
   const { data, error } = await supabase
     .from('whatsapp_accounts')
-    .insert([{ phone, label, is_active: true }])
+    .insert([dbData])
     .select();
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-  return NextResponse.json(data);
+  return NextResponse.json(mapToFrontend(data));
 }
 
 export async function PATCH(req: Request) {
-  const supabase = createRouteHandlerClient({ cookies });
-  const { id, isActive } = await req.json();
+  const body = await req.json();
+  const { id, ...rest } = body;
+  const dbData = mapToDB(rest);
 
   const { data, error } = await supabase
     .from('whatsapp_accounts')
-    .update({ is_active: isActive })
+    .update(dbData)
     .eq('id', id)
     .select();
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-  return NextResponse.json(data);
+  return NextResponse.json(mapToFrontend(data));
 }
 
 export async function DELETE(req: Request) {
-  const supabase = createRouteHandlerClient({ cookies });
   const { searchParams } = new URL(req.url);
   const id = searchParams.get('id');
+
+  if (!id) return NextResponse.json({ error: 'Missing ID' }, { status: 400 });
 
   const { error } = await supabase
     .from('whatsapp_accounts')
