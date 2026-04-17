@@ -3,6 +3,7 @@
 import type { Metadata } from "next";
 
 import { ProductProvider } from './context/ProductContext';
+import Tracker from './components/Tracker';
 import "./globals.css";
 
 
@@ -74,6 +75,7 @@ export default function RootLayout({
       </head>
       <body className="min-h-full flex flex-col bg-slate-50 text-slate-900 font-sans antialiased">
         <ProductProvider>
+          <Tracker />
           {children}
         </ProductProvider>
       </body>
