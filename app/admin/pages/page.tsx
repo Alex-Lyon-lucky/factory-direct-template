@@ -3,8 +3,13 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
+import dynamic from 'next/dynamic';
 import { useProducts, PageContent } from '../../context/ProductContext';
-import TiptapEditor from '../products/TiptapEditor';
+
+const TiptapEditor = dynamic(() => import('../products/TiptapEditor'), { 
+  ssr: false,
+  loading: () => <div className="p-10 bg-slate-50 rounded-3xl animate-pulse text-[10px] font-black uppercase text-slate-400 tracking-widest text-center">正在加载富文本编辑器...</div>
+});
 
 export default function PagesManagement() {
   const { pages, materials, refreshData } = useProducts();
@@ -16,28 +21,37 @@ export default function PagesManagement() {
 
   useEffect(() => {
     if (pages) {
-      // 深度克隆并确保所有必要的对象和字段都已初始化
-      const updatedPages = JSON.parse(JSON.stringify(pages)) as PageContent;
-      
-      if (!updatedPages.home) updatedPages.home = {} as any;
-      if (!updatedPages.home.categoryImages) updatedPages.home.categoryImages = {};
-      if (!updatedPages.home.stats) updatedPages.home.stats = [
-        { label: 'Years Experience', value: '20+' },
-        { label: 'Global Clients', value: '500+' },
-        { label: 'Countries Served', value: '80+' },
-        { label: 'Industry Awards', value: '50+' }
-      ];
-      if (!updatedPages.home.trustItems) updatedPages.home.trustItems = [];
-      if (!updatedPages.home.faq) updatedPages.home.faq = [];
-      if (!updatedPages.home.featuredCount) updatedPages.home.featuredCount = 6;
-      if (!updatedPages.home.advantages) updatedPages.home.advantages = [];
-      
-      if (!updatedPages.about) updatedPages.about = { title: '', content: '' } as any;
-      if (!updatedPages.contact) updatedPages.contact = { title: '', description: '' } as any;
-      if (!updatedPages.products) updatedPages.products = { title: '' } as any;
-      if (!updatedPages.news) updatedPages.news = { title: '' } as any;
-      
-      setLocalPages(updatedPages);
+      try {
+        const updatedPages = JSON.parse(JSON.stringify(pages)) as PageContent;
+        
+        // 彻底确保所有层级的字段都存在，避免访问 undefined
+        if (!updatedPages.home) updatedPages.home = { 
+          heroTitle: '', heroSubtitle: '', advantages: [], categoryTitle: '', categorySubtitle: '', stats: [] 
+        } as any;
+        
+        if (!updatedPages.home.categoryImages) updatedPages.home.categoryImages = {};
+        if (!updatedPages.home.advantages) updatedPages.home.advantages = [];
+        if (!updatedPages.home.stats) updatedPages.home.stats = [
+          { label: 'Years Experience', value: '20+' },
+          { label: 'Global Clients', value: '500+' },
+          { label: 'Countries Served', value: '80+' },
+          { label: 'Industry Awards', value: '50+' }
+        ];
+        if (!updatedPages.home.trustItems) updatedPages.home.trustItems = [];
+        if (!updatedPages.home.faq) updatedPages.home.faq = [];
+        if (!updatedPages.home.featuredCount) updatedPages.home.featuredCount = 6;
+        
+        if (!updatedPages.about) updatedPages.about = { title: '', content: '', heroImg: '' };
+        if (updatedPages.about.content === undefined) updatedPages.about.content = '';
+        
+        if (!updatedPages.contact) updatedPages.contact = { title: '', description: '' };
+        if (!updatedPages.products) updatedPages.products = { title: '', subtitle: '' } as any;
+        if (!updatedPages.news) updatedPages.news = { title: '', subtitle: '' } as any;
+        
+        setLocalPages(updatedPages);
+      } catch (e) {
+        console.error("Critical error in initializing pages data:", e);
+      }
     }
   }, [pages]);
 
@@ -64,7 +78,19 @@ export default function PagesManagement() {
     }
   };
 
-  if (!localPages || !localPages.home || !localPages.about || !localPages.contact) return <div className="p-20 text-center font-black uppercase text-slate-300 animate-pulse">正在同步服务器数据...</div>;
+  if (!localPages || !localPages.home || !localPages.about || !localPages.contact) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+        <div className="text-center space-y-6">
+          <div className="w-20 h-20 bg-blue-600 rounded-[32px] mx-auto flex items-center justify-center text-white text-3xl animate-bounce">
+            <i className="fas fa-sync-alt"></i>
+          </div>
+          <h2 className="text-2xl font-black uppercase tracking-tighter text-slate-900">正在同步站点配置...</h2>
+          <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">初次加载或数据同步中，请稍候</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-7xl mx-auto space-y-12 animate-in slide-in-from-bottom-8 duration-700 pb-20 px-4">
@@ -488,8 +514,8 @@ export default function PagesManagement() {
                     <TiptapEditor 
                       content={localPages.about.content} 
                       onChange={val => setLocalPages({...localPages, about: {...localPages.about, content: val}})}
-                      onImageClick={() => setShowMatPicker({ active: true, target: 'about.content' })}
-                      insertedImage={lastSelectedAboutImg}
+                      onOpenLibrary={() => setShowMatPicker({ active: true, target: 'about.content' })}
+                      lastSelectedImage={lastSelectedAboutImg || undefined}
                     />
                   </div>
                </div>

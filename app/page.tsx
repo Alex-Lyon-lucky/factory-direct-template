@@ -97,38 +97,38 @@ export default function Home() {
 
   return (
     <Layout>
-      {/* HERO SECTION */}
-      <header className="relative bg-[#0a0f1d] py-20 lg:py-40 px-4 overflow-hidden">
+      {/* HERO SECTION - REFINED ULTRA COMPACT V3 */}
+      <header className="relative bg-[#0a0f1d] py-6 lg:py-10 px-4 overflow-hidden border-b border-white/5">
         <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-blue-600/10 rounded-full translate-x-1/2 -translate-y-1/2 blur-[120px] animate-pulse"></div>
-        <div className="max-w-7xl mx-auto grid lg:grid-cols-12 gap-16 items-center relative z-10">
+        <div className="max-w-7xl mx-auto grid lg:grid-cols-12 gap-10 items-center relative z-10">
           <div className="lg:col-span-7 text-center lg:text-left animate-in fade-in slide-in-from-left-8 duration-1000">
-            <div className="inline-flex items-center gap-3 bg-blue-600/10 border border-blue-600/20 px-4 py-2 rounded-full mb-8">
-              <span className="w-2 h-2 rounded-full bg-blue-500"></span>
-              <span className="text-blue-400 font-black uppercase tracking-[0.3em] text-[10px]">Direct Factory Excellence</span>
+            <div className="inline-flex items-center gap-3 bg-blue-600/10 border border-blue-600/20 px-4 py-1.5 rounded-full mb-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+              <span className="text-blue-400 font-black uppercase tracking-[0.3em] text-[9px]">Direct Factory Excellence</span>
             </div>
             
-            <h1 className="text-5xl md:text-7xl lg:text-8xl font-black text-white mb-10 uppercase tracking-tighter leading-[0.95]">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-white mb-2 uppercase tracking-tighter leading-[0.9]">
               {homeData.heroTitle}
             </h1>
             
-            <p className="text-slate-400 text-sm md:text-xl max-w-2xl mx-auto lg:mx-0 mb-12 leading-relaxed font-medium">
+            <p className="text-slate-400 text-xs md:text-sm max-w-2xl mx-auto lg:mx-0 mb-5 leading-relaxed font-medium">
               {homeData.heroSubtitle}
             </p>
 
-            <div className="flex flex-col sm:flex-row justify-center lg:justify-start gap-6">
-              <Link href="/products" className="group bg-blue-600 text-white font-black px-12 py-6 rounded-2xl hover:bg-white hover:text-blue-600 transition-all uppercase tracking-widest text-xs shadow-2xl flex items-center justify-center gap-3">
+            <div className="flex flex-col sm:flex-row justify-center lg:justify-start gap-4">
+              <Link href="/products" className="group bg-blue-600 text-white font-black px-10 py-4 rounded-2xl hover:bg-white hover:text-blue-600 transition-all uppercase tracking-widest text-[10px] shadow-2xl flex items-center justify-center gap-3">
                 Explore Products <i className="fas fa-arrow-right group-hover:translate-x-2 transition-transform"></i>
               </Link>
-              <Link href="/contact" className="bg-white/5 border border-white/10 text-white font-black px-12 py-6 rounded-2xl hover:bg-white hover:text-slate-900 transition-all uppercase tracking-widest text-xs">
+              <Link href="/contact" className="bg-white/5 border border-white/10 text-white font-black px-10 py-4 rounded-2xl hover:bg-white hover:text-slate-900 transition-all uppercase tracking-widest text-[10px]">
                 Get Free Quote
               </Link>
             </div>
             
-            <div className="mt-16 flex flex-wrap justify-center lg:justify-start gap-10">
+            <div className="mt-6 flex flex-wrap justify-center lg:justify-start gap-8">
                {homeData.advantages.map((adv, i) => (
-                  <div key={i} className="flex items-center gap-3">
-                     <div className="w-2 h-2 bg-blue-500 rounded-full"></div> 
-                     <span className="text-[11px] font-black text-slate-400 uppercase tracking-widest">{adv}</span>
+                  <div key={i} className="flex items-center gap-2">
+                     <div className="w-1.5 h-1.5 bg-blue-500/50 rounded-full"></div> 
+                     <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">{adv}</span>
                   </div>
                ))}
             </div>
