@@ -12,7 +12,7 @@ export default function ProductForm({ initialData }: { initialData?: Product }) 
   const router = useRouter();
   const { categories, materials, updateProduct, refreshData } = useProducts();
   const [form, setForm] = useState<Partial<Product>>({
-    name: '', cat: '', img: '', gallery: [], spec: 'M6 - M36', description: '', price: '', stock: '', keywords: ['', '', '', '', ''], seoTitle: '', seoDescription: '', seoSlug: '', alt: '', sortOrder: 0, summary: '', specs: [], companyProfile: '', technicalDrawings: ''
+    name: '', cat: '', img: '', gallery: [], galleryAlts: [], spec: 'M6 - M36', description: '', price: '', stock: '', keywords: ['', '', '', '', ''], seoTitle: '', seoDescription: '', seoSlug: '', alt: '', sortOrder: 0, summary: '', specs: [], companyProfile: '', technicalDrawings: ''
   });
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState<string | null>(null);
@@ -23,7 +23,13 @@ export default function ProductForm({ initialData }: { initialData?: Product }) 
 
   useEffect(() => {
     if (initialData) {
-      setForm({ ...initialData, gallery: initialData.gallery || [], keywords: initialData.keywords || ['', '', '', '', ''], specs: initialData.specs || [] });
+      setForm({ 
+        ...initialData, 
+        gallery: initialData.gallery || [], 
+        galleryAlts: initialData.galleryAlts || [],
+        keywords: initialData.keywords || ['', '', '', '', ''], 
+        specs: initialData.specs || [] 
+      });
     }
   }, [initialData]);
 
@@ -47,7 +53,14 @@ export default function ProductForm({ initialData }: { initialData?: Product }) 
       const results = await Promise.all(uploadPromises);
       const successfulUploads = results.filter(url => url !== null) as string[];
       if (target === 'main') setForm(prev => ({ ...prev, img: successfulUploads[0] || prev.img }));
-      else if (target === 'gallery') setForm(prev => ({ ...prev, gallery: [...(prev.gallery || []), ...successfulUploads].slice(0, 6) }));
+      else if (target === 'gallery') setForm(prev => {
+        const newGallery = [...(prev.gallery || []), ...successfulUploads].slice(0, 6);
+        const newAlts = [...(prev.galleryAlts || [])];
+        successfulUploads.forEach(() => {
+          if (newAlts.length < 6) newAlts.push('');
+        });
+        return { ...prev, gallery: newGallery, galleryAlts: newAlts.slice(0, 6) };
+      });
       else if (target === 'editor') setLastSelectedEditorImg(successfulUploads[0]);
       else if (target === 'drawings') setLastSelectedDrawingsImg(successfulUploads[0]);
       else if (target === 'company') setLastSelectedCompanyImg(successfulUploads[0]);
@@ -60,8 +73,21 @@ export default function ProductForm({ initialData }: { initialData?: Product }) 
   const toggleGalleryImg = (url: string) => {
     setForm(prev => {
       const gallery = prev.gallery || [];
-      if (gallery.includes(url)) return { ...prev, gallery: gallery.filter(u => u !== url) };
-      else if (gallery.length < 6) return { ...prev, gallery: [...gallery, url] };
+      const galleryAlts = prev.galleryAlts || [];
+      if (gallery.includes(url)) {
+        const idx = gallery.indexOf(url);
+        return { 
+          ...prev, 
+          gallery: gallery.filter(u => u !== url),
+          galleryAlts: galleryAlts.filter((_, i) => i !== idx)
+        };
+      } else if (gallery.length < 6) {
+        return { 
+          ...prev, 
+          gallery: [...gallery, url],
+          galleryAlts: [...galleryAlts, ''] 
+        };
+      }
       return prev;
     });
   };
@@ -142,8 +168,13 @@ export default function ProductForm({ initialData }: { initialData?: Product }) 
                               <input 
                                  type="text" 
                                  placeholder={`副图 ${i+1} Alt 标签`} 
-                                 className="w-full bg-white border-none rounded-xl px-4 py-2 text-[9px] font-black uppercase text-slate-400 focus:ring-2 ring-blue-500/10"
-                                 defaultValue={form.name + ' - Detail ' + (i+1)}
+                                 className="w-full bg-white border-none rounded-xl px-4 py-2 text-[9px] font-black uppercase text-blue-600 focus:ring-2 ring-blue-500/10"
+                                 value={form.galleryAlts?.[i] || ''}
+                                 onChange={e => {
+                                   const newAlts = [...(form.galleryAlts || [])];
+                                   newAlts[i] = e.target.value;
+                                   setForm({...form, galleryAlts: newAlts});
+                                 }}
                               />
                            </div>
                         ))}

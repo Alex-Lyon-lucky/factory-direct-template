@@ -28,6 +28,7 @@ export interface Product {
   sortOrder?: number;
   summary?: string;
   specs?: { key: string; value: string }[];
+  galleryAlts?: string[];
   companyProfile?: string;
   technicalDrawings?: string;
 }

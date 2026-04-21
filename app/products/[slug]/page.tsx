@@ -75,7 +75,11 @@ export default function ProductDetailPage() {
               <div className="relative aspect-square rounded-[56px] overflow-hidden bg-slate-50 border border-slate-100 shadow-2xl shadow-slate-200/50 group">
                 <Image 
                   src={activeImg || product.img} 
-                  alt={product.name} 
+                  alt={
+                    activeImg === product.img 
+                    ? (product.alt || product.name) 
+                    : (product.galleryAlts?.[product.gallery?.indexOf(activeImg) ?? -1] || product.name)
+                  } 
                   fill 
                   className="object-contain p-12 transition-transform duration-1000 group-hover:scale-105"
                   priority
@@ -88,7 +92,7 @@ export default function ProductDetailPage() {
                     onClick={() => setActiveImg(img)}
                     className={`w-20 h-20 flex-shrink-0 relative rounded-[24px] overflow-hidden border-2 transition-all ${activeImg === img ? 'border-blue-600 shadow-lg' : 'border-transparent opacity-60 hover:opacity-100'}`}
                   >
-                    <Image src={img} alt="" fill className="object-cover p-2" />
+                    <Image src={img} alt={i === 0 ? (product.alt || product.name) : (product.galleryAlts?.[i-1] || product.name)} fill className="object-cover p-2" />
                   </button>
                 ))}
               </div>
