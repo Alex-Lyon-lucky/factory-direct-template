@@ -22,7 +22,7 @@ export default function MaterialLibraryPage() {
 
   const filteredMaterials = materials.filter(m => filterCat === 'All' || m.category === filterCat);
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, isBatch: boolean = false) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
 
@@ -44,27 +44,53 @@ export default function MaterialLibraryPage() {
         if (data.url) {
           const type = file.type.startsWith('video/') ? 'video' : 'image';
           
+          const materialData = {
+            name: file.name.split('.')[0],
+            url: data.url,
+            type: type,
+            category: type === 'video' ? '其他' : '产品图',
+            hash: data.hash
+          };
+
+          if (!isBatch) {
+            // 单个上传逻辑：设置到 newMaterial 状态并打开弹窗（模拟之前的模式）
+            setNewMaterial(materialData);
+            setShowAddModal(true);
+            setUploading(false); // 停止上传状态以便操作弹窗
+            return; // 结束当前流程，由弹窗确认保存
+          }
+
+          // 批量上传逻辑：直接保存到数据库
           await fetch('/api/materials', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              name: file.name.split('.')[0],
-              url: data.url,
-              type: type,
-              category: type === 'video' ? '其他' : '产品图',
-              hash: data.hash
-            })
+            body: JSON.stringify(materialData)
           });
           successCount++;
         }
       } catch (error) {
-        console.error('Batch upload error:', error);
+        console.error('Upload error:', error);
       }
     }
 
     setUploading(false);
     refreshData();
     if (successCount > 0) alert(`成功上传 ${successCount} 个素材`);
+  };
+
+  const handleSaveNew = async () => {
+    try {
+      await fetch('/api/materials', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newMaterial)
+      });
+      setShowAddModal(false);
+      refreshData();
+      alert('素材已保存');
+    } catch (e) {
+      alert('保存失败');
+    }
   };
 
   const handleBulkCreateProducts = async () => {
@@ -153,21 +179,37 @@ export default function MaterialLibraryPage() {
             onClick={() => setShowBatchTools(!showBatchTools)}
             className={`px-8 py-5 rounded-3xl font-black uppercase tracking-widest text-[10px] transition-all ${showBatchTools ? 'bg-slate-900 text-white' : 'bg-white border border-slate-200 text-slate-400 hover:text-slate-900'}`}
           >
-            {showBatchTools ? '退出批量管理' : '批量管理模式'}
+            {showBatchTools ? '退出选择模式' : '多选模式'}
           </button>
+          
           <button 
             onClick={() => fileInputRef.current?.click()}
             disabled={uploading}
-            className="bg-blue-600 text-white px-10 py-5 rounded-3xl font-black uppercase tracking-widest text-sm shadow-xl shadow-blue-200 hover:bg-blue-700 transition disabled:opacity-50"
+            className="bg-white border border-slate-200 text-slate-900 px-8 py-5 rounded-3xl font-black uppercase tracking-widest text-xs hover:bg-slate-50 transition"
           >
-            {uploading ? '正在极速上传...' : '+ 批量上传素材'}
+            {uploading ? '处理中...' : '上传单个素材'}
           </button>
+
+          <button 
+            onClick={() => {
+              const el = document.createElement('input');
+              el.type = 'file';
+              el.multiple = true;
+              el.accept = 'image/*,video/*';
+              el.onchange = (e) => handleFileUpload(e as any, true);
+              el.click();
+            }}
+            disabled={uploading}
+            className="bg-blue-600 text-white px-10 py-5 rounded-3xl font-black uppercase tracking-widest text-sm shadow-xl shadow-blue-200 hover:bg-blue-700 transition"
+          >
+            {uploading ? '批量上传中...' : '+ 批量上传素材'}
+          </button>
+
           <input 
             type="file" 
             ref={fileInputRef} 
-            onChange={handleFileUpload} 
+            onChange={(e) => handleFileUpload(e, false)} 
             className="hidden" 
-            multiple
             accept="image/*,video/*"
           />
         </div>
@@ -280,6 +322,47 @@ export default function MaterialLibraryPage() {
           </div>
         ))}
       </div>
+
+      {/* Add/Single Upload Modal */}
+      {showAddModal && (
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md z-[100] flex items-center justify-center p-4">
+            <div className="bg-white w-full max-w-md rounded-[48px] p-12 shadow-2xl animate-in zoom-in duration-300">
+               <h3 className="text-2xl font-black uppercase mb-8 text-slate-900">确认素材信息</h3>
+               <div className="space-y-6">
+                  <div className="aspect-square relative rounded-3xl overflow-hidden bg-slate-50 mb-6">
+                     {newMaterial.type === 'video' ? (
+                       <video src={newMaterial.url} className="w-full h-full object-cover" />
+                     ) : (
+                       <Image src={newMaterial.url} alt="" fill className="object-contain p-4" />
+                     )}
+                  </div>
+                  <div>
+                     <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">素材名称</label>
+                     <input 
+                       type="text" 
+                       value={newMaterial.name}
+                       onChange={e => setNewMaterial({...newMaterial, name: e.target.value})}
+                       className="w-full bg-slate-50 border-none rounded-2xl px-6 py-4 font-bold"
+                     />
+                  </div>
+                  <div>
+                     <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">所属分类</label>
+                     <select 
+                       value={newMaterial.category}
+                       onChange={e => setNewMaterial({...newMaterial, category: e.target.value})}
+                       className="w-full bg-slate-50 border-none rounded-2xl px-6 py-4 font-bold text-xs"
+                     >
+                       {assetCategories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
+                     </select>
+                  </div>
+                  <div className="flex gap-4 pt-6">
+                     <button onClick={() => setShowAddModal(false)} className="flex-1 py-4 font-black uppercase text-xs text-slate-400 tracking-widest">取消</button>
+                     <button onClick={handleSaveNew} className="flex-1 bg-blue-600 text-white py-4 rounded-2xl font-black uppercase text-xs tracking-widest shadow-xl shadow-blue-200">保存素材</button>
+                  </div>
+               </div>
+            </div>
+        </div>
+      )}
 
       {/* Edit Modal */}
       {editingMaterial && (
