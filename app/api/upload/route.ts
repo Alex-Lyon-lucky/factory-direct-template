@@ -34,9 +34,13 @@ export async function POST(request: Request) {
     }
 
     // New file, upload to Cloudinary
+    const isVideo = file.type.startsWith('video/');
     const result: any = await new Promise((resolve, reject) => {
       const uploadStream = cloudinary.uploader.upload_stream(
-        { folder: 'highfasteners' },
+        { 
+          folder: 'highfasteners',
+          resource_type: isVideo ? 'video' : 'image'
+        },
         (error, result) => {
           if (error) {
             console.error('Cloudinary upload error details:', error);

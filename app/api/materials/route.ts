@@ -80,6 +80,34 @@ export async function POST(request: Request) {
   }
 }
 
+export async function PUT(request: Request) {
+  try {
+    const updatedMaterial = await request.json();
+    if (!updatedMaterial.id) return NextResponse.json({ success: false, error: 'Missing ID' }, { status: 400 });
+
+    if (isCloud) {
+      const { error } = await supabase
+        .from('materials')
+        .update(updatedMaterial)
+        .eq('id', updatedMaterial.id);
+      
+      if (!error) return NextResponse.json({ success: true });
+      console.error('Supabase PUT error:', error);
+      return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    }
+
+    const materials = getLocalMaterials();
+    const index = materials.findIndex((m: any) => m.id === updatedMaterial.id);
+    if (index === -1) return NextResponse.json({ success: false, error: 'Not found' }, { status: 404 });
+
+    materials[index] = { ...materials[index], ...updatedMaterial };
+    saveLocalMaterials(materials);
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    return NextResponse.json({ success: false, error: 'Failed to update material' }, { status: 500 });
+  }
+}
+
 export async function DELETE(request: Request) {
   try {
     const { id } = await request.json();
