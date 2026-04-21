@@ -41,8 +41,29 @@ export default function Home() {
 
   // Category Layout Logic
   const renderCategories = () => {
-    const cats = categories.slice(0, 12); // Limit to 12
+    const cats = categories.slice(0, 12); 
     const count = cats.length;
+
+    // 特殊处理 5 个分类的情况: 3上 + 2下 (加一个了解更多)
+    if (count === 5) {
+      return (
+        <div className="space-y-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {cats.slice(0, 3).map(cat => <CategoryCard key={cat.id} cat={cat} homeData={homeData} />)}
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {cats.slice(3, 5).map(cat => <CategoryCard key={cat.id} cat={cat} homeData={homeData} />)}
+            <Link href="/products" className="group relative aspect-square rounded-[48px] bg-slate-900 flex flex-col items-center justify-center overflow-hidden transition-all hover:bg-blue-600">
+               <div className="relative z-10 text-center">
+                  <p className="text-white font-black text-2xl uppercase tracking-tighter mb-2">Explore More</p>
+                  <p className="text-white/40 text-[10px] font-black uppercase tracking-widest group-hover:text-white transition">View Full Catalog &rarr;</p>
+               </div>
+               <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/20 rounded-full blur-3xl group-hover:bg-white/10 transition"></div>
+            </Link>
+          </div>
+        </div>
+      );
+    }
 
     if (count === 3) {
       return (
@@ -52,7 +73,7 @@ export default function Home() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <CategoryCard cat={cats[2]} homeData={homeData} />
-            <Link href="/products" className="group relative aspect-[16/7] md:aspect-auto rounded-[48px] bg-slate-900 flex flex-col items-center justify-center overflow-hidden transition-all hover:bg-blue-600">
+            <Link href="/products" className="group relative aspect-square rounded-[48px] bg-slate-900 flex flex-col items-center justify-center overflow-hidden transition-all hover:bg-blue-600">
                <div className="relative z-10 text-center">
                   <p className="text-white font-black text-2xl uppercase tracking-tighter mb-2">Explore More</p>
                   <p className="text-white/40 text-[10px] font-black uppercase tracking-widest group-hover:text-white transition">View Full Catalog &rarr;</p>
@@ -310,7 +331,7 @@ function ContactItem({ icon, label, value }: { icon: string, label: string, valu
 
 function CategoryCard({ cat, homeData }: { cat: any, homeData: any }) {
    return (
-      <Link href={`/products?cat=${cat.value}`} className="group relative aspect-[4/5] md:aspect-[16/10] lg:aspect-[4/5] rounded-[48px] overflow-hidden shadow-lg cursor-pointer block border border-slate-100 hover:shadow-2xl transition-all duration-500">
+      <Link href={`/products?cat=${cat.value}`} className="group relative aspect-square rounded-[48px] overflow-hidden shadow-lg cursor-pointer block border border-slate-100 hover:shadow-2xl transition-all duration-500">
          <Image 
             src={homeData.categoryImages?.[cat.value] || "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&q=80&w=600"} 
             alt={cat.name} fill className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" 

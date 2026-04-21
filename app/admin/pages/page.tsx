@@ -16,8 +16,10 @@ export default function PagesManagement() {
 
   useEffect(() => {
     if (pages) {
-      // 初始化新字段以防 JSON 中不存在
-      const updatedPages = { ...pages };
+      // 深度克隆并确保所有必要的对象和字段都已初始化
+      const updatedPages = JSON.parse(JSON.stringify(pages)) as PageContent;
+      
+      if (!updatedPages.home) updatedPages.home = {} as any;
       if (!updatedPages.home.categoryImages) updatedPages.home.categoryImages = {};
       if (!updatedPages.home.stats) updatedPages.home.stats = [
         { label: 'Years Experience', value: '20+' },
@@ -28,6 +30,12 @@ export default function PagesManagement() {
       if (!updatedPages.home.trustItems) updatedPages.home.trustItems = [];
       if (!updatedPages.home.faq) updatedPages.home.faq = [];
       if (!updatedPages.home.featuredCount) updatedPages.home.featuredCount = 6;
+      if (!updatedPages.home.advantages) updatedPages.home.advantages = [];
+      
+      if (!updatedPages.about) updatedPages.about = { title: '', content: '' } as any;
+      if (!updatedPages.contact) updatedPages.contact = { title: '', description: '' } as any;
+      if (!updatedPages.products) updatedPages.products = { title: '' } as any;
+      if (!updatedPages.news) updatedPages.news = { title: '' } as any;
       
       setLocalPages(updatedPages);
     }
@@ -56,7 +64,7 @@ export default function PagesManagement() {
     }
   };
 
-  if (!localPages) return <div className="p-20 text-center font-black uppercase text-slate-300 animate-pulse">正在加载页面配置...</div>;
+  if (!localPages || !localPages.home || !localPages.about || !localPages.contact) return <div className="p-20 text-center font-black uppercase text-slate-300 animate-pulse">正在同步服务器数据...</div>;
 
   return (
     <div className="max-w-7xl mx-auto space-y-12 animate-in slide-in-from-bottom-8 duration-700 pb-20 px-4">
@@ -105,7 +113,7 @@ export default function PagesManagement() {
                       <label className="block text-[9px] font-black uppercase text-slate-400 mb-4 tracking-[0.3em]">主标题 (Hero Title)</label>
                       <input 
                         type="text" 
-                        value={localPages.home.heroTitle}
+                        value={localPages.home.heroTitle || ''}
                         onChange={e => setLocalPages({...localPages, home: {...localPages.home, heroTitle: e.target.value}})}
                         className="w-full bg-slate-50 border-none rounded-2xl px-6 py-4 font-black text-sm focus:ring-4 ring-blue-500/10 transition-all"
                       />
@@ -114,7 +122,7 @@ export default function PagesManagement() {
                       <label className="block text-[9px] font-black uppercase text-slate-400 mb-4 tracking-[0.3em]">副标题 (Hero Subtitle)</label>
                       <textarea 
                         rows={4}
-                        value={localPages.home.heroSubtitle}
+                        value={localPages.home.heroSubtitle || ''}
                         onChange={e => setLocalPages({...localPages, home: {...localPages.home, heroSubtitle: e.target.value}})}
                         className="w-full bg-slate-50 border-none rounded-[28px] px-8 py-6 font-medium text-sm leading-relaxed focus:ring-4 ring-blue-500/10 transition-all"
                       />
@@ -123,7 +131,7 @@ export default function PagesManagement() {
                       <label className="block text-[9px] font-black uppercase text-slate-400 mb-4 tracking-[0.3em]">核心优势 (Advantages - 每行一个)</label>
                       <textarea 
                         rows={4}
-                        value={localPages.home.advantages.join('\n')}
+                        value={(localPages.home.advantages || []).join('\n')}
                         onChange={e => setLocalPages({...localPages, home: {...localPages.home, advantages: e.target.value.split('\n')}})}
                         placeholder="例如: 8.8/10.9/12.9 GRADE SPECIALIST"
                         className="w-full bg-slate-50 border-none rounded-[28px] px-8 py-6 font-black text-[10px] uppercase tracking-widest leading-loose focus:ring-4 ring-blue-500/10 transition-all"
