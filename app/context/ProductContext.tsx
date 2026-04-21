@@ -113,6 +113,17 @@ export interface PageContent {
     headerHeight?: number;
     bgMode?: string;
     bgColor?: string;
+    videoTitle?: string;
+    videoSubtitle?: string;
+    videoUrl?: string;
+    videoDesc?: string;
+    serviceTitle?: string;
+    serviceSubtitle?: string;
+    serviceContent?: string;
+    serviceImg?: string;
+    partnersTitle?: string;
+    partnersSubtitle?: string;
+    partners?: { img: string; name: string; desc: string }[];
   };
   contact: {
     title: string;

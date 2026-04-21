@@ -20,7 +20,14 @@ const DEFAULT_PAGES: PageContent = {
     stats: [{ label: '', value: '' }, { label: '', value: '' }, { label: '', value: '' }, { label: '', value: '' }],
     trustTitle: '', trustSubtitle: '', trustItems: [], faq: []
   },
-  about: { title: '', content: '', heroImg: '' },
+  about: { 
+    title: '', content: '', heroImg: '',
+    videoTitle: '', videoSubtitle: '', videoUrl: '', videoDesc: '',
+    serviceTitle: 'Professional Service', 
+    serviceSubtitle: 'Providing you with comprehensive and professional pre-sales and after-sales services',
+    serviceContent: '', serviceImg: '',
+    partnersTitle: 'Our Strategic Partners', partnersSubtitle: '', partners: []
+  },
   contact: { title: '', description: '' },
   products: { title: '', subtitle: '' },
   news: { title: '', subtitle: '' },
@@ -218,16 +225,80 @@ export default function PagesManagement() {
           </div>
         )}
 
-        {/* 关于我们 & 其他 (保持之前的稳定性结构) */}
+        {/* 关于我们装修 */}
         {activeTab === 'about' && (
-          <div className="bg-white p-12 rounded-[56px] shadow-sm border border-slate-100 animate-in fade-in duration-700">
-             <h3 className="text-xl font-black uppercase text-slate-900 mb-10">关于我们详述</h3>
-             <div className="space-y-10">
-                <input type="text" value={localPages.about.title} onChange={e => setLocalPages({...localPages, about: {...localPages.about, title: e.target.value}})} className="w-full bg-slate-50 border-none rounded-2xl px-6 py-4 font-black text-sm" />
-                <div onClick={() => setShowMatPicker({ active: true, target: 'about.heroImg' })} className="relative aspect-[21/9] rounded-3xl overflow-hidden bg-slate-50 border-2 border-dashed border-slate-100 flex items-center justify-center cursor-pointer">
-                  {localPages.about.heroImg ? <Image src={localPages.about.heroImg} alt="" fill className="object-cover" /> : <i className="fas fa-image text-slate-200"></i>}
+          <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
+             {/* 基础配置 */}
+             <div className="bg-white p-12 rounded-[56px] shadow-sm border border-slate-100">
+                <h3 className="text-xl font-black uppercase text-slate-900 mb-10 flex items-center gap-4"><i className="fas fa-info-circle text-emerald-600"></i> 基础介绍配置</h3>
+                <div className="space-y-8">
+                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                      <div className="space-y-6">
+                        <label className="block text-[9px] font-black uppercase text-slate-400 tracking-[0.3em]">页面主标题</label>
+                        <input type="text" value={localPages.about.title} onChange={e => setLocalPages({...localPages, about: {...localPages.about, title: e.target.value}})} className="w-full bg-slate-50 border-none rounded-2xl px-6 py-4 font-black text-sm" />
+                      </div>
+                      <div className="space-y-4">
+                        <label className="block text-[9px] font-black uppercase text-slate-400 tracking-[0.3em]">顶部横幅 / 封面</label>
+                        <div onClick={() => setShowMatPicker({ active: true, target: 'about.heroImg' })} className="relative aspect-[21/9] rounded-3xl overflow-hidden bg-slate-50 border-2 border-dashed border-slate-100 flex items-center justify-center cursor-pointer">
+                          {localPages.about.heroImg ? <Image src={localPages.about.heroImg} alt="" fill className="object-cover" /> : <i className="fas fa-image text-slate-200"></i>}
+                        </div>
+                      </div>
+                   </div>
+                   <TiptapEditor content={localPages.about.content || ''} onChange={val => setLocalPages({...localPages, about: {...localPages.about, content: val}})} onOpenLibrary={() => setShowMatPicker({ active: true, target: 'about.content' })} lastSelectedImage={lastSelectedAboutImg || undefined} />
                 </div>
-                <TiptapEditor content={localPages.about.content || ''} onChange={val => setLocalPages({...localPages, about: {...localPages.about, content: val}})} onOpenLibrary={() => setShowMatPicker({ active: true, target: 'about.content' })} lastSelectedImage={lastSelectedAboutImg || undefined} />
+             </div>
+
+             {/* 视频与专业服务 */}
+             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                <div className="bg-white p-12 rounded-[56px] shadow-sm border border-slate-100">
+                   <h4 className="font-black uppercase text-xs text-slate-900 mb-8 flex items-center gap-3"><i className="fas fa-play-circle text-red-500"></i> 关于我们视频介绍</h4>
+                   <div className="space-y-4">
+                      <input type="text" placeholder="视频 URL (Youtube/Cloudinary)" value={localPages.about.videoUrl} onChange={e => setLocalPages({...localPages, about: {...localPages.about, videoUrl: e.target.value}})} className="w-full bg-slate-50 border-none rounded-xl px-4 py-3 text-xs font-medium" />
+                      <input type="text" placeholder="视频标题" value={localPages.about.videoTitle} onChange={e => setLocalPages({...localPages, about: {...localPages.about, videoTitle: e.target.value}})} className="w-full bg-slate-50 border-none rounded-xl px-4 py-3 text-sm font-black" />
+                      <textarea rows={2} placeholder="视频短评" value={localPages.about.videoDesc} onChange={e => setLocalPages({...localPages, about: {...localPages.about, videoDesc: e.target.value}})} className="w-full bg-slate-50 border-none rounded-xl px-4 py-3 text-xs" />
+                   </div>
+                </div>
+                <div className="bg-white p-12 rounded-[56px] shadow-sm border border-slate-100">
+                   <h4 className="font-black uppercase text-xs text-slate-900 mb-8 flex items-center gap-3"><i className="fas fa-user-shield text-blue-600"></i> 专业服务模块 (Professional Service)</h4>
+                   <div className="space-y-4">
+                      <input type="text" placeholder="服务标题" value={localPages.about.serviceTitle} onChange={e => setLocalPages({...localPages, about: {...localPages.about, serviceTitle: e.target.value}})} className="w-full bg-slate-50 border-none rounded-xl px-4 py-3 text-sm font-black" />
+                      <textarea rows={2} placeholder="服务简评" value={localPages.about.serviceSubtitle} onChange={e => setLocalPages({...localPages, about: {...localPages.about, serviceSubtitle: e.target.value}})} className="w-full bg-slate-50 border-none rounded-xl px-4 py-3 text-xs font-medium leading-relaxed" />
+                      <div onClick={() => setShowMatPicker({ active: true, target: 'about.serviceImg' })} className="relative aspect-video rounded-2xl overflow-hidden bg-slate-50 border-2 border-dashed border-slate-100 flex items-center justify-center cursor-pointer">
+                         {localPages.about.serviceImg ? <Image src={localPages.about.serviceImg} alt="" fill className="object-cover" /> : <i className="fas fa-plus text-slate-200"></i>}
+                      </div>
+                   </div>
+                </div>
+             </div>
+
+             {/* 合作伙伴配置 */}
+             <div className="bg-white p-12 rounded-[56px] shadow-sm border border-slate-100">
+                <div className="flex justify-between items-center mb-10">
+                   <h3 className="text-xl font-black uppercase text-slate-900">战略合作伙伴 (Partners)</h3>
+                   <button onClick={() => setLocalPages({...localPages, about: {...localPages.about, partners: [...(localPages.about.partners || []), {img: '', name: '', desc: ''}]}})} className="bg-slate-900 text-white px-6 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest">添加合作伙伴</button>
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8">
+                   {localPages.about.partners?.map((item, i) => (
+                     <div key={i} className="group relative bg-slate-50 p-6 rounded-[32px] border border-transparent hover:border-blue-100 transition-all">
+                        <button onClick={() => {
+                          const newPartners = localPages.about.partners?.filter((_, idx) => idx !== i);
+                          setLocalPages({...localPages, about: {...localPages.about, partners: newPartners}});
+                        }} className="absolute -top-2 -right-2 w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition shadow-lg z-10"><i className="fas fa-times"></i></button>
+                        <div onClick={() => setShowMatPicker({ active: true, target: `about.partners[${i}].img` })} className="relative aspect-square w-full mx-auto mb-4 bg-white rounded-2xl shadow-sm flex items-center justify-center overflow-hidden cursor-pointer">
+                           {item.img ? <Image src={item.img} alt="" fill className="object-contain p-2" /> : <i className="fas fa-handshake text-slate-200"></i>}
+                        </div>
+                        <input type="text" placeholder="品牌名" value={item.name} onChange={e => {
+                           const newPartners = [...(localPages.about.partners || [])];
+                           newPartners[i].name = e.target.value;
+                           setLocalPages({...localPages, about: {...localPages.about, partners: newPartners}});
+                        }} className="w-full bg-transparent border-none p-0 text-center font-black text-slate-900 text-[10px] mb-1" />
+                        <input type="text" placeholder="简介 (可选)" value={item.desc} onChange={e => {
+                           const newPartners = [...(localPages.about.partners || [])];
+                           newPartners[i].desc = e.target.value;
+                           setLocalPages({...localPages, about: {...localPages.about, partners: newPartners}});
+                        }} className="w-full bg-transparent border-none p-0 text-center font-medium text-slate-400 text-[8px]" />
+                     </div>
+                   ))}
+                </div>
              </div>
           </div>
         )}
@@ -283,6 +354,13 @@ export default function PagesManagement() {
                                if (newTrust[idx]) {
                                  newTrust[idx].img = mat.url;
                                  setLocalPages({...localPages, home: {...localPages.home, trustItems: newTrust}});
+                               }
+                             } else if (target.includes('partners[')) {
+                               const idx = parseInt(target.match(/\[(\d+)\]/)?.[1] || '0');
+                               const newPartners = [...(localPages.about.partners || [])];
+                               if (newPartners[idx]) {
+                                 newPartners[idx].img = mat.url;
+                                 setLocalPages({...localPages, about: {...localPages.about, partners: newPartners}});
                                }
                              } else {
                                const [p, f] = target.split('.');
