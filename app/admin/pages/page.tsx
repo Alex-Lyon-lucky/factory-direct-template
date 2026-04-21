@@ -56,6 +56,11 @@ const PagesManagement = () => {
             stats: dbData.home?.stats || DEFAULT_PAGES.home.stats,
             trustItems: dbData.home?.trustItems || [],
             faq: dbData.home?.faq || []
+          },
+          about: {
+            ...DEFAULT_PAGES.about,
+            ...dbData.about,
+            partners: dbData.about?.partners || []
           }
         });
       } catch (e) { console.error(e); }
@@ -87,13 +92,17 @@ const PagesManagement = () => {
   };
 
   const TitleConfig = ({ prefix }: { prefix: string }) => {
-    const section = prefix.split('.').pop() || '';
-    const sectionData = (localPages.home as any);
-    const title = sectionData[`${section}Title`];
-    const subtitle = sectionData[`${section}Subtitle`];
-    const color = sectionData[`${section}TitleColor`];
-    const subColor = sectionData[`${section}SubtitleColor`];
-    const align = sectionData[`${section}Align`] || 'center';
+    // prefix is 'home.category' or 'about.service'
+    const parts = prefix.split('.');
+    const parentKey = parts[0]; 
+    const section = parts[1];
+    
+    const parentData = (localPages as any)[parentKey] || {};
+    const title = parentData[`${section}Title`];
+    const subtitle = parentData[`${section}Subtitle`];
+    const color = parentData[`${section}TitleColor`];
+    const subColor = parentData[`${section}SubtitleColor`];
+    const align = parentData[`${section}Align`] || 'center';
 
     return (
       <div className="bg-slate-50/50 p-8 rounded-3xl border border-slate-100 mb-10 space-y-6">
@@ -103,7 +112,7 @@ const PagesManagement = () => {
             {(['left', 'center', 'right'] as const).map(a => (
               <button 
                 key={a}
-                onClick={() => updateField(`${prefix}.${section}Align`, a)}
+                onClick={() => updateField(`${parentKey}.${section}Align`, a)}
                 className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all ${align === a ? 'bg-slate-900 text-white' : 'text-slate-300 hover:text-slate-900'}`}
               >
                 <i className={`fas fa-align-${a}`}></i>
@@ -117,7 +126,7 @@ const PagesManagement = () => {
               <input 
                 type="text" 
                 value={title || ''} 
-                onChange={e => updateField(`${prefix}.${section}Title`, e.target.value)}
+                onChange={e => updateField(`${parentKey}.${section}Title`, e.target.value)}
                 placeholder="不填则不显示"
                 className="w-full bg-white border border-slate-100 rounded-xl px-4 py-3 text-sm font-black"
               />
@@ -126,7 +135,7 @@ const PagesManagement = () => {
                 <input 
                   type="text" 
                   value={color || 'text-slate-900'} 
-                  onChange={e => updateField(`${prefix}.${section}TitleColor`, e.target.value)}
+                  onChange={e => updateField(`${parentKey}.${section}TitleColor`, e.target.value)}
                   placeholder="如: text-blue-600"
                   className="flex-1 bg-white border border-slate-100 rounded-lg px-3 py-1 text-[10px] font-mono"
                 />
@@ -137,7 +146,7 @@ const PagesManagement = () => {
               <input 
                 type="text" 
                 value={subtitle || ''} 
-                onChange={e => updateField(`${prefix}.${section}Subtitle`, e.target.value)}
+                onChange={e => updateField(`${parentKey}.${section}Subtitle`, e.target.value)}
                 placeholder="不填则不显示"
                 className="w-full bg-white border border-slate-100 rounded-xl px-4 py-3 text-xs font-bold"
               />
@@ -146,7 +155,7 @@ const PagesManagement = () => {
                 <input 
                   type="text" 
                   value={subColor || 'text-slate-400'} 
-                  onChange={e => updateField(`${prefix}.${section}SubtitleColor`, e.target.value)}
+                  onChange={e => updateField(`${parentKey}.${section}SubtitleColor`, e.target.value)}
                   placeholder="如: text-slate-400"
                   className="flex-1 bg-white border border-slate-100 rounded-lg px-3 py-1 text-[10px] font-mono"
                 />
@@ -206,9 +215,7 @@ const PagesManagement = () => {
             {/* 2. 分类装修 */}
             <div className="bg-white p-12 rounded-[56px] shadow-sm border border-slate-100">
                <h3 className="text-xl font-black uppercase text-slate-900 mb-10 flex items-center gap-4"><i className="fas fa-th-large text-emerald-600"></i> 产品分类模块</h3>
-               
                <TitleConfig prefix="home.category" />
-
                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
                   {categories.map(cat => (
                     <div key={cat.id} className="space-y-4">
@@ -224,9 +231,7 @@ const PagesManagement = () => {
             {/* 3. 热门产品 */}
             <div className="bg-white p-12 rounded-[56px] shadow-sm border border-slate-100">
                <h3 className="text-xl font-black uppercase text-slate-900 mb-10 flex items-center gap-4"><i className="fas fa-star text-amber-500"></i> 热门产品展示模块</h3>
-               
                <TitleConfig prefix="home.featured" />
-
                <div className="max-w-xs">
                   <label className="block text-[9px] font-black uppercase text-slate-400 mb-4 tracking-[0.3em]">展示产品数量</label>
                   <input type="number" value={localPages.home.featuredCount || 6} onChange={e => updateField('home.featuredCount', parseInt(e.target.value))} className="w-full bg-slate-50 border-none rounded-2xl px-6 py-4 font-black text-sm" />
@@ -236,9 +241,7 @@ const PagesManagement = () => {
             {/* 4. 数据模块 */}
             <div className="bg-white p-12 rounded-[56px] shadow-sm border border-slate-100">
                <h3 className="text-xl font-black uppercase text-slate-900 mb-10 flex items-center gap-4"><i className="fas fa-chart-bar text-indigo-500"></i> 工厂数据统计模块</h3>
-               
                <TitleConfig prefix="home.stats" />
-
                <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
                 {localPages.home.stats?.map((stat, i) => (
                   <div key={i} className="bg-slate-50 p-6 rounded-2xl">
@@ -260,9 +263,7 @@ const PagesManagement = () => {
             {/* 5. 视频介绍 */}
             <div className="bg-white p-12 rounded-[56px] shadow-sm border border-slate-100">
                <h3 className="text-xl font-black uppercase text-slate-900 mb-10 flex items-center gap-4"><i className="fas fa-play-circle text-red-500"></i> 视频介绍模块</h3>
-               
                <TitleConfig prefix="home.video" />
-
                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   <div className="space-y-4">
                      <label className="block text-[9px] font-black uppercase text-slate-400 tracking-widest">视频 URL</label>
@@ -278,9 +279,7 @@ const PagesManagement = () => {
             {/* 6. 证书荣誉 */}
             <div className="bg-white p-12 rounded-[56px] shadow-sm border border-slate-100">
                <h3 className="text-xl font-black uppercase text-slate-900 mb-10 flex items-center gap-4"><i className="fas fa-certificate text-amber-600"></i> 资质荣誉模块</h3>
-               
                <TitleConfig prefix="home.trust" />
-
                <div className="flex justify-end mb-8">
                   <button onClick={() => updateField('home.trustItems', [...(localPages.home.trustItems || []), {img: '', title: '', desc: ''}])} className="bg-slate-900 text-white px-6 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest">添加证书</button>
                </div>
@@ -307,9 +306,7 @@ const PagesManagement = () => {
             {/* 7. FAQ 系统 */}
             <div className="bg-white p-12 rounded-[56px] shadow-sm border border-slate-100">
                <h3 className="text-xl font-black uppercase text-slate-900 mb-10 flex items-center gap-4"><i className="fas fa-question-circle text-blue-500"></i> FAQ 问答模块</h3>
-               
                <TitleConfig prefix="home.faq" />
-
                <div className="flex justify-end mb-8">
                   <button onClick={() => updateField('home.faq', [...(localPages.home.faq || []), {q: '', a: ''}])} className="bg-blue-600 text-white px-6 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest">添加问答</button>
                </div>
@@ -337,7 +334,6 @@ const PagesManagement = () => {
           </div>
         )}
 
-        {/* 其它 Tab (保持全量配置) */}
         {activeTab === 'about' && (
           <div className="space-y-12 animate-in fade-in duration-700">
              <div className="bg-white p-12 rounded-[56px] shadow-sm border border-slate-100">
@@ -348,6 +344,49 @@ const PagesManagement = () => {
                      {localPages.about.heroImg ? <Image src={localPages.about.heroImg} alt="" fill className="object-cover" /> : <i className="fas fa-image text-slate-200"></i>}
                    </div>
                    <TiptapEditor content={localPages.about.content || ''} onChange={val => updateField('about.content', val)} onOpenLibrary={() => setShowMatPicker({ active: true, target: 'about.content' })} lastSelectedImage={lastSelectedAboutImg || undefined} />
+                </div>
+             </div>
+
+             <div className="bg-white p-12 rounded-[56px] shadow-sm border border-slate-100">
+                <h3 className="text-xl font-black uppercase text-slate-900 mb-10 flex items-center gap-4"><i className="fas fa-user-shield text-blue-600"></i> 专业服务模块 (Professional Service)</h3>
+                <TitleConfig prefix="about.service" />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                   <div className="space-y-4">
+                      <label className="block text-[9px] font-black uppercase text-slate-400 tracking-widest">服务补充文案 / 列表</label>
+                      <textarea rows={4} value={localPages.about.serviceContent || ''} onChange={e => updateField('about.serviceContent', e.target.value)} className="w-full bg-slate-50 border-none rounded-xl px-4 py-3 text-xs font-medium" />
+                   </div>
+                   <div className="space-y-4">
+                      <label className="block text-[9px] font-black uppercase text-slate-400 tracking-widest">服务配图</label>
+                      <div onClick={() => setShowMatPicker({ active: true, target: 'about.serviceImg' })} className="relative aspect-video rounded-2xl overflow-hidden bg-slate-50 border-2 border-dashed border-slate-100 flex items-center justify-center cursor-pointer">
+                         {localPages.about.serviceImg ? <Image src={localPages.about.serviceImg} alt="" fill className="object-cover" /> : <i className="fas fa-plus text-slate-200"></i>}
+                      </div>
+                   </div>
+                </div>
+             </div>
+
+             <div className="bg-white p-12 rounded-[56px] shadow-sm border border-slate-100">
+                <h3 className="text-xl font-black uppercase text-slate-900 mb-10 flex items-center gap-4"><i className="fas fa-handshake text-orange-500"></i> 战略合作伙伴 (Partners)</h3>
+                <TitleConfig prefix="about.partners" />
+                <div className="flex justify-end mb-8">
+                   <button onClick={() => updateField('about.partners', [...(localPages.about.partners || []), {img: '', name: '', desc: ''}])} className="bg-slate-900 text-white px-6 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest">添加伙伴</button>
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8">
+                   {localPages.about.partners?.map((item, i) => (
+                     <div key={i} className="group relative bg-slate-50 p-6 rounded-[32px] border border-transparent hover:border-blue-100 transition-all">
+                        <button onClick={() => {
+                          const newPartners = localPages.about.partners?.filter((_, idx) => idx !== i);
+                          updateField('about.partners', newPartners);
+                        }} className="absolute top-2 right-2 w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition shadow-lg z-10"><i className="fas fa-times"></i></button>
+                        <div onClick={() => setShowMatPicker({ active: true, target: `about.partners[${i}].img` })} className="relative aspect-square w-full mx-auto mb-4 bg-white rounded-2xl shadow-sm flex items-center justify-center overflow-hidden cursor-pointer">
+                           {item.img ? <Image src={item.img} alt="" fill className="object-contain p-2" /> : <i className="fas fa-handshake text-slate-200"></i>}
+                        </div>
+                        <input type="text" placeholder="品牌名" value={item.name} onChange={e => {
+                           const newPartners = [...(localPages.about.partners || [])];
+                           newPartners[i].name = e.target.value;
+                           updateField('about.partners', newPartners);
+                        }} className="w-full bg-transparent border-none p-0 text-center font-black text-slate-900 text-[10px] mb-1" />
+                     </div>
+                   ))}
                 </div>
              </div>
           </div>
@@ -377,7 +416,6 @@ const PagesManagement = () => {
         )}
       </div>
 
-      {/* 增强型素材选择逻辑 */}
       {showMatPicker.active && (
         <div className="fixed inset-0 bg-slate-900/80 backdrop-blur-xl z-[200] flex items-center justify-center p-6 md:p-12">
            <div className="bg-white w-full max-w-6xl rounded-[80px] shadow-2xl h-full max-h-[900px] flex flex-col overflow-hidden relative">

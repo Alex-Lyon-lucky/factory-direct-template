@@ -4,6 +4,7 @@
 import Image from 'next/image';
 import Layout from '../components/Layout';
 import PageHeader from '../components/PageHeader';
+import ModuleTitle from '../components/ModuleTitle';
 import { useProducts } from '../context/ProductContext';
 
 export default function AboutPage() {
@@ -49,10 +50,10 @@ export default function AboutPage() {
 
               <div className="relative aspect-square rounded-[80px] overflow-hidden shadow-2xl animate-in fade-in slide-in-from-right-8 duration-1000 group">
                  <Image 
-                   src={about.heroImg || fallbackAbout.heroImg} 
-                   alt="Factory" 
-                   fill
-                   className="object-cover group-hover:scale-105 transition-transform duration-1000"
+                    src={about.heroImg || fallbackAbout.heroImg} 
+                    alt="Factory" 
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-1000"
                  />
                  <div className="absolute inset-0 bg-gradient-to-t from-blue-900/20 to-transparent"></div>
               </div>
@@ -87,12 +88,16 @@ export default function AboutPage() {
 
                    {/* 右侧服务文案 */}
                    <div className="text-white">
-                      <h3 className="text-xs font-black uppercase text-blue-500 tracking-[0.4em] mb-6">Unrivaled Expertise</h3>
-                      <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter mb-8 leading-none">
-                         {about.serviceTitle || "Professional Service"}
-                      </h2>
+                      <ModuleTitle 
+                        title={about.serviceTitle}
+                        subtitle={about.serviceSubtitle}
+                        titleColor={about.serviceTitleColor || "text-white"}
+                        subtitleColor={about.serviceSubtitleColor || "text-slate-400"}
+                        align={about.serviceAlign || "left"}
+                        className="mb-8"
+                      />
                       <p className="text-slate-400 text-lg font-medium leading-relaxed mb-12 opacity-80">
-                         {about.serviceSubtitle || "Providing you with comprehensive and professional pre-sales and after-sales services"}
+                         {about.serviceContent}
                       </p>
                       
                       {about.serviceImg && (
@@ -109,9 +114,14 @@ export default function AboutPage() {
         {/* 3. 战略合作伙伴 (Partners) */}
         {about.partners && about.partners.length > 0 && (
           <section className="py-32 bg-slate-50">
-             <div className="max-w-[1400px] mx-auto px-6 text-center">
-                <h3 className="text-xs font-black uppercase text-blue-600 tracking-[0.4em] mb-6">Strategic Alliances</h3>
-                <h2 className="text-4xl md:text-5xl font-black uppercase text-slate-900 tracking-tighter mb-20">{about.partnersTitle || "Global Partnership Network"}</h2>
+             <div className="max-w-[1400px] mx-auto px-6">
+                <ModuleTitle 
+                  title={about.partnersTitle}
+                  subtitle={about.partnersSubtitle}
+                  titleColor={about.partnersTitleColor}
+                  subtitleColor={about.partnersSubtitleColor}
+                  align={about.partnersAlign}
+                />
                 
                 <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-12">
                    {about.partners.map((partner, i) => (

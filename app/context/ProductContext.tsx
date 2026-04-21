@@ -141,10 +141,16 @@ export interface PageContent {
     videoDesc?: string;
     serviceTitle?: string;
     serviceSubtitle?: string;
+    serviceTitleColor?: string;
+    serviceSubtitleColor?: string;
+    serviceAlign?: 'left' | 'center' | 'right';
     serviceContent?: string;
     serviceImg?: string;
     partnersTitle?: string;
     partnersSubtitle?: string;
+    partnersTitleColor?: string;
+    partnersSubtitleColor?: string;
+    partnersAlign?: 'left' | 'center' | 'right';
     partners?: { img: string; name: string; desc: string }[];
   };
   contact: {
