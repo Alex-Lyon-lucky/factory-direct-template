@@ -90,6 +90,21 @@ export interface PageContent {
     heroSubtitle: string;
     advantages: string[];
     heroImg?: string;
+    categoryTitle?: string;
+    categorySubtitle?: string;
+    categoryImages?: Record<string, string>;
+    featuredTitle?: string;
+    featuredSubtitle?: string;
+    featuredCount?: number;
+    videoTitle?: string;
+    videoSubtitle?: string;
+    videoUrl?: string;
+    videoDesc?: string;
+    stats?: { label: string; value: string }[];
+    trustTitle?: string;
+    trustSubtitle?: string;
+    trustItems?: { img: string; title: string; desc: string }[];
+    faq?: { q: string; a: string }[];
   };
   about: {
     title: string;
@@ -129,6 +144,13 @@ export interface PageContent {
   };
 }
 
+export interface WhatsAppAccount {
+  id: number;
+  phone: string;
+  label: string;
+  is_active: boolean;
+}
+
 interface ProductContextType {
   categories: Category[];
   setCategories: React.Dispatch<React.SetStateAction<Category[]>>;
@@ -140,6 +162,7 @@ interface ProductContextType {
   inquiries: Inquiry[];
   settings: SiteSettings | null;
   pages: PageContent | null;
+  whatsappAccounts: WhatsAppAccount[];
   refreshData: () => Promise<void>;
   deleteProduct: (id: number) => Promise<boolean>;
   deleteNews: (id: number) => Promise<boolean>;
@@ -160,26 +183,29 @@ export function ProductProvider({ children }: { children: ReactNode }) {
   const [inquiries, setInquiries] = useState<Inquiry[]>([]);
   const [settings, setSettings] = useState<SiteSettings | null>(null);
   const [pages, setPages] = useState<PageContent | null>(null);
+  const [whatsappAccounts, setWhatsappAccounts] = useState<WhatsAppAccount[]>([]);
 
   const refreshData = async () => {
     try {
-      const [catRes, prodRes, newsRes, inqRes, setRes, pageRes, matRes] = await Promise.all([
+      const [catRes, prodRes, newsRes, inqRes, setRes, pageRes, matRes, waRes] = await Promise.all([
         fetch('/api/categories'),
         fetch('/api/products'),
         fetch('/api/news'),
         fetch('/api/inquiry'),
         fetch('/api/settings'),
         fetch('/api/pages'),
-        fetch('/api/materials')
+        fetch('/api/materials'),
+        fetch('/api/whatsapp-accounts')
       ]);
-      const [catData, prodData, newsData, inqData, setData, pageData, matData] = await Promise.all([
+      const [catData, prodData, newsData, inqData, setData, pageData, matData, waData] = await Promise.all([
         catRes.json(),
         prodRes.json(),
         newsRes.json(),
         inqRes.json(),
         setRes.json(),
         pageRes.json(),
-        matRes.json()
+        matRes.json(),
+        waRes.json()
       ]);
       setCategories(catData);
       setProducts(prodData);
@@ -188,6 +214,7 @@ export function ProductProvider({ children }: { children: ReactNode }) {
       setSettings(setData);
       setPages(pageData);
       setMaterials(matData);
+      setWhatsappAccounts(waData || []);
     } catch (error) {
       console.error('Failed to fetch data:', error);
     }
@@ -311,6 +338,7 @@ export function ProductProvider({ children }: { children: ReactNode }) {
       inquiries,
       settings,
       pages,
+      whatsappAccounts,
       refreshData, 
       deleteProduct, deleteNews, deleteInquiry, deleteMaterial,
       updateProduct, updateNews, updateMaterial

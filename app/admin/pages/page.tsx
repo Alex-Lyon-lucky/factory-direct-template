@@ -16,7 +16,20 @@ export default function PagesManagement() {
 
   useEffect(() => {
     if (pages) {
-      setLocalPages(pages);
+      // 初始化新字段以防 JSON 中不存在
+      const updatedPages = { ...pages };
+      if (!updatedPages.home.categoryImages) updatedPages.home.categoryImages = {};
+      if (!updatedPages.home.stats) updatedPages.home.stats = [
+        { label: 'Years Experience', value: '20+' },
+        { label: 'Global Clients', value: '500+' },
+        { label: 'Countries Served', value: '80+' },
+        { label: 'Industry Awards', value: '50+' }
+      ];
+      if (!updatedPages.home.trustItems) updatedPages.home.trustItems = [];
+      if (!updatedPages.home.faq) updatedPages.home.faq = [];
+      if (!updatedPages.home.featuredCount) updatedPages.home.featuredCount = 6;
+      
+      setLocalPages(updatedPages);
     }
   }, [pages]);
 
@@ -80,10 +93,11 @@ export default function PagesManagement() {
       <div className="grid grid-cols-1 gap-12">
         {activeTab === 'home' && (
           <div className="space-y-10">
+            {/* 1. Hero Section */}
             <div className="bg-white p-12 rounded-[56px] shadow-sm border border-slate-100">
                <h3 className="text-xl font-black uppercase tracking-tighter text-slate-900 mb-10 flex items-center gap-4">
                   <div className="w-10 h-10 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600"><i className="fas fa-bolt"></i></div> 
-                  首页 Hero 轮播模块
+                  1. 首页 Hero 轮播模块
                </h3>
                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
                   <div className="space-y-8">
@@ -132,6 +146,298 @@ export default function PagesManagement() {
                         </div>
                      </div>
                   </div>
+               </div>
+            </div>
+
+            {/* 2. Category Section */}
+            <div className="bg-white p-12 rounded-[56px] shadow-sm border border-slate-100">
+               <h3 className="text-xl font-black uppercase tracking-tighter text-slate-900 mb-10 flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-600"><i className="fas fa-th-large"></i></div> 
+                  2. 产品分类模块 (适配布局)
+               </h3>
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mb-10">
+                  <div>
+                    <label className="block text-[9px] font-black uppercase text-slate-400 mb-4 tracking-[0.3em]">模块主标题</label>
+                    <input 
+                      type="text" 
+                      value={localPages.home.categoryTitle || 'Featured Categories'}
+                      onChange={e => setLocalPages({...localPages, home: {...localPages.home, categoryTitle: e.target.value}})}
+                      className="w-full bg-slate-50 border-none rounded-2xl px-6 py-4 font-black text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[9px] font-black uppercase text-slate-400 mb-4 tracking-[0.3em]">模块简短介绍</label>
+                    <input 
+                      type="text" 
+                      value={localPages.home.categorySubtitle || 'Premium Selection for Global Infrastructure'}
+                      onChange={e => setLocalPages({...localPages, home: {...localPages.home, categorySubtitle: e.target.value}})}
+                      className="w-full bg-slate-50 border-none rounded-2xl px-6 py-4 font-bold text-xs"
+                    />
+                  </div>
+               </div>
+               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                  {categories.map(cat => (
+                    <div key={cat.id} className="space-y-4">
+                      <div 
+                        onClick={() => setShowMatPicker({ active: true, target: `home.categoryImages[${cat.value}]` })}
+                        className="relative aspect-[4/5] rounded-[32px] overflow-hidden bg-slate-50 border border-slate-100 cursor-pointer hover:border-blue-400 transition-all group"
+                      >
+                        {localPages.home.categoryImages?.[cat.value] ? (
+                          <Image src={localPages.home.categoryImages[cat.value]} alt={cat.name} fill className="object-cover" />
+                        ) : (
+                          <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-300 gap-2">
+                            <i className="fas fa-image text-xl"></i>
+                            <span className="text-[8px] font-black uppercase tracking-tighter">设置封面图</span>
+                          </div>
+                        )}
+                        <div className="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
+                          <span className="text-[8px] text-white font-black uppercase">更换</span>
+                        </div>
+                      </div>
+                      <p className="text-center font-black uppercase text-[10px] tracking-widest text-slate-900">{cat.name}</p>
+                    </div>
+                  ))}
+               </div>
+            </div>
+
+            {/* 3. Featured Products Section */}
+            <div className="bg-white p-12 rounded-[56px] shadow-sm border border-slate-100">
+               <h3 className="text-xl font-black uppercase tracking-tighter text-slate-900 mb-10 flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-2xl bg-orange-50 flex items-center justify-center text-orange-600"><i className="fas fa-star"></i></div> 
+                  3. 优质产品推荐模块
+               </h3>
+               <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+                  <div>
+                    <label className="block text-[9px] font-black uppercase text-slate-400 mb-4 tracking-[0.3em]">模块主标题</label>
+                    <input 
+                      type="text" 
+                      value={localPages.home.featuredTitle || 'High Precision Fasteners'}
+                      onChange={e => setLocalPages({...localPages, home: {...localPages.home, featuredTitle: e.target.value}})}
+                      className="w-full bg-slate-50 border-none rounded-2xl px-6 py-4 font-black text-sm"
+                    />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="block text-[9px] font-black uppercase text-slate-400 mb-4 tracking-[0.3em]">模块简短介绍</label>
+                    <input 
+                      type="text" 
+                      value={localPages.home.featuredSubtitle || 'Engineered for Performance and Durability'}
+                      onChange={e => setLocalPages({...localPages, home: {...localPages.home, featuredSubtitle: e.target.value}})}
+                      className="w-full bg-slate-50 border-none rounded-2xl px-6 py-4 font-bold text-xs"
+                    />
+                  </div>
+               </div>
+               <div className="mt-8">
+                  <label className="block text-[9px] font-black uppercase text-slate-400 mb-4 tracking-[0.3em]">展示产品数量 (默认 6)</label>
+                  <select 
+                    value={localPages.home.featuredCount || 6}
+                    onChange={e => setLocalPages({...localPages, home: {...localPages.home, featuredCount: parseInt(e.target.value)}})}
+                    className="w-full bg-slate-50 border-none rounded-2xl px-6 py-4 font-black text-sm"
+                  >
+                    <option value={4}>4 个 (2x2)</option>
+                    <option value={6}>6 个 (3x2)</option>
+                    <option value={8}>8 个 (4x2)</option>
+                  </select>
+               </div>
+            </div>
+
+            {/* 4. Video & Stats Section */}
+            <div className="bg-white p-12 rounded-[56px] shadow-sm border border-slate-100">
+               <h3 className="text-xl font-black uppercase tracking-tighter text-slate-900 mb-10 flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-2xl bg-red-50 flex items-center justify-center text-red-600"><i className="fas fa-play"></i></div> 
+                  4. 视频介绍与核心数据 (Stats)
+               </h3>
+               <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                  <div className="space-y-6">
+                    <div>
+                      <label className="block text-[9px] font-black uppercase text-slate-400 mb-4 tracking-[0.3em]">视频标题</label>
+                      <input 
+                        type="text" 
+                        value={localPages.home.videoTitle || 'Inside Our Factory'}
+                        onChange={e => setLocalPages({...localPages, home: {...localPages.home, videoTitle: e.target.value}})}
+                        className="w-full bg-slate-50 border-none rounded-2xl px-6 py-4 font-black text-sm"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[9px] font-black uppercase text-slate-400 mb-4 tracking-[0.3em]">视频 YouTube URL / MP4 URL</label>
+                      <input 
+                        type="text" 
+                        placeholder="https://..."
+                        value={localPages.home.videoUrl || ''}
+                        onChange={e => setLocalPages({...localPages, home: {...localPages.home, videoUrl: e.target.value}})}
+                        className="w-full bg-slate-50 border-none rounded-2xl px-6 py-4 font-bold text-xs"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[9px] font-black uppercase text-slate-400 mb-4 tracking-[0.3em]">右侧文字介绍</label>
+                      <textarea 
+                        rows={6}
+                        value={localPages.home.videoText || ''}
+                        onChange={e => setLocalPages({...localPages, home: {...localPages.home, videoText: e.target.value}})}
+                        className="w-full bg-slate-50 border-none rounded-[28px] px-8 py-6 font-medium text-sm leading-relaxed"
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-8">
+                    <label className="block text-[9px] font-black uppercase text-slate-400 mb-2 tracking-[0.3em]">核心优势数据 (Stats)</label>
+                    <div className="grid grid-cols-2 gap-4">
+                      {(localPages.home.stats || []).map((stat, i) => (
+                        <div key={i} className="bg-slate-50 p-6 rounded-3xl space-y-3">
+                           <input 
+                             type="text" 
+                             value={stat.value} 
+                             onChange={e => {
+                               const newStats = [...(localPages.home.stats || [])];
+                               newStats[i].value = e.target.value;
+                               setLocalPages({...localPages, home: {...localPages.home, stats: newStats}});
+                             }}
+                             className="w-full bg-transparent border-none p-0 font-black text-2xl text-blue-600"
+                           />
+                           <input 
+                             type="text" 
+                             value={stat.label} 
+                             onChange={e => {
+                               const newStats = [...(localPages.home.stats || [])];
+                               newStats[i].label = e.target.value;
+                               setLocalPages({...localPages, home: {...localPages.home, stats: newStats}});
+                             }}
+                             className="w-full bg-transparent border-none p-0 text-[10px] font-black uppercase text-slate-400 tracking-widest"
+                           />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+               </div>
+            </div>
+
+            {/* 5. Trust (Certificates/Exhibition) Section */}
+            <div className="bg-white p-12 rounded-[56px] shadow-sm border border-slate-100">
+               <div className="flex justify-between items-center mb-10">
+                  <h3 className="text-xl font-black uppercase tracking-tighter text-slate-900 flex items-center gap-4">
+                     <div className="w-10 h-10 rounded-2xl bg-emerald-50 flex items-center justify-center text-emerald-600"><i className="fas fa-award"></i></div> 
+                     5. 实力展示 (证书/展会/资质)
+                  </h3>
+                  <button 
+                    onClick={() => setLocalPages({
+                      ...localPages,
+                      home: {
+                        ...localPages.home,
+                        trustItems: [...(localPages.home.trustItems || []), { img: '', title: '新证书/展会', desc: '简短描述' }]
+                      }
+                    } as PageContent)}
+                    className="bg-emerald-600 text-white px-6 py-3 rounded-2xl font-black uppercase text-[10px] tracking-widest flex items-center gap-2 hover:bg-emerald-700 transition shadow-lg"
+                  >
+                    <i className="fas fa-plus"></i> 添加项
+                  </button>
+               </div>
+               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                  {(localPages.home.trustItems || []).map((item, i) => (
+                    <div key={i} className="bg-slate-50 p-8 rounded-[40px] space-y-6 relative group">
+                       <button 
+                         onClick={() => {
+                           const newTrust = (localPages.home.trustItems || []).filter((_, idx) => idx !== i);
+                           setLocalPages({...localPages, home: {...localPages.home, trustItems: newTrust}});
+                         }}
+                         className="absolute top-4 right-4 w-8 h-8 bg-white rounded-full flex items-center justify-center text-red-500 opacity-0 group-hover:opacity-100 transition shadow-sm z-10"
+                       >
+                         <i className="fas fa-times"></i>
+                       </button>
+                       <div 
+                         onClick={() => setShowMatPicker({ active: true, target: `home.trustItems[${i}]` })}
+                         className="relative aspect-square rounded-3xl overflow-hidden bg-white border border-slate-200 cursor-pointer flex items-center justify-center"
+                       >
+                          {item.img ? <Image src={item.img} alt="" fill className="object-contain p-4" /> : <i className="fas fa-image text-slate-200 text-2xl"></i>}
+                       </div>
+                       <input 
+                         type="text" 
+                         value={item.title}
+                         onChange={e => {
+                           const newTrust = [...(localPages.home.trustItems || [])];
+                           newTrust[i].title = e.target.value;
+                           setLocalPages({...localPages, home: {...localPages.home, trustItems: newTrust}});
+                         }}
+                         className="w-full bg-transparent border-none p-0 font-black uppercase text-xs text-slate-900 tracking-widest text-center"
+                       />
+                       <input 
+                         type="text" 
+                         value={item.desc}
+                         onChange={e => {
+                           const newTrust = [...(localPages.home.trustItems || [])];
+                           newTrust[i].desc = e.target.value;
+                           setLocalPages({...localPages, home: {...localPages.home, trustItems: newTrust}});
+                         }}
+                         className="w-full bg-transparent border-none p-0 text-[10px] font-bold text-slate-400 text-center"
+                       />
+                    </div>
+                  ))}
+                  {(localPages.home.trustItems || []).length === 0 && (
+                    <div className="col-span-full py-12 text-center text-slate-300 font-black uppercase text-[10px] tracking-[0.4em]">
+                       点击右上角“添加项”开始装修
+                    </div>
+                  )}
+               </div>
+            </div>
+
+            {/* 6. FAQ Section */}
+            <div className="bg-white p-12 rounded-[56px] shadow-sm border border-slate-100">
+               <div className="flex justify-between items-center mb-10">
+                  <h3 className="text-xl font-black uppercase tracking-tighter text-slate-900 flex items-center gap-4">
+                     <div className="w-10 h-10 rounded-2xl bg-purple-50 flex items-center justify-center text-purple-600"><i className="fas fa-question-circle"></i></div> 
+                     6. 常见问题解答 (FAQ)
+                  </h3>
+                  <button 
+                    onClick={() => setLocalPages({
+                      ...localPages,
+                      home: {
+                        ...localPages.home,
+                        faq: [...(localPages.home.faq || []), { q: '这是一个新问题？', a: '这是问题的详细解答，客户点击后展开。' }]
+                      }
+                    } as PageContent)}
+                    className="bg-purple-600 text-white px-6 py-3 rounded-2xl font-black uppercase text-[10px] tracking-widest flex items-center gap-2 hover:bg-purple-700 transition shadow-lg"
+                  >
+                    <i className="fas fa-plus"></i> 添加问题
+                  </button>
+               </div>
+               <div className="space-y-6">
+                  {(localPages.home.faq || []).map((faq, i) => (
+                    <div key={i} className="bg-slate-50 p-8 rounded-[32px] space-y-4 group relative">
+                       <button 
+                         onClick={() => {
+                           const newFaq = (localPages.home.faq || []).filter((_, idx) => idx !== i);
+                           setLocalPages({...localPages, home: {...localPages.home, faq: newFaq}});
+                         }}
+                         className="absolute top-4 right-4 w-8 h-8 bg-white rounded-full flex items-center justify-center text-red-500 opacity-0 group-hover:opacity-100 transition shadow-sm z-10"
+                       >
+                         <i className="fas fa-times"></i>
+                       </button>
+                       <input 
+                         type="text" 
+                         value={faq.q}
+                         onChange={e => {
+                           const newFaq = [...(localPages.home.faq || [])];
+                           newFaq[i].q = e.target.value;
+                           setLocalPages({...localPages, home: {...localPages.home, faq: newFaq}});
+                         }}
+                         placeholder="输入问题..."
+                         className="w-full bg-transparent border-none p-0 font-black text-slate-900 text-sm tracking-tight"
+                       />
+                       <textarea 
+                         rows={2}
+                         value={faq.a}
+                         onChange={e => {
+                           const newFaq = [...(localPages.home.faq || [])];
+                           newFaq[i].a = e.target.value;
+                           setLocalPages({...localPages, home: {...localPages.home, faq: newFaq}});
+                         }}
+                         placeholder="输入答案内容..."
+                         className="w-full bg-transparent border-none p-0 text-xs font-medium text-slate-500 leading-relaxed"
+                       />
+                    </div>
+                  ))}
+                  {(localPages.home.faq || []).length === 0 && (
+                    <div className="py-12 text-center text-slate-300 font-black uppercase text-[10px] tracking-[0.4em]">
+                       点击右上角“添加问题”开始装修
+                    </div>
+                  )}
                </div>
             </div>
           </div>
@@ -282,14 +588,40 @@ export default function PagesManagement() {
                  <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8 pb-12">
                       {materials.map((mat) => (
                         <div key={mat.id} onClick={() => {
-                            const parts = showMatPicker.target.split('.');
-                            const page = parts[0] as keyof PageContent;
-                            const field = parts[1];
+                            const target = showMatPicker.target;
                             
-                            if (field === 'content') {
+                            if (target === 'about.content') {
                               setLastSelectedAboutImg(mat.url);
                               setTimeout(() => setLastSelectedAboutImg(null), 100);
+                            } else if (target.startsWith('home.categoryImages[')) {
+                              const catValue = target.match(/\[(.*?)\]/)?.[1];
+                              if (catValue) {
+                                setLocalPages({
+                                  ...localPages,
+                                  home: {
+                                    ...localPages.home,
+                                    categoryImages: {
+                                      ...(localPages.home.categoryImages || {}),
+                                      [catValue]: mat.url
+                                    }
+                                  }
+                                } as PageContent);
+                              }
+                            } else if (target.startsWith('home.trustItems[')) {
+                               const idx = parseInt(target.match(/\[(\d+)\]/)?.[1] || '0');
+                               const newTrust = [...(localPages.home.trustItems || [])];
+                               if (newTrust[idx]) {
+                                 newTrust[idx] = { ...newTrust[idx], img: mat.url };
+                                 setLocalPages({
+                                   ...localPages,
+                                   home: { ...localPages.home, trustItems: newTrust }
+                                 } as PageContent);
+                               }
                             } else {
+                              const parts = target.split('.');
+                              const page = parts[0] as keyof PageContent;
+                              const field = parts[1];
+                              
                               setLocalPages({
                                 ...localPages,
                                 [page]: {
