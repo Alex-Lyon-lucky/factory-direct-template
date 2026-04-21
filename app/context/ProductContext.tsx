@@ -332,7 +332,12 @@ export function ProductProvider({ children }: { children: ReactNode }) {
         setMaterials(materials.map(m => m.id === material.id ? material : m));
         return true;
       }
-    } catch (e) { console.error(e); }
+      const err = await res.json();
+      alert('更新失败: ' + (err.error || '未知错误'));
+    } catch (e) { 
+      console.error(e); 
+      alert('连接服务器失败');
+    }
     return false;
   };
 

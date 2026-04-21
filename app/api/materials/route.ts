@@ -47,14 +47,15 @@ export async function POST(request: Request) {
         return NextResponse.json({ success: true, material: existing, isDuplicate: true });
       }
 
-      const materialWithId = { 
-        ...newMaterial, 
-        id: newMaterial.id || Date.now(),
-        date: new Date().toISOString().split('T')[0]
+      // 准备插入的数据，移除 id 让 Supabase 自动生成
+      const { id, ...insertData } = newMaterial;
+      const finalInsertData = {
+        ...insertData,
+        date: insertData.date || new Date().toISOString().split('T')[0]
       };
 
-      const { error } = await supabase.from('materials').insert([materialWithId]);
-      if (!error) return NextResponse.json({ success: true, material: materialWithId });
+      const { data: inserted, error } = await supabase.from('materials').insert([finalInsertData]).select().single();
+      if (!error) return NextResponse.json({ success: true, material: inserted });
       console.error('Supabase POST error:', error);
       return NextResponse.json({ success: false, error: error.message }, { status: 500 });
     }
@@ -82,14 +83,18 @@ export async function POST(request: Request) {
 
 export async function PUT(request: Request) {
   try {
-    const updatedMaterial = await request.json();
-    if (!updatedMaterial.id) return NextResponse.json({ success: false, error: 'Missing ID' }, { status: 400 });
+    const data = await request.json();
+    console.log('Updating material with data:', data);
+    const { id, ...updateData } = data;
+    
+    if (!id) return NextResponse.json({ success: false, error: 'Missing ID' }, { status: 400 });
 
     if (isCloud) {
+      // 移除 id，因为 Supabase 不允许更新主键
       const { error } = await supabase
         .from('materials')
-        .update(updatedMaterial)
-        .eq('id', updatedMaterial.id);
+        .update(updateData)
+        .eq('id', id);
       
       if (!error) return NextResponse.json({ success: true });
       console.error('Supabase PUT error:', error);
@@ -97,14 +102,15 @@ export async function PUT(request: Request) {
     }
 
     const materials = getLocalMaterials();
-    const index = materials.findIndex((m: any) => m.id === updatedMaterial.id);
+    const index = materials.findIndex((m: any) => m.id === id);
     if (index === -1) return NextResponse.json({ success: false, error: 'Not found' }, { status: 404 });
 
-    materials[index] = { ...materials[index], ...updatedMaterial };
+    materials[index] = { ...materials[index], ...updateData };
     saveLocalMaterials(materials);
     return NextResponse.json({ success: true });
   } catch (error) {
-    return NextResponse.json({ success: false, error: 'Failed to update material' }, { status: 500 });
+    console.error('Update API error:', error);
+    return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
   }
 }
 

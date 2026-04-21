@@ -39,6 +39,12 @@ export default function MaterialLibraryPage() {
           method: 'POST',
           body: formData,
         });
+        
+        if (!res.ok) {
+          const errorData = await res.json();
+          throw new Error(errorData.error || `Upload failed with status ${res.status}`);
+        }
+        
         const data = await res.json();
         
         if (data.url) {
