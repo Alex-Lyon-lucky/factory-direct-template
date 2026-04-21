@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { useProducts } from './context/ProductContext';
 import Layout from './components/Layout';
 import InquiryForm from './components/InquiryForm';
+import ModuleTitle from './components/ModuleTitle';
 
 export default function Home() {
   const { pages, categories, products, settings, whatsappAccounts } = useProducts();
@@ -17,22 +18,12 @@ export default function Home() {
     heroSubtitle: "Hangfan specializes in high-precision fasteners and custom hardware. We bridge the gap between quality manufacturing and international standards.",
     advantages: ["8.8/10.9/12.9 GRADE SPECIALIST", "FULL SCALE OEM CAPABILITIES", "ISO 9001:2015 CERTIFIED"],
     heroImg: "https://images.unsplash.com/photo-1530124560677-bdaea024f061?auto=format&fit=crop&q=80&w=800",
-    categoryTitle: "Featured Categories",
-    categorySubtitle: "Engineered for Performance and Durability",
-    categoryImages: {},
-    featuredTitle: "High Precision Fasteners",
-    featuredSubtitle: "Top-rated products from our manufacturing line",
-    featuredCount: 6,
-    videoTitle: "Advanced Manufacturing",
-    videoUrl: "",
-    videoText: "Our facility is equipped with the latest cold-heading and thread-rolling machinery. Every product undergoes rigorous quality checks to ensure compliance with international standards.",
     stats: [
       { label: 'Years Experience', value: '20+' },
       { label: 'Global Clients', value: '500+' },
       { label: 'Countries Served', value: '80+' },
       { label: 'Industry Awards', value: '50+' }
     ],
-    trustTitle: "Certified Quality & Global Presence",
     trustItems: [],
     faq: []
   };
@@ -44,7 +35,6 @@ export default function Home() {
     const cats = categories.slice(0, 12); 
     const count = cats.length;
 
-    // 特殊处理 5 个分类的情况: 3上 + 2下 (加一个了解更多)
     if (count === 5) {
       return (
         <div className="space-y-8">
@@ -72,24 +62,17 @@ export default function Home() {
             {cats.slice(0, 2).map(cat => <CategoryCard key={cat.id} cat={cat} homeData={homeData} />)}
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <CategoryCard cat={cats[2]} homeData={homeData} />
-            <Link href="/products" className="group relative aspect-square rounded-[48px] bg-slate-900 flex flex-col items-center justify-center overflow-hidden transition-all hover:bg-blue-600">
-               <div className="relative z-10 text-center">
-                  <p className="text-white font-black text-2xl uppercase tracking-tighter mb-2">Explore More</p>
-                  <p className="text-white/40 text-[10px] font-black uppercase tracking-widest group-hover:text-white transition">View Full Catalog &rarr;</p>
-               </div>
-               <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/20 rounded-full blur-3xl group-hover:bg-white/10 transition"></div>
-            </Link>
+            {cats.slice(2, 3).map(cat => <CategoryCard key={cat.id} cat={cat} homeData={homeData} />)}
+            <div className="relative aspect-square rounded-[48px] bg-slate-50 border-2 border-dashed border-slate-100 flex items-center justify-center">
+               <p className="text-slate-300 font-black text-xs uppercase tracking-widest">More Categories Coming</p>
+            </div>
           </div>
         </div>
       );
     }
 
-    // Default Grid (Adapts based on count)
-    const gridCols = count % 4 === 0 ? 'lg:grid-cols-4' : count % 3 === 0 ? 'lg:grid-cols-3' : 'lg:grid-cols-2';
-    
     return (
-      <div className={`grid grid-cols-1 sm:grid-cols-2 ${gridCols} gap-8`}>
+      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-8">
         {cats.map(cat => <CategoryCard key={cat.id} cat={cat} homeData={homeData} />)}
       </div>
     );
@@ -98,219 +81,261 @@ export default function Home() {
   return (
     <Layout>
       {/* HERO SECTION - REFINED ULTRA COMPACT V3 */}
-      <header className="relative bg-[#0a0f1d] py-6 lg:py-10 px-4 overflow-hidden border-b border-white/5">
-        <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-blue-600/10 rounded-full translate-x-1/2 -translate-y-1/2 blur-[120px] animate-pulse"></div>
-        <div className="max-w-7xl mx-auto grid lg:grid-cols-12 gap-10 items-center relative z-10">
-          <div className="lg:col-span-7 text-center lg:text-left animate-in fade-in slide-in-from-left-8 duration-1000">
-            <div className="inline-flex items-center gap-3 bg-blue-600/10 border border-blue-600/20 px-4 py-1.5 rounded-full mb-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
-              <span className="text-blue-400 font-black uppercase tracking-[0.3em] text-[9px]">Direct Factory Excellence</span>
-            </div>
-            
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-white mb-2 uppercase tracking-tighter leading-[0.9]">
-              {homeData.heroTitle}
-            </h1>
-            
-            <p className="text-slate-400 text-xs md:text-sm max-w-2xl mx-auto lg:mx-0 mb-5 leading-relaxed font-medium">
-              {homeData.heroSubtitle}
-            </p>
-
-            <div className="flex flex-col sm:flex-row justify-center lg:justify-start gap-4">
-              <Link href="/products" className="group bg-blue-600 text-white font-black px-10 py-4 rounded-2xl hover:bg-white hover:text-blue-600 transition-all uppercase tracking-widest text-[10px] shadow-2xl flex items-center justify-center gap-3">
-                Explore Products <i className="fas fa-arrow-right group-hover:translate-x-2 transition-transform"></i>
-              </Link>
-              <Link href="/contact" className="bg-white/5 border border-white/10 text-white font-black px-10 py-4 rounded-2xl hover:bg-white hover:text-slate-900 transition-all uppercase tracking-widest text-[10px]">
-                Get Free Quote
-              </Link>
-            </div>
-            
-            <div className="mt-6 flex flex-wrap justify-center lg:justify-start gap-8">
-               {homeData.advantages.map((adv, i) => (
-                  <div key={i} className="flex items-center gap-2">
-                     <div className="w-1.5 h-1.5 bg-blue-500/50 rounded-full"></div> 
-                     <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">{adv}</span>
+      <section className="relative w-full bg-[#0a0f1d] overflow-hidden">
+        <div className="max-w-[1400px] mx-auto px-6 py-6 lg:py-10 flex flex-col lg:flex-row items-center gap-10 lg:gap-20 min-h-[500px] lg:min-h-[600px] relative z-10">
+          <div className="flex-1 text-center lg:text-left animate-in fade-in slide-in-from-left-8 duration-1000">
+             <div className="inline-block bg-blue-600/10 border border-blue-500/20 px-4 py-2 rounded-full mb-6">
+                <span className="text-blue-500 font-black text-[10px] uppercase tracking-[0.3em]">Factory Direct Excellence</span>
+             </div>
+             <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-white uppercase tracking-tighter mb-6 leading-[0.9]">
+               {homeData.heroTitle}
+             </h1>
+             <p className="text-white/40 text-sm md:text-base font-medium max-w-xl mb-8 leading-relaxed">
+               {homeData.heroSubtitle}
+             </p>
+             <div className="flex flex-col sm:flex-row items-center gap-4 mb-10">
+               <Link href="/products" className="w-full sm:w-auto bg-blue-600 text-white px-10 py-5 rounded-2xl font-black text-xs uppercase tracking-widest shadow-2xl shadow-blue-600/20 hover:bg-blue-700 transition-all active:scale-95">
+                 View Collections
+               </Link>
+               <Link href="/contact" className="w-full sm:w-auto bg-white/5 text-white px-10 py-5 rounded-2xl font-black text-xs uppercase tracking-widest border border-white/10 hover:bg-white/10 transition-all">
+                 Contact Sales
+               </Link>
+             </div>
+             <div className="flex flex-wrap items-center justify-center lg:justify-start gap-x-8 gap-y-4 pt-10 border-t border-white/5">
+                {homeData.advantages.map((adv, i) => (
+                  <div key={i} className="flex items-center gap-3">
+                    <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
+                    <span className="text-white font-black text-[9px] uppercase tracking-widest opacity-60">{adv}</span>
                   </div>
-               ))}
+                ))}
+             </div>
+          </div>
+
+          <div className="flex-1 w-full relative animate-in fade-in zoom-in duration-1000">
+            <div className="relative aspect-square max-w-[500px] mx-auto rounded-[80px] overflow-hidden shadow-2xl border border-white/10 rotate-3 hover:rotate-0 transition-transform duration-700 group">
+              <Image 
+                src={homeData.heroImg} 
+                alt="Fastener Manufacturing" 
+                fill 
+                className="object-cover group-hover:scale-110 transition-transform duration-1000"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-blue-900/40 to-transparent"></div>
             </div>
           </div>
-
-          {/* COMPRESSED HERO IMAGE */}
-          <div className="lg:col-span-5 hidden lg:block relative group">
-            <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-[52px] opacity-20 blur shadow-2xl"></div>
-            <Image
-              src={homeData.heroImg || "https://images.unsplash.com/photo-1530124560677-bdaea024f061?auto=format&fit=crop&q=80&w=800"}
-              alt="Premium Fasteners" width={800} height={800}
-              className="relative rounded-[48px] shadow-2xl aspect-square object-cover border border-white/10"
-              priority
-            />
-          </div>
         </div>
-      </header>
+        
+        {/* Background Elements */}
+        <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-blue-600/10 rounded-full blur-[120px] -mr-96 -mt-96 animate-pulse"></div>
+        <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-blue-900/10 rounded-full blur-[120px] -ml-72 -mb-72 animate-pulse"></div>
+      </section>
 
-      {/* CATEGORY SECTION (ADAPTIVE) */}
-      <section className="max-w-7xl mx-auto px-4 py-32">
-        <div className="flex flex-col md:flex-row justify-between items-center md:items-end mb-20 gap-6">
-          <div className="text-center md:text-left">
-            <span className="text-blue-600 font-black uppercase tracking-[0.3em] text-[10px] mb-4 block">Product Selection</span>
-            <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter text-slate-900 leading-none">{homeData.categoryTitle}</h2>
-            <p className="text-slate-400 font-bold uppercase tracking-widest text-[10px] mt-4">{homeData.categorySubtitle}</p>
-          </div>
+      {/* CATEGORIES SECTION */}
+      <section className="bg-white py-24 md:py-32">
+        <div className="max-w-[1400px] mx-auto px-6">
+          <ModuleTitle 
+            title={homeData.categoryTitle}
+            subtitle={homeData.categorySubtitle}
+            titleColor={homeData.categoryTitleColor}
+            subtitleColor={homeData.categorySubtitleColor}
+            align={homeData.categoryAlign}
+          />
+          {renderCategories()}
         </div>
-        {renderCategories()}
       </section>
 
       {/* FEATURED PRODUCTS */}
-      <section className="bg-slate-50 py-32 px-4">
-         <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-20">
-               <span className="text-blue-600 font-black uppercase tracking-[0.3em] text-[10px] mb-4 block">Our Recommendations</span>
-               <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter text-slate-900 leading-none">{homeData.featuredTitle}</h2>
-               <p className="text-slate-400 font-bold uppercase tracking-widest text-[10px] mt-4">{homeData.featuredSubtitle}</p>
-            </div>
-            <div className={`grid grid-cols-2 md:grid-cols-3 ${homeData.featuredCount === 4 ? 'lg:grid-cols-4' : homeData.featuredCount === 8 ? 'lg:grid-cols-4' : 'lg:grid-cols-3'} gap-6 md:gap-10`}>
-               {products.slice(0, homeData.featuredCount).map(prod => (
-                  <Link key={prod.id} href={`/products/${prod.seoSlug}`} className="bg-white p-6 rounded-[40px] border border-slate-100 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 group">
-                     <div className="relative aspect-square rounded-3xl overflow-hidden bg-slate-50 mb-6">
-                        <Image src={prod.img} alt={prod.name} fill className="object-contain p-8 group-hover:scale-110 transition-transform duration-700" />
-                     </div>
-                     <h4 className="text-lg font-black uppercase text-slate-900 tracking-tight line-clamp-1">{prod.name}</h4>
-                     <p className="text-blue-600 font-black uppercase text-[10px] tracking-widest mt-2">{prod.spec}</p>
-                  </Link>
-               ))}
-            </div>
-         </div>
-      </section>
-
-      {/* VIDEO & STATS SECTION */}
-      <section className="py-32 px-4 relative overflow-hidden bg-[#0a0f1d]">
-         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full opacity-5 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]"></div>
-         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-20 items-center relative z-10">
-            <div className="relative aspect-video rounded-[48px] overflow-hidden bg-slate-800 shadow-2xl">
-               {homeData.videoUrl ? (
-                  <iframe 
-                    src={homeData.videoUrl.replace('watch?v=', 'embed/')} 
-                    className="absolute inset-0 w-full h-full" 
-                    frameBorder="0" 
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                    allowFullScreen
-                  ></iframe>
-               ) : (
-                  <div className="absolute inset-0 flex items-center justify-center text-white/10">
-                     <i className="fas fa-play text-8xl"></i>
-                  </div>
-               )}
-            </div>
-            <div className="space-y-10">
-               <h2 className="text-4xl md:text-5xl font-black text-white uppercase tracking-tighter leading-none">{homeData.videoTitle}</h2>
-               <p className="text-white/60 text-lg leading-relaxed font-medium">{homeData.videoText}</p>
-               
-               <div className="grid grid-cols-2 gap-8 pt-8">
-                  {homeData.stats?.map((stat, i) => (
-                     <div key={i}>
-                        <p className="text-4xl md:text-5xl font-black text-blue-500 mb-2">{stat.value}</p>
-                        <p className="text-[10px] font-black text-white/40 uppercase tracking-[0.3em]">{stat.label}</p>
-                     </div>
-                  ))}
-               </div>
-            </div>
-         </div>
-      </section>
-
-      {/* TRUST & EXHIBITION SECTION */}
-      <section className="py-32 px-4 max-w-7xl mx-auto">
-         <div className="text-center mb-20">
-            <span className="text-blue-600 font-black uppercase tracking-[0.4em] text-[10px] mb-4 block">Proven Capability</span>
-            <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter text-slate-900 leading-none">{homeData.trustTitle || 'Industrial Certifications'}</h2>
-         </div>
-         <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {homeData.trustItems?.map((item, i) => (
-               <div key={i} className="text-center group">
-                  <div className="relative aspect-square rounded-[40px] bg-slate-50 border border-slate-100 overflow-hidden mb-6 group-hover:shadow-xl transition-all">
-                     <Image src={item.img} alt={item.title} fill className="object-contain p-8 group-hover:scale-105 transition-transform" />
-                  </div>
-                  <h4 className="text-xs font-black uppercase text-slate-900 tracking-widest mb-2">{item.title}</h4>
-                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">{item.desc}</p>
-               </div>
+      <section className="bg-slate-50 py-24 md:py-32">
+        <div className="max-w-[1400px] mx-auto px-6">
+          <ModuleTitle 
+            title={homeData.featuredTitle}
+            subtitle={homeData.featuredSubtitle}
+            titleColor={homeData.featuredTitleColor}
+            subtitleColor={homeData.featuredSubtitleColor}
+            align={homeData.featuredAlign}
+          />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {products.slice(0, homeData.featuredCount || 6).map((product) => (
+              <Link key={product.id} href={`/products/${product.seoSlug || product.id}`} className="group bg-white p-8 rounded-[48px] border border-slate-100 shadow-sm hover:shadow-2xl transition-all duration-500">
+                 <div className="relative aspect-square rounded-[36px] overflow-hidden mb-8 bg-slate-50 p-6 group-hover:p-4 transition-all duration-700">
+                    <Image 
+                      src={product.img} 
+                      alt={product.alt || product.name} 
+                      fill 
+                      className="object-contain group-hover:scale-110 transition-transform duration-700"
+                    />
+                 </div>
+                 <div className="flex justify-between items-start mb-4">
+                    <h3 className="text-xl font-black text-slate-900 uppercase tracking-tighter leading-none group-hover:text-blue-600 transition">{product.name}</h3>
+                    <div className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center text-slate-400 group-hover:bg-blue-600 group-hover:text-white transition">
+                       <i className="fas fa-arrow-right text-[10px]"></i>
+                    </div>
+                 </div>
+                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{product.cat}</p>
+              </Link>
             ))}
-         </div>
+          </div>
+          <div className="mt-20 text-center">
+             <Link href="/products" className="inline-flex items-center gap-4 bg-slate-900 text-white px-12 py-5 rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-slate-200 hover:bg-blue-600 transition-all active:scale-95">
+                Explore All Products <i className="fas fa-long-arrow-alt-right"></i>
+             </Link>
+          </div>
+        </div>
       </section>
 
-      {/* FAQ SECTION */}
-      <section className="bg-slate-50 py-32 px-4">
-         <div className="max-w-4xl mx-auto">
-            <div className="text-center mb-20">
-               <h2 className="text-4xl font-black uppercase tracking-tighter text-slate-900 leading-none">Frequently Asked Questions</h2>
-            </div>
-            <div className="space-y-4">
-               {homeData.faq?.map((faq, i) => (
-                  <div key={i} className="bg-white rounded-[32px] overflow-hidden border border-slate-200">
-                     <button 
-                       onClick={() => setActiveFaq(activeFaq === i ? null : i)}
-                       className="w-full px-8 py-6 flex items-center justify-between text-left group"
-                     >
-                        <span className={`font-black uppercase text-xs tracking-widest transition-colors ${activeFaq === i ? 'text-blue-600' : 'text-slate-900'}`}>{faq.q}</span>
-                        <div className={`w-8 h-8 rounded-xl flex items-center justify-center transition-all ${activeFaq === i ? 'bg-blue-600 text-white rotate-180' : 'bg-slate-100 text-slate-400'}`}>
-                           <i className="fas fa-chevron-down text-[10px]"></i>
-                        </div>
-                     </button>
-                     <div className={`px-8 overflow-hidden transition-all duration-500 ${activeFaq === i ? 'max-h-96 pb-8' : 'max-h-0'}`}>
-                        <p className="text-sm font-medium text-slate-500 leading-relaxed border-t border-slate-50 pt-6">
-                           {faq.a}
-                        </p>
+      {/* STATS & VIDEO SECTION */}
+      {(homeData.videoUrl || (homeData.stats && homeData.stats.length > 0)) && (
+        <section className="bg-white py-24 md:py-32">
+           <div className="max-w-[1400px] mx-auto px-6">
+              <ModuleTitle 
+                title={homeData.statsTitle}
+                subtitle={homeData.statsSubtitle}
+                titleColor={homeData.statsTitleColor}
+                subtitleColor={homeData.statsSubtitleColor}
+                align={homeData.statsAlign}
+              />
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 lg:gap-32 items-center">
+                 <div className="grid grid-cols-2 gap-8 md:gap-12 order-2 lg:order-1">
+                    {homeData.stats?.map((stat, i) => (
+                      <div key={i} className="animate-in fade-in slide-in-from-bottom-8 duration-700" style={{ transitionDelay: `${i * 100}ms` }}>
+                        <h4 className="text-5xl md:text-7xl font-black text-slate-900 uppercase tracking-tighter mb-4 leading-none">{stat.value}</h4>
+                        <p className="text-xs font-black uppercase text-blue-600 tracking-[0.4em]">{stat.label}</p>
+                      </div>
+                    ))}
+                 </div>
+                 
+                 <div className="relative order-1 lg:order-2 group">
+                    <div className="absolute -inset-4 bg-blue-600/5 rounded-[64px] blur-2xl group-hover:bg-blue-600/10 transition duration-700"></div>
+                    <div className="relative aspect-video rounded-[48px] overflow-hidden shadow-2xl bg-slate-900 border border-slate-100">
+                       {homeData.videoUrl ? (
+                         <video src={homeData.videoUrl} autoPlay muted loop playsInline className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition duration-700" />
+                       ) : (
+                         <div className="absolute inset-0 flex items-center justify-center text-slate-700 font-black uppercase text-[10px] tracking-widest">Manufacturing Showcase</div>
+                       )}
+                       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                          <div className="w-20 h-20 bg-blue-600 rounded-full flex items-center justify-center text-white shadow-2xl shadow-blue-600/40 scale-90 group-hover:scale-100 transition duration-500">
+                             <i className="fas fa-play ml-1"></i>
+                          </div>
+                       </div>
+                    </div>
+                    <div className="mt-8 text-center lg:text-left">
+                       <h3 className="text-xl font-black text-slate-900 uppercase tracking-tighter mb-4">{homeData.videoTitle}</h3>
+                       <p className="text-slate-400 text-sm font-medium leading-loose opacity-80">{homeData.videoDesc}</p>
+                    </div>
+                 </div>
+              </div>
+           </div>
+        </section>
+      )}
+
+      {/* TRUST & FAQ SECTION */}
+      <section className="bg-slate-50 py-24 md:py-40">
+        <div className="max-w-[1400px] mx-auto px-6">
+          <ModuleTitle 
+            title={homeData.trustTitle}
+            subtitle={homeData.trustSubtitle}
+            titleColor={homeData.trustTitleColor}
+            subtitleColor={homeData.trustSubtitleColor}
+            align={homeData.trustAlign}
+          />
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8 mb-32">
+             {homeData.trustItems?.map((item, i) => (
+                <div key={i} className="group flex flex-col items-center animate-in fade-in duration-1000">
+                   <div className="relative aspect-square w-full bg-white rounded-[40px] shadow-sm flex items-center justify-center p-8 mb-6 group-hover:shadow-xl group-hover:-translate-y-2 transition-all duration-500">
+                      <Image src={item.img} alt={item.title} fill className="object-contain p-8 opacity-40 group-hover:opacity-100 transition grayscale group-hover:grayscale-0" />
+                   </div>
+                   <p className="text-[10px] font-black uppercase text-slate-400 text-center tracking-widest">{item.title}</p>
+                </div>
+             ))}
+          </div>
+
+          <div className="max-w-4xl mx-auto">
+             <ModuleTitle 
+               title={homeData.faqTitle}
+               subtitle={homeData.faqSubtitle}
+               titleColor={homeData.faqTitleColor}
+               subtitleColor={homeData.faqSubtitleColor}
+               align={homeData.faqAlign}
+               className="mb-12"
+             />
+             <div className="space-y-4">
+                {homeData.faq?.map((item, i) => (
+                   <div key={i} className={`group bg-white rounded-[32px] overflow-hidden border border-slate-100 transition-all duration-500 ${activeFaq === i ? 'shadow-2xl' : 'hover:bg-slate-50'}`}>
+                      <button 
+                        onClick={() => setActiveFaq(activeFaq === i ? null : i)}
+                        className="w-full px-10 py-8 flex justify-between items-center text-left"
+                      >
+                         <span className="text-sm md:text-base font-black text-slate-900 uppercase tracking-tight">{item.q}</span>
+                         <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-500 ${activeFaq === i ? 'bg-slate-900 text-white rotate-180' : 'bg-slate-50 text-slate-400'}`}>
+                            <i className="fas fa-chevron-down text-[10px]"></i>
+                         </div>
+                      </button>
+                      <div className={`transition-all duration-500 ease-in-out ${activeFaq === i ? 'max-h-[500px] opacity-100 border-t border-slate-50' : 'max-h-0 opacity-0 overflow-hidden'}`}>
+                         <div className="px-10 py-8">
+                            <p className="text-slate-500 text-sm leading-loose font-medium opacity-80">{item.a}</p>
+                         </div>
+                      </div>
+                   </div>
+                ))}
+             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CONTACT & INQUIRY SECTION */}
+      <section className="bg-white py-24 md:py-40">
+          <div className="max-w-[1400px] mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
+             <div className="animate-in fade-in slide-in-from-left-8 duration-1000">
+                <h3 className="text-xs font-black uppercase text-blue-600 tracking-[0.4em] mb-6">Global Fastener Supply</h3>
+                <h2 className="text-5xl md:text-7xl font-black uppercase text-slate-900 tracking-tighter mb-10 leading-[0.9]">Ready to build <br />your project?</h2>
+                <p className="text-slate-400 text-lg font-medium max-w-lg mb-12 opacity-80 leading-relaxed">
+                   Connect with our technical sales team for custom quotes and international logistics support.
+                </p>
+                
+                <div className="space-y-12">
+                   <ContactItem icon="fas fa-envelope" label="General Inquiry" value={settings?.contactEmail || "sales@hangfan.com"} />
+                   <ContactItem icon="fas fa-phone-alt" label="Direct Hotline" value={settings?.contactPhone || "+86 123 4567 890"} />
+                   
+                   <div className="pt-10 border-t border-slate-100">
+                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6">Our Sales Team</p>
+                      <div className="flex flex-wrap gap-4">
+                        {whatsappAccounts.filter(acc => acc.is_active).map((acc, i) => (
+                           <Link 
+                             key={i} 
+                             href={`https://wa.me/${acc.phone.replace(/\D/g, '')}`} 
+                             target="_blank"
+                             className="flex items-center gap-4 bg-emerald-50 px-6 py-4 rounded-2xl border border-emerald-100 group hover:bg-emerald-600 transition-all"
+                           >
+                              <div className="w-10 h-10 bg-emerald-500 rounded-xl flex items-center justify-center text-white text-lg group-hover:bg-white group-hover:text-emerald-600 transition">
+                                 <i className="fab fa-whatsapp"></i>
+                              </div>
+                              <div className="text-left">
+                                <p className="text-[8px] font-black uppercase text-emerald-500 group-hover:text-white transition">Chat with</p>
+                                <p className="font-black uppercase text-[10px] tracking-widest text-emerald-700 group-hover:text-white transition">{acc.label}</p>
+                              </div>
+                           </Link>
+                        ))}
+                        {whatsappAccounts.filter(acc => acc.is_active).length === 0 && settings?.whatsapp && (
+                           <Link href={`https://wa.me/${settings.whatsapp.replace(/\D/g, '')}`} target="_blank" className="flex items-center gap-4 bg-emerald-50 px-6 py-4 rounded-2xl border border-emerald-100 group hover:bg-emerald-600 transition-all">
+                              <div className="w-10 h-10 bg-emerald-500 rounded-xl flex items-center justify-center text-white text-lg group-hover:bg-white group-hover:text-emerald-600 transition">
+                                 <i className="fab fa-whatsapp"></i>
+                              </div>
+                              <span className="font-black uppercase text-[10px] tracking-widest text-emerald-700 group-hover:text-white transition">Chat on WhatsApp</span>
+                           </Link>
+                        )}
                      </div>
-                  </div>
-               ))}
-            </div>
-         </div>
-      </section>
-
-      {/* FOOTER INQUIRY & INFO */}
-      <section className="py-32 px-4 max-w-7xl mx-auto">
-         <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-start">
-            <div>
-               <h2 className="text-4xl md:text-6xl font-black uppercase text-slate-900 tracking-tighter mb-10 leading-[0.9]">Partner with Us for <span className="text-blue-600">Reliable</span> Solutions</h2>
-               <div className="space-y-10">
-                  <ContactItem icon="fas fa-map-marker-alt" label="Factory Address" value={settings?.address || 'Handan, Hebei, China'} />
-                  <ContactItem icon="fas fa-phone-alt" label="General Phone" value={settings?.contactPhone || '+86 123 4567 890'} />
-                  <ContactItem icon="far fa-envelope" label="Sales Email" value={settings?.contactEmail || 'sales@highfasteners.com'} />
-               </div>
-               
-               {/* WHATSAPP TEAM */}
-               <div className="mt-16 pt-16 border-t border-slate-100">
-                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em] mb-8">Our Sales Team (Online)</p>
-                  <div className="flex flex-wrap gap-4">
-                     {whatsappAccounts.filter(acc => acc.is_active).map(acc => (
-                       <Link key={acc.id} href={`https://wa.me/${acc.phone.replace(/\D/g, '')}`} target="_blank" className="flex items-center gap-4 bg-emerald-50 px-6 py-4 rounded-2xl border border-emerald-100 group hover:bg-emerald-600 transition-all">
-                          <div className="w-10 h-10 bg-emerald-500 rounded-xl flex items-center justify-center text-white text-lg group-hover:bg-white group-hover:text-emerald-600 transition">
-                             <i className="fab fa-whatsapp"></i>
-                          </div>
-                          <div>
-                            <p className="text-[8px] font-black text-emerald-600 uppercase tracking-widest group-hover:text-white transition">Chat with</p>
-                            <span className="font-black uppercase text-[10px] tracking-widest text-emerald-700 group-hover:text-white transition">{acc.label}</span>
-                          </div>
-                       </Link>
-                     ))}
-                     {whatsappAccounts.filter(acc => acc.is_active).length === 0 && settings?.whatsapp && (
-                        <Link href={`https://wa.me/${settings.whatsapp.replace(/\D/g, '')}`} target="_blank" className="flex items-center gap-4 bg-emerald-50 px-6 py-4 rounded-2xl border border-emerald-100 group hover:bg-emerald-600 transition-all">
-                           <div className="w-10 h-10 bg-emerald-500 rounded-xl flex items-center justify-center text-white text-lg group-hover:bg-white group-hover:text-emerald-600 transition">
-                              <i className="fab fa-whatsapp"></i>
-                           </div>
-                           <span className="font-black uppercase text-[10px] tracking-widest text-emerald-700 group-hover:text-white transition">Chat on WhatsApp</span>
-                        </Link>
-                     )}
-                  </div>
-               </div>
-            </div>
-            
-            <div className="bg-white p-10 md:p-16 rounded-[64px] border border-slate-100 shadow-2xl relative">
-               <div className="mb-10">
-                  <h3 className="text-2xl font-black uppercase text-slate-900 tracking-tighter">Instant Inquiry</h3>
-                  <p className="text-slate-400 text-[10px] font-black uppercase tracking-widest mt-2">Professional response within 12h</p>
-               </div>
-               <InquiryForm />
-            </div>
-         </div>
-      </section>
+                   </div>
+                </div>
+             </div>
+             
+             <div className="bg-white p-10 md:p-16 rounded-[64px] border border-slate-100 shadow-2xl relative">
+                <div className="mb-10">
+                   <h3 className="text-2xl font-black uppercase text-slate-900 tracking-tighter">Instant Inquiry</h3>
+                   <p className="text-slate-400 text-[10px] font-black uppercase tracking-widest mt-2">Professional response within 12h</p>
+                </div>
+                <InquiryForm />
+             </div>
+          </div>
+       </section>
     </Layout>
   );
 }
