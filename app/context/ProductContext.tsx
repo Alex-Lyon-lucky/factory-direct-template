@@ -109,6 +109,18 @@ export interface PageContent {
     videoAlign?: 'left' | 'center' | 'right';
     videoUrl?: string;
     videoDesc?: string;
+    // Homepage About Us (New Version)
+    aboutTag?: string;
+    aboutTitle?: string;
+    aboutDesc?: string;
+    aboutStats?: { icon: string; value: string; label: string }[];
+    aboutBtn1Label?: string;
+    aboutBtn1Link?: string;
+    aboutBtn2Label?: string;
+    aboutBtn2Link?: string;
+    aboutVideoUrl?: string;
+    aboutVideoCover?: string;
+
     stats?: { label: string; value: string }[];
     statsTitle?: string;
     statsSubtitle?: string;

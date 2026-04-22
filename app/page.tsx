@@ -18,19 +18,26 @@ export default function Home() {
     heroSubtitle: "Hangfan specializes in high-precision fasteners and custom hardware. We bridge the gap between quality manufacturing and international standards.",
     advantages: ["8.8/10.9/12.9 GRADE SPECIALIST", "FULL SCALE OEM CAPABILITIES", "ISO 9001:2015 CERTIFIED"],
     heroImg: "https://images.unsplash.com/photo-1530124560677-bdaea024f061?auto=format&fit=crop&q=80&w=800",
-    stats: [
-      { label: 'Years Experience', value: '20+' },
-      { label: 'Global Clients', value: '500+' },
-      { label: 'Countries Served', value: '80+' },
-      { label: 'Industry Awards', value: '50+' }
+    aboutTag: 'ABOUT HANGFAN',
+    aboutTitle: 'Experienced & Quality More Than 20 Years',
+    aboutDesc: 'Handan Hangfan Metal Products Co., Ltd. is a comprehensive enterprise integrating scientific research, production and trade. We specialize in high-end fasteners, including various high-strength bolts, nuts, and non-standard custom parts, serving global infrastructure and machinery industries with 20+ years of industrial expertise.',
+    aboutStats: [
+      { icon: 'fas fa-industry', value: '20+', label: 'Years Experience' },
+      { icon: 'fas fa-users', value: '500+', label: 'Global Clients' },
+      { icon: 'fas fa-globe', value: '80+', label: 'Countries Served' },
+      { icon: 'fas fa-award', value: '50+', label: 'Industry Awards' }
     ],
+    aboutBtn1Label: 'Learn More About Us',
+    aboutBtn1Link: '/about',
+    aboutBtn2Label: 'Request a Quote',
+    aboutBtn2Link: '/contact',
+    aboutVideoCover: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&q=80&w=800',
     trustItems: [],
     faq: []
   };
 
   const homeData = pages?.home ? { ...fallbackHome, ...pages.home } : fallbackHome;
 
-  // Category Layout Logic
   const renderCategories = () => {
     const cats = categories.slice(0, 12); 
     const count = cats.length;
@@ -55,22 +62,6 @@ export default function Home() {
       );
     }
 
-    if (count === 3) {
-      return (
-        <div className="space-y-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {cats.slice(0, 2).map(cat => <CategoryCard key={cat.id} cat={cat} homeData={homeData} />)}
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {cats.slice(2, 3).map(cat => <CategoryCard key={cat.id} cat={cat} homeData={homeData} />)}
-            <div className="relative aspect-square rounded-[48px] bg-slate-50 border-2 border-dashed border-slate-100 flex items-center justify-center">
-               <p className="text-slate-300 font-black text-xs uppercase tracking-widest">More Categories Coming</p>
-            </div>
-          </div>
-        </div>
-      );
-    }
-
     return (
       <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-8">
         {cats.map(cat => <CategoryCard key={cat.id} cat={cat} homeData={homeData} />)}
@@ -80,20 +71,20 @@ export default function Home() {
 
   return (
     <Layout>
-      {/* HERO SECTION - REFINED ULTRA COMPACT V3 */}
+      {/* HERO SECTION */}
       <section className="relative w-full bg-[#0a0f1d] overflow-hidden">
-        <div className="max-w-[1400px] mx-auto px-6 py-6 lg:py-10 flex flex-col lg:flex-row items-center gap-10 lg:gap-20 min-h-[500px] lg:min-h-[600px] relative z-10">
+        <div className="max-w-[1400px] mx-auto px-6 py-10 lg:py-16 flex flex-col lg:flex-row items-center gap-10 lg:gap-20 min-h-[500px] lg:min-h-[700px] relative z-10">
           <div className="flex-1 text-center lg:text-left animate-in fade-in slide-in-from-left-8 duration-1000">
              <div className="inline-block bg-blue-600/10 border border-blue-500/20 px-4 py-2 rounded-full mb-6">
                 <span className="text-blue-500 font-black text-[10px] uppercase tracking-[0.3em]">Factory Direct Excellence</span>
              </div>
-             <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-white uppercase tracking-tighter mb-6 leading-[0.9]">
+             <h1 className="text-4xl md:text-5xl lg:text-7xl font-black text-white uppercase tracking-tighter mb-6 leading-[0.85]">
                {homeData.heroTitle}
              </h1>
-             <p className="text-white/40 text-sm md:text-base font-medium max-w-xl mb-8 leading-relaxed">
+             <p className="text-white/40 text-sm md:text-base font-medium max-w-xl mb-10 leading-relaxed">
                {homeData.heroSubtitle}
              </p>
-             <div className="flex flex-col sm:flex-row items-center gap-4 mb-10">
+             <div className="flex flex-col sm:flex-row items-center gap-4 mb-12">
                <Link href="/products" className="w-full sm:w-auto bg-blue-600 text-white px-10 py-5 rounded-2xl font-black text-xs uppercase tracking-widest shadow-2xl shadow-blue-600/20 hover:bg-blue-700 transition-all active:scale-95">
                  View Collections
                </Link>
@@ -112,7 +103,7 @@ export default function Home() {
           </div>
 
           <div className="flex-1 w-full relative animate-in fade-in zoom-in duration-1000">
-            <div className="relative aspect-square max-w-[500px] mx-auto rounded-[80px] overflow-hidden shadow-2xl border border-white/10 rotate-3 hover:rotate-0 transition-transform duration-700 group">
+            <div className="relative aspect-square max-w-[550px] mx-auto rounded-[100px] overflow-hidden shadow-2xl border border-white/10 rotate-3 hover:rotate-0 transition-transform duration-700 group">
               <Image 
                 src={homeData.heroImg} 
                 alt="Fastener Manufacturing" 
@@ -129,8 +120,66 @@ export default function Home() {
         <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-blue-900/10 rounded-full blur-[120px] -ml-72 -mb-72 animate-pulse"></div>
       </section>
 
+      {/* NEW ABOUT US SPLIT-SCREEN SECTION (Replaces old stats/video) */}
+      <section className="bg-white py-24 md:py-40">
+        <div className="max-w-[1400px] mx-auto px-6 flex flex-col lg:flex-row items-center gap-16 lg:gap-32">
+           {/* Left Column: Video Cover */}
+           <div className="flex-1 w-full relative group">
+              <div className="absolute -inset-4 bg-blue-600/5 rounded-[80px] blur-3xl group-hover:bg-blue-600/10 transition duration-700"></div>
+              <div className="relative aspect-square lg:aspect-[4/5] rounded-[64px] overflow-hidden shadow-2xl bg-slate-900 border border-slate-100">
+                 {homeData.aboutVideoUrl ? (
+                   <video src={homeData.aboutVideoUrl} poster={homeData.aboutVideoCover} autoPlay muted loop playsInline className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition duration-700" />
+                 ) : (
+                   <Image src={homeData.aboutVideoCover || fallbackHome.aboutVideoCover} alt="Factory" fill className="object-cover opacity-80 group-hover:opacity-100 transition duration-700" />
+                 )}
+                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                    <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center text-blue-600 shadow-2xl shadow-blue-600/20 scale-90 group-hover:scale-100 transition duration-500">
+                       <i className="fas fa-play ml-1 text-2xl"></i>
+                    </div>
+                 </div>
+              </div>
+           </div>
+
+           {/* Right Column: Content Area */}
+           <div className="flex-1 text-left">
+              <div className="inline-block bg-blue-50 px-4 py-2 rounded-xl mb-6 border border-blue-100">
+                 <span className="text-blue-600 font-black text-[10px] uppercase tracking-[0.3em]">{homeData.aboutTag}</span>
+              </div>
+              <h2 className="text-4xl md:text-6xl font-black text-slate-900 uppercase tracking-tighter mb-8 leading-[0.9]">
+                 {homeData.aboutTitle}
+              </h2>
+              <p className="text-slate-500 text-sm md:text-base font-medium leading-loose mb-12 opacity-80">
+                 {homeData.aboutDesc}
+              </p>
+
+              {/* Stats Grid */}
+              <div className="grid grid-cols-2 gap-8 mb-16">
+                 {homeData.aboutStats?.map((stat, i) => (
+                    <div key={i} className="space-y-3">
+                       <i className={`${stat.icon} text-blue-600 text-lg`}></i>
+                       <div>
+                          <h4 className="text-3xl font-black text-slate-900 leading-none mb-1">{stat.value}</h4>
+                          <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest">{stat.label}</p>
+                       </div>
+                    </div>
+                 ))}
+              </div>
+
+              {/* CTA Buttons */}
+              <div className="flex flex-col sm:flex-row gap-4">
+                 <Link href={homeData.aboutBtn1Link || '/about'} className="bg-blue-600 text-white px-10 py-5 rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl shadow-blue-100 hover:bg-slate-900 transition-all text-center">
+                    {homeData.aboutBtn1Label}
+                 </Link>
+                 <Link href={homeData.aboutBtn2Link || '/contact'} className="bg-slate-900 text-white px-10 py-5 rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl shadow-slate-200 hover:bg-blue-600 transition-all text-center flex items-center justify-center gap-3">
+                    <i className="fas fa-comments"></i> {homeData.aboutBtn2Label}
+                 </Link>
+              </div>
+           </div>
+        </div>
+      </section>
+
       {/* CATEGORIES SECTION */}
-      <section className="bg-white py-24 md:py-32">
+      <section className="bg-slate-50 py-24 md:py-32">
         <div className="max-w-[1400px] mx-auto px-6">
           <ModuleTitle 
             title={homeData.categoryTitle}
@@ -144,7 +193,7 @@ export default function Home() {
       </section>
 
       {/* FEATURED PRODUCTS */}
-      <section className="bg-slate-50 py-24 md:py-32">
+      <section className="bg-white py-24 md:py-32">
         <div className="max-w-[1400px] mx-auto px-6">
           <ModuleTitle 
             title={homeData.featuredTitle}
@@ -155,8 +204,8 @@ export default function Home() {
           />
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {products.slice(0, homeData.featuredCount || 6).map((product) => (
-              <Link key={product.id} href={`/products/${product.seoSlug || product.id}`} className="group bg-white p-8 rounded-[48px] border border-slate-100 shadow-sm hover:shadow-2xl transition-all duration-500">
-                 <div className="relative aspect-square rounded-[36px] overflow-hidden mb-8 bg-slate-50 p-6 group-hover:p-4 transition-all duration-700">
+              <Link key={product.id} href={`/products/${product.seoSlug || product.id}`} className="group bg-slate-50 p-8 rounded-[48px] border border-slate-100 shadow-sm hover:shadow-2xl transition-all duration-500">
+                 <div className="relative aspect-square rounded-[36px] overflow-hidden mb-8 bg-white p-6 group-hover:p-4 transition-all duration-700">
                     <Image 
                       src={product.img} 
                       alt={product.alt || product.name} 
@@ -166,7 +215,7 @@ export default function Home() {
                  </div>
                  <div className="flex justify-between items-start mb-4">
                     <h3 className="text-xl font-black text-slate-900 uppercase tracking-tighter leading-none group-hover:text-blue-600 transition">{product.name}</h3>
-                    <div className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center text-slate-400 group-hover:bg-blue-600 group-hover:text-white transition">
+                    <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-slate-400 group-hover:bg-blue-600 group-hover:text-white transition">
                        <i className="fas fa-arrow-right text-[10px]"></i>
                     </div>
                  </div>
@@ -182,51 +231,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* STATS & VIDEO SECTION */}
-      {(homeData.videoUrl || (homeData.stats && homeData.stats.length > 0)) && (
-        <section className="bg-white py-24 md:py-32">
-           <div className="max-w-[1400px] mx-auto px-6">
-              <ModuleTitle 
-                title={homeData.statsTitle}
-                subtitle={homeData.statsSubtitle}
-                titleColor={homeData.statsTitleColor}
-                subtitleColor={homeData.statsSubtitleColor}
-                align={homeData.statsAlign}
-              />
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 lg:gap-32 items-center">
-                 <div className="grid grid-cols-2 gap-8 md:gap-12 order-2 lg:order-1">
-                    {homeData.stats?.map((stat, i) => (
-                      <div key={i} className="animate-in fade-in slide-in-from-bottom-8 duration-700" style={{ transitionDelay: `${i * 100}ms` }}>
-                        <h4 className="text-5xl md:text-7xl font-black text-slate-900 uppercase tracking-tighter mb-4 leading-none">{stat.value}</h4>
-                        <p className="text-xs font-black uppercase text-blue-600 tracking-[0.4em]">{stat.label}</p>
-                      </div>
-                    ))}
-                 </div>
-                 
-                 <div className="relative order-1 lg:order-2 group">
-                    <div className="absolute -inset-4 bg-blue-600/5 rounded-[64px] blur-2xl group-hover:bg-blue-600/10 transition duration-700"></div>
-                    <div className="relative aspect-video rounded-[48px] overflow-hidden shadow-2xl bg-slate-900 border border-slate-100">
-                       {homeData.videoUrl ? (
-                         <video src={homeData.videoUrl} autoPlay muted loop playsInline className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition duration-700" />
-                       ) : (
-                         <div className="absolute inset-0 flex items-center justify-center text-slate-700 font-black uppercase text-[10px] tracking-widest">Manufacturing Showcase</div>
-                       )}
-                       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                          <div className="w-20 h-20 bg-blue-600 rounded-full flex items-center justify-center text-white shadow-2xl shadow-blue-600/40 scale-90 group-hover:scale-100 transition duration-500">
-                             <i className="fas fa-play ml-1"></i>
-                          </div>
-                       </div>
-                    </div>
-                    <div className="mt-8 text-center lg:text-left">
-                       <h3 className="text-xl font-black text-slate-900 uppercase tracking-tighter mb-4">{homeData.videoTitle}</h3>
-                       <p className="text-slate-400 text-sm font-medium leading-loose opacity-80">{homeData.videoDesc}</p>
-                    </div>
-                 </div>
-              </div>
-           </div>
-        </section>
-      )}
-
       {/* TRUST & FAQ SECTION */}
       <section className="bg-slate-50 py-24 md:py-40">
         <div className="max-w-[1400px] mx-auto px-6">
@@ -240,7 +244,7 @@ export default function Home() {
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8 mb-32">
              {homeData.trustItems?.map((item, i) => (
                 <div key={i} className="group flex flex-col items-center animate-in fade-in duration-1000">
-                   <div className="relative aspect-square w-full bg-white rounded-[40px] shadow-sm flex items-center justify-center p-8 mb-6 group-hover:shadow-xl group-hover:-translate-y-2 transition-all duration-500">
+                   <div className="relative aspect-square w-full bg-white rounded-[40px] shadow-sm flex items-center justify-center p-8 mb-6 group-hover:shadow-xl group-hover:-translate-y-2 transition-all duration-500 border border-slate-100">
                       <Image src={item.img} alt={item.title} fill className="object-contain p-8 opacity-40 group-hover:opacity-100 transition grayscale group-hover:grayscale-0" />
                    </div>
                    <p className="text-[10px] font-black uppercase text-slate-400 text-center tracking-widest">{item.title}</p>
@@ -314,14 +318,6 @@ export default function Home() {
                               </div>
                            </Link>
                         ))}
-                        {whatsappAccounts.filter(acc => acc.is_active).length === 0 && settings?.whatsapp && (
-                           <Link href={`https://wa.me/${settings.whatsapp.replace(/\D/g, '')}`} target="_blank" className="flex items-center gap-4 bg-emerald-50 px-6 py-4 rounded-2xl border border-emerald-100 group hover:bg-emerald-600 transition-all">
-                              <div className="w-10 h-10 bg-emerald-500 rounded-xl flex items-center justify-center text-white text-lg group-hover:bg-white group-hover:text-emerald-600 transition">
-                                 <i className="fab fa-whatsapp"></i>
-                              </div>
-                              <span className="font-black uppercase text-[10px] tracking-widest text-emerald-700 group-hover:text-white transition">Chat on WhatsApp</span>
-                           </Link>
-                        )}
                      </div>
                    </div>
                 </div>
