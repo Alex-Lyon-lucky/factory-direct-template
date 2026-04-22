@@ -33,8 +33,9 @@ const INITIAL_PAGES: PageContent = {
 const BLOCK_TYPES = [
   { type: 'Hero', label: '首屏视窗 (Hero)', icon: 'fas fa-bolt' },
   { type: 'SplitAbout', label: '1:1 左右分栏 (Video/About)', icon: 'fas fa-play-circle' },
-  { type: 'Category', label: '产品分类格子', icon: 'fas fa-th-large' },
+  { type: 'Category', label: '产品分类格子 (3+2)', icon: 'fas fa-th-large' },
   { type: 'FeaturedProduct', label: '热门产品橱窗', icon: 'fas fa-star' },
+  { type: 'NewArrivals', label: '新品发布模块', icon: 'fas fa-fire' },
   { type: 'Stats', label: '工厂实力数据', icon: 'fas fa-chart-bar' },
   { type: 'Trust', label: '资质荣誉墙', icon: 'fas fa-certificate' },
   { type: 'FAQ', label: 'FAQ 问叠问答', icon: 'fas fa-question-circle' },
@@ -97,8 +98,18 @@ export default function PagesManagement() {
             data: {
               title: oldHome.categoryTitle || 'Product Categories',
               subtitle: oldHome.categorySubtitle || '',
-              align: oldHome.categoryAlign || 'center'
+              align: oldHome.categoryAlign || 'center',
+              images: oldHome.categoryImages || {}
             }
+          });
+        }
+
+        // Add New Arrivals as a default if missing
+        if (!migratedPages.home.find((b: any) => b.type === 'NewArrivals')) {
+          migratedPages.home.push({
+            id: 'migrated-new',
+            type: 'NewArrivals',
+            data: { count: 4 }
           });
         }
       }
@@ -267,9 +278,62 @@ export default function PagesManagement() {
             )}
             
             {block.type === 'Category' && (
-               <div className="grid grid-cols-2 gap-8">
-                  <input type="text" placeholder="标题" value={block.data.title} onChange={e => updateBlockData(block.id, { title: e.target.value })} className="w-full bg-slate-50 border-none rounded-xl px-4 py-3 font-black text-sm outline-none" />
-                  <input type="text" placeholder="副标题" value={block.data.subtitle} onChange={e => updateBlockData(block.id, { subtitle: e.target.value })} className="w-full bg-slate-50 border-none rounded-xl px-4 py-3 text-xs outline-none" />
+               <div className="space-y-6">
+                  <div className="grid grid-cols-2 gap-8">
+                    <input type="text" placeholder="模块大标题" value={block.data.title} onChange={e => updateBlockData(block.id, { title: e.target.value })} className="w-full bg-slate-50 border-none rounded-xl px-4 py-3 font-black text-sm outline-none" />
+                    <input type="text" placeholder="副标题" value={block.data.subtitle} onChange={e => updateBlockData(block.id, { subtitle: e.target.value })} className="w-full bg-slate-50 border-none rounded-xl px-4 py-3 text-xs outline-none" />
+                  </div>
+                  <div className="grid grid-cols-5 gap-4">
+                     {categories.slice(0, 5).map(cat => (
+                       <div key={cat.id} className="space-y-2">
+                          <label className="text-[8px] font-black uppercase text-slate-400 block truncate">{cat.name}</label>
+                          <div onClick={() => setShowMatPicker({ active: true, target: `block.${block.id}.images.${cat.value}` })} className="relative aspect-square rounded-2xl bg-slate-50 border-2 border-dashed border-slate-100 flex items-center justify-center cursor-pointer overflow-hidden">
+                             {block.data.images?.[cat.value] ? <Image src={block.data.images[cat.value]} alt="" fill className="object-cover" /> : <i className="fas fa-image text-slate-200"></i>}
+                          </div>
+                       </div>
+                     ))}
+                  </div>
+               </div>
+            )}
+
+            {block.type === 'FeaturedProduct' && (
+               <div className="space-y-6">
+                  <div className="grid grid-cols-2 gap-8">
+                    <input type="text" placeholder="标题" value={block.data.title} onChange={e => updateBlockData(block.id, { title: e.target.value })} className="w-full bg-slate-50 border-none rounded-xl px-4 py-3 font-black text-sm outline-none" />
+                    <input type="number" placeholder="显示数量" value={block.data.count || 6} onChange={e => updateBlockData(block.id, { count: parseInt(e.target.value) })} className="w-full bg-slate-50 border-none rounded-xl px-4 py-3 text-xs outline-none" />
+                  </div>
+                  <div className="p-6 bg-slate-50 rounded-2xl">
+                     <label className="text-[9px] font-black text-slate-400 uppercase mb-4 block">手动选定产品 (不选则自动显示前几个)</label>
+                     <div className="flex flex-wrap gap-2">
+                        {products.map(p => (
+                          <button 
+                            key={p.id} 
+                            onClick={() => {
+                              const currentIds = block.data.productIds || [];
+                              const newIds = currentIds.includes(p.id.toString()) 
+                                ? currentIds.filter((id: string) => id !== p.id.toString())
+                                : [...currentIds, p.id.toString()];
+                              updateBlockData(block.id, { productIds: newIds });
+                            }}
+                            className={`px-3 py-1.5 rounded-lg text-[9px] font-bold uppercase transition ${block.data.productIds?.includes(p.id.toString()) ? 'bg-blue-600 text-white' : 'bg-white text-slate-400 border border-slate-100'}`}
+                          >
+                            {p.name}
+                          </button>
+                        ))}
+                     </div>
+                  </div>
+               </div>
+            )}
+
+            {block.type === 'NewArrivals' && (
+               <div className="space-y-6">
+                  <div className="grid grid-cols-2 gap-8">
+                    <input type="text" placeholder="显示数量 (默认4)" value={block.data.count || 4} onChange={e => updateBlockData(block.id, { count: parseInt(e.target.value) })} className="w-full bg-slate-50 border-none rounded-xl px-4 py-3 text-xs outline-none" />
+                    <div className="p-4 bg-blue-50 rounded-xl text-[9px] font-black uppercase text-blue-600 flex items-center gap-2">
+                       <i className="fas fa-info-circle"></i>
+                       该模块会自动按录入时间倒序显示最新产品
+                    </div>
+                  </div>
                </div>
             )}
 
