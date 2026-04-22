@@ -58,9 +58,12 @@ export default function PagesManagement() {
       
       // Data Migration: If home is an object (old format), convert to blocks
       if (migratedPages.home && !Array.isArray(migratedPages.home)) {
+        console.log('Migrating old home data to blocks...');
         const oldHome = migratedPages.home as any;
-        migratedPages.home = [
-          { 
+        migratedPages.home = [];
+        
+        if (oldHome.heroTitle || oldHome.heroImg) {
+          migratedPages.home.push({ 
             id: 'migrated-hero', 
             type: 'Hero', 
             data: { 
@@ -69,9 +72,10 @@ export default function PagesManagement() {
               img: oldHome.heroImg || '',
               advantages: oldHome.advantages || []
             } 
-          }
-        ];
-        if (oldHome.aboutTitle) {
+          });
+        }
+        
+        if (oldHome.aboutTitle || oldHome.aboutDesc) {
           migratedPages.home.push({
             id: 'migrated-about',
             type: 'SplitAbout',
@@ -82,6 +86,18 @@ export default function PagesManagement() {
               videoCover: oldHome.aboutVideoCover || '',
               videoUrl: oldHome.aboutVideoUrl || '',
               stats: oldHome.aboutStats || []
+            }
+          });
+        }
+
+        if (oldHome.categoryTitle) {
+          migratedPages.home.push({
+            id: 'migrated-cat',
+            type: 'Category',
+            data: {
+              title: oldHome.categoryTitle || 'Product Categories',
+              subtitle: oldHome.categorySubtitle || '',
+              align: oldHome.categoryAlign || 'center'
             }
           });
         }
@@ -318,8 +334,8 @@ export default function PagesManagement() {
         </div>
 
         {/* Specialized Header Editor for all pages except Home (Home has its own Hero) */}
-        {activeTab !== 'home' && (
-          <HeaderEditor config={localPages[activeTab as keyof PageContent].header} path={`${activeTab}.header`} />
+        {activeTab !== 'home' && localPages[activeTab] && (
+          <HeaderEditor config={(localPages[activeTab] as any).header || DEFAULT_HEADER} path={`${activeTab}.header`} />
         )}
 
         {/* Dynamic Block List for Home and About */}
@@ -332,11 +348,11 @@ export default function PagesManagement() {
                  </button>
               </div>
 
-              {(activeTab === 'home' ? localPages.home : localPages.about.blocks || []).map((block, i) => (
+              {(activeTab === 'home' ? localPages.home : (localPages.about?.blocks || [])).map((block, i) => (
                 <BlockEditor key={block.id} block={block} index={i} />
               ))}
 
-              {((activeTab === 'home' ? localPages.home : localPages.about.blocks) || []).length === 0 && (
+              {((activeTab === 'home' ? localPages.home : localPages.about?.blocks) || []).length === 0 && (
                 <div className="py-32 bg-white rounded-[56px] border-2 border-dashed border-slate-100 flex flex-col items-center justify-center text-slate-300">
                    <i className="fas fa-cubes text-6xl mb-6"></i>
                    <p className="font-black uppercase text-xs tracking-[0.4em]">当前页面为空，请点击上方按钮添加第一个积木</p>
@@ -346,7 +362,7 @@ export default function PagesManagement() {
         )}
 
         {/* Simple Fields for Contact Page */}
-        {activeTab === 'contact' && (
+        {activeTab === 'contact' && localPages.contact && (
           <div className="bg-white p-12 rounded-[56px] border border-slate-100 shadow-sm animate-in fade-in duration-700">
              <h3 className="text-xl font-black uppercase text-slate-900 mb-10">联系引导文案</h3>
              <input type="text" value={localPages.contact.title} onChange={e => setLocalPages({...localPages, contact: {...localPages.contact, title: e.target.value}})} className="w-full bg-slate-50 border-none rounded-2xl px-6 py-4 font-black text-sm mb-6 outline-none" />

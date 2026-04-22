@@ -38,8 +38,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     checkAuth();
   }, [pathname, router]);
 
-  const SidebarItem = ({ href, icon, label, badge }: { href: string, icon: string, label: string, badge?: number }) => {
-    const isActive = pathname === href || (href !== '/admin' && pathname.startsWith(href));
+  const SidebarItem = ({ href, icon, label, badge, exact }: { href: string, icon: string, label: string, badge?: number, exact?: boolean }) => {
+    const isActive = exact ? pathname === href : pathname.startsWith(href);
     return (
       <Link 
         href={href} 
@@ -85,29 +85,29 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </div>
 
         <nav className="flex-1 p-4 space-y-2 overflow-y-auto no-scrollbar">
-          <SidebarItem href="/admin" icon="fas fa-chart-pie" label="控制中心" />
+          <SidebarItem href="/admin" icon="fas fa-chart-pie" label="控制中心" exact />
           
           <div className="pt-4 pb-2 px-4">
             {!collapsed && <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest">系统管理</p>}
           </div>
-          <SidebarItem href="/admin/settings" icon="fas fa-cog" label="基础设置" />
+          <SidebarItem href="/admin/settings" icon="fas fa-cog" label="基础设置" exact />
           <SidebarItem href="/admin/settings/whatsapp" icon="fab fa-whatsapp" label="WhatsApp 分流系统" />
           <SidebarItem href="/admin/pages" icon="fas fa-pager" label="页面管理" />
           <div className="pt-4 pb-2 px-4">
             {!collapsed && <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest">内容运营</p>}
           </div>
-          <SidebarItem href="/admin/news" icon="fas fa-newspaper" label="文章动态管理" />
-          <Link href="/admin/news/add" className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl transition-all text-slate-500 hover:bg-slate-50`}>
-             <i className="fas fa-pen-nib w-5 text-center"></i>
+          <SidebarItem href="/admin/news" icon="fas fa-newspaper" label="文章动态管理" exact />
+          <Link href="/admin/news/add" className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl transition-all group ${pathname === '/admin/news/add' ? 'bg-blue-600 text-white shadow-lg shadow-blue-200' : 'text-slate-500 hover:bg-slate-50'}`}>
+             <i className={`fas fa-pen-nib w-5 text-center ${pathname === '/admin/news/add' ? 'text-white' : 'group-hover:text-blue-600'}`}></i>
              {!collapsed && <span className="font-bold text-sm">发布新文章</span>}
           </Link>
 
           <div className="pt-4 pb-2 px-4">
             {!collapsed && <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest">产品中心</p>}
           </div>
-          <SidebarItem href="/admin/products" icon="fas fa-boxes-stacked" label="产品列表管理" />
-          <Link href="/admin/products/add" className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl transition-all text-slate-500 hover:bg-slate-50`}>
-             <i className="fas fa-plus-circle w-5 text-center"></i>
+          <SidebarItem href="/admin/products" icon="fas fa-boxes-stacked" label="产品列表管理" exact />
+          <Link href="/admin/products/add" className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl transition-all group ${pathname === '/admin/products/add' ? 'bg-blue-600 text-white shadow-lg shadow-blue-200' : 'text-slate-500 hover:bg-slate-50'}`}>
+             <i className={`fas fa-plus-circle w-5 text-center ${pathname === '/admin/products/add' ? 'text-white' : 'group-hover:text-blue-600'}`}></i>
              {!collapsed && <span className="font-bold text-sm">录入新产品</span>}
           </Link>
           <SidebarItem href="/admin/categories" icon="fas fa-tags" label="分类体系管理" />
