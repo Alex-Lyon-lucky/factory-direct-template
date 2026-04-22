@@ -94,9 +94,16 @@ export default function PagesManagement() {
         subtitleColor: '#64748b',
         textColor: '#334155',
         align: 'center',
-        title: type === 'Hero' ? 'MAIN HEADLINE' : 'SECTION TITLE',
+        title: type === 'Hero' ? 'ENGINEERED FOR EXTREME PERFORMANCE' : 'SECTION TITLE',
         subtitle: 'Sub-description text goes here',
-        ...(type === 'Hero' ? { advantages: ['ADVANTAGE 1', 'ADVANTAGE 2', 'ADVANTAGE 3'], img: '' } :
+        tag: 'FACTORY DIRECT EXCELLENCE',
+        btn1Label: 'VIEW COLLECTIONS',
+        btn2Label: 'CONTACT SALES',
+        bgColor: type === 'Hero' ? '#0a0f1d' : '#ffffff',
+        titleColor: type === 'Hero' ? '#ffffff' : '#0f172a',
+        subtitleColor: type === 'Hero' ? '#94a3b8' : '#64748b',
+        textColor: type === 'Hero' ? '#94a3b8' : '#334155',
+        ...(type === 'Hero' ? { advantages: ['8.8/10.9/12.9 GRADE SPECIALIST', 'FULL SCALE OEM CAPABILITIES', 'GLOBAL LOGISTICS NETWORK', 'ISO 9001:2015 CERTIFIED'], img: '' } :
             type === 'SplitAbout' ? { tag: 'SINCE 1995', desc: 'Long description...', stats: [], videoUrl: '', videoCover: '' } :
             type === 'Category' ? { categories: [], images: {} } :
             type === 'FeaturedProduct' ? { count: 6, productIds: [] } :
@@ -212,7 +219,14 @@ export default function PagesManagement() {
          {/* Common Settings: Title, Subtitle, Colors */}
          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 mb-12 border-b border-slate-50 pb-12">
             <div className="lg:col-span-2 space-y-4">
-               <input type="text" placeholder="模块大标题" value={block.data.title || ''} onChange={e => updateBlockData(block.id, { title: e.target.value })} className="w-full bg-slate-50 border-none rounded-xl px-4 py-3 font-black text-xs outline-none" />
+               <div className="flex gap-4">
+                 <input type="text" placeholder="模块大标题" value={block.data.title || ''} onChange={e => updateBlockData(block.id, { title: e.target.value })} className="flex-1 bg-slate-50 border-none rounded-xl px-4 py-3 font-black text-xs outline-none" />
+                 <select value={block.data.align || 'center'} onChange={e => updateBlockData(block.id, { align: e.target.value })} className="bg-slate-50 border-none rounded-xl px-4 py-3 text-[10px] font-black uppercase outline-none cursor-pointer">
+                    <option value="left">左对齐</option>
+                    <option value="center">居中对齐</option>
+                    <option value="right">右对齐</option>
+                 </select>
+               </div>
                <input type="text" placeholder="模块副标题" value={block.data.subtitle || ''} onChange={e => updateBlockData(block.id, { subtitle: e.target.value })} className="w-full bg-slate-50 border-none rounded-xl px-4 py-3 text-[10px] font-bold outline-none" />
             </div>
             <div className="lg:col-span-2 flex flex-wrap gap-4">
@@ -228,6 +242,11 @@ export default function PagesManagement() {
             {block.type === 'Hero' && (
                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
                   <div className="space-y-4">
+                     <input type="text" placeholder="标签文案 (FACTORY DIRECT...)" value={block.data.tag} onChange={e => updateBlockData(block.id, { tag: e.target.value })} className="w-full bg-slate-50 border-none rounded-xl px-4 py-2 text-[10px] font-black uppercase outline-none" />
+                     <div className="grid grid-cols-2 gap-4">
+                        <input type="text" placeholder="按钮1文字" value={block.data.btn1Label} onChange={e => updateBlockData(block.id, { btn1Label: e.target.value })} className="w-full bg-slate-50 border-none rounded-xl px-4 py-2 text-[10px] font-bold outline-none" />
+                        <input type="text" placeholder="按钮2文字" value={block.data.btn2Label} onChange={e => updateBlockData(block.id, { btn2Label: e.target.value })} className="w-full bg-slate-50 border-none rounded-xl px-4 py-2 text-[10px] font-bold outline-none" />
+                     </div>
                      <label className="text-[8px] font-black uppercase text-slate-400">优势列表 (Advantages)</label>
                      {(block.data.advantages || []).map((adv: string, i: number) => (
                        <input key={i} type="text" value={adv} onChange={e => {
@@ -239,6 +258,22 @@ export default function PagesManagement() {
                   </div>
                   <div onClick={() => setShowMatPicker({ active: true, target: `block.${block.id}.img` })} className="relative aspect-video rounded-[40px] bg-slate-50 border-2 border-dashed border-slate-100 flex items-center justify-center cursor-pointer overflow-hidden group">
                      {block.data.img ? <Image src={block.data.img} alt="" fill className="object-cover group-hover:scale-110 transition duration-700" /> : <i className="fas fa-image text-slate-200"></i>}
+                  </div>
+               </div>
+            )}
+
+            {block.type === 'SplitAbout' && (
+               <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                  <div className="space-y-4">
+                     <input type="text" placeholder="小标签 (e.g. ABOUT HANGFAN)" value={block.data.tag} onChange={e => updateBlockData(block.id, { tag: e.target.value })} className="w-full bg-slate-50 border-none rounded-xl px-4 py-3 text-[10px] font-black uppercase outline-none" />
+                     <textarea rows={4} placeholder="描述文案" value={block.data.desc} onChange={e => updateBlockData(block.id, { desc: e.target.value })} className="w-full bg-slate-50 border-none rounded-xl px-4 py-3 text-xs outline-none" />
+                  </div>
+                  <div className="space-y-4">
+                     <div onClick={() => setShowMatPicker({ active: true, target: `block.${block.id}.videoCover` })} className="relative aspect-video rounded-3xl bg-slate-50 border-2 border-dashed border-slate-100 flex items-center justify-center cursor-pointer group">
+                        {block.data.videoCover ? <Image src={block.data.videoCover} alt="" fill className="object-cover rounded-3xl" /> : <i className="fas fa-video text-slate-200"></i>}
+                        <div className="absolute inset-0 flex items-center justify-center"><div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-xl text-blue-600"><i className="fas fa-play ml-1"></i></div></div>
+                     </div>
+                     <input type="text" placeholder="视频 URL (Youtube/Cloudinary)" value={block.data.videoUrl} onChange={e => updateBlockData(block.id, { videoUrl: e.target.value })} className="w-full bg-slate-50 border-none rounded-xl px-4 py-3 text-[10px] font-mono outline-none" />
                   </div>
                </div>
             )}
