@@ -24,13 +24,14 @@ const DEFAULT_HEADER: PageHeaderConfig = {
 const INITIAL_PAGES: PageContent = {
   home: [],
   about: { header: { ...DEFAULT_HEADER, title: 'About Us' }, blocks: [] },
-  products: { header: { ...DEFAULT_HEADER, title: 'Product Center' } },
-  news: { header: { ...DEFAULT_HEADER, title: 'News & Media' } },
-  inquiry: { header: { ...DEFAULT_HEADER, title: 'Inquiry Now' } },
+  products: { header: { ...DEFAULT_HEADER, title: 'Product Center' }, blocks: [] },
+  news: { header: { ...DEFAULT_HEADER, title: 'News & Media' }, blocks: [] },
+  inquiry: { header: { ...DEFAULT_HEADER, title: 'Inquiry Now' }, blocks: [] },
   contact: { header: { ...DEFAULT_HEADER, title: 'Contact Us' }, title: '', description: '' }
 };
 
 const BLOCK_TYPES = [
+  { type: 'FeatureMedia', label: '媒体+特性组合 (如质保)', icon: 'fas fa-shield-alt' },
   { type: 'Hero', label: '首屏视窗 (Hero)', icon: 'fas fa-bolt' },
   { type: 'SplitAbout', label: '1:1 左右分栏 (Video/About)', icon: 'fas fa-play-circle' },
   { type: 'Category', label: '产品分类格子 (灵活行列)', icon: 'fas fa-th-large' },
@@ -155,6 +156,48 @@ const BlockEditor = ({ block, index, moveBlock, removeBlock, updateBlockData, se
 
        {/* Block-specific Fields */}
        <div className="space-y-8">
+          {block.type === 'FeatureMedia' && (
+             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                <div className="space-y-6">
+                   <div className="flex gap-4">
+                      <select value={block.data.mediaType || 'image'} onChange={e => updateBlockData(block.id, { mediaType: e.target.value })} className="bg-slate-50 border-none rounded-xl px-4 py-3 text-[10px] font-black uppercase outline-none">
+                         <option value="image">图片模式</option>
+                         <option value="video">视频模式</option>
+                      </select>
+                      <button onClick={() => setShowMatPicker({ active: true, target: `block.${block.id}.mediaUrl` })} className="flex-1 bg-slate-900 text-white rounded-xl text-[10px] font-black uppercase tracking-widest">
+                         {block.data.mediaUrl ? '更改素材' : '选择图片/视频'}
+                      </button>
+                   </div>
+                   <div className="relative aspect-video rounded-[40px] bg-slate-50 border-2 border-dashed border-slate-100 flex items-center justify-center overflow-hidden">
+                      {block.data.mediaUrl ? (
+                         block.data.mediaType === 'video' ? <div className="text-[10px] font-mono p-4 text-center">{block.data.mediaUrl}</div> : <Image src={block.data.mediaUrl} alt="" fill className="object-cover" />
+                      ) : <i className="fas fa-photo-video text-slate-200 text-3xl"></i>}
+                   </div>
+                </div>
+                <div className="space-y-4">
+                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">特性列表 (Features)</label>
+                   {(block.data.features || []).map((f: any, i: number) => (
+                      <div key={i} className="p-6 bg-slate-50 rounded-3xl relative group/feat space-y-3">
+                         <button onClick={() => updateBlockData(block.id, { features: block.data.features.filter((_: any, idx: number) => idx !== i) })} className="absolute top-4 right-4 text-red-400 opacity-0 group-hover/feat:opacity-100 transition"><i className="fas fa-trash-alt"></i></button>
+                         <div className="flex gap-4">
+                            <div onClick={() => setShowMatPicker({ active: true, target: `block.${block.id}.features.${i}.icon` })} className="w-12 h-12 bg-white rounded-xl flex items-center justify-center cursor-pointer border border-slate-100 shrink-0">
+                               {f.icon?.startsWith('http') ? <Image src={f.icon} alt="" width={24} height={24} className="object-contain" /> : <i className={f.icon || 'fas fa-check'}></i>}
+                            </div>
+                            <div className="flex-1 space-y-2">
+                               <input type="text" placeholder="特性名称" value={f.title} onChange={e => {
+                                 const nf = [...block.data.features]; nf[i].title = e.target.value; updateBlockData(block.id, { features: nf });
+                               }} className="w-full bg-white border-none rounded-lg px-4 py-2 font-black text-xs outline-none" />
+                               <input type="text" placeholder="描述信息 (可选)" value={f.desc} onChange={e => {
+                                 const nf = [...block.data.features]; nf[i].desc = e.target.value; updateBlockData(block.id, { features: nf });
+                               }} className="w-full bg-white border-none rounded-lg px-4 py-2 text-[10px] font-bold outline-none" />
+                            </div>
+                         </div>
+                      </div>
+                   ))}
+                   <button onClick={() => updateBlockData(block.id, { features: [...(block.data.features || []), { title: '', icon: '', desc: '' }] })} className="w-full py-4 rounded-3xl border-2 border-dashed border-slate-200 flex items-center justify-center text-slate-400 hover:bg-slate-50 transition"><i className="fas fa-plus"></i></button>
+                </div>
+             </div>
+          )}
           {block.type === 'Hero' && (
              <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
                 <div className="space-y-4">
@@ -270,6 +313,9 @@ const BlockEditor = ({ block, index, moveBlock, removeBlock, updateBlockData, se
                            <input type="text" placeholder="步骤标题" value={step.title} onChange={e => {
                              const ns = [...block.data.steps]; ns[i].title = e.target.value; updateBlockData(block.id, { steps: ns });
                            }} className="w-full bg-white border border-slate-100 rounded-xl px-4 py-2 font-black text-xs outline-none focus:ring-2 ring-blue-500/10" />
+                           <input type="text" placeholder="描述文案 (可选)" value={step.desc || ''} onChange={e => {
+                             const ns = [...block.data.steps]; ns[i].desc = e.target.value; updateBlockData(block.id, { steps: ns });
+                           }} className="w-full bg-white border border-slate-100 rounded-xl px-4 py-2 text-[10px] font-bold outline-none focus:ring-2 ring-blue-500/10" />
                            <input type="text" placeholder="图标类名或URL" value={step.icon} onChange={e => {
                              const ns = [...block.data.steps]; ns[i].icon = e.target.value; updateBlockData(block.id, { steps: ns });
                            }} className="w-full bg-white border border-slate-100 rounded-xl px-4 py-2 text-[10px] font-mono outline-none focus:ring-2 ring-blue-500/10" />
@@ -428,7 +474,8 @@ export default function PagesManagement() {
         tag: 'FACTORY DIRECT EXCELLENCE',
         btn1Label: 'VIEW COLLECTIONS',
         btn2Label: 'CONTACT SALES',
-        ...(type === 'Hero' ? { advantages: ['8.8/10.9/12.9 GRADE SPECIALIST', 'FULL SCALE OEM CAPABILITIES', 'GLOBAL LOGISTICS NETWORK', 'ISO 9001:2015 CERTIFIED'], img: '' } :
+        ...(type === 'FeatureMedia' ? { mediaUrl: '', mediaType: 'image', features: [{ title: 'QUALITY', icon: 'fas fa-check', desc: '' }] } :
+            type === 'Hero' ? { advantages: ['8.8/10.9/12.9 GRADE SPECIALIST', 'FULL SCALE OEM CAPABILITIES', 'GLOBAL LOGISTICS NETWORK', 'ISO 9001:2015 CERTIFIED'], img: '' } :
             type === 'SplitAbout' ? { tag: 'SINCE 1995', desc: 'Long description...', stats: [], videoUrl: '', videoCover: '' } :
             type === 'Category' ? { categories: [], images: {} } :
             type === 'FeaturedProduct' || type === 'NewArrivals' ? { count: 6, productIds: [], cols: 3 } :
@@ -442,40 +489,54 @@ export default function PagesManagement() {
       }
     };
 
-    if (activeTab === 'home') setLocalPages({ ...localPages, home: [...localPages.home, newBlock] });
-    else if (activeTab === 'about') setLocalPages({ ...localPages, about: { ...localPages.about, blocks: [...(localPages.about.blocks || []), newBlock] } });
+    setLocalPages(prev => {
+      const updated = { ...prev };
+      if (activeTab === 'home') updated.home = [...prev.home, newBlock];
+      else if ((updated as any)[activeTab]) {
+        (updated as any)[activeTab].blocks = [...((updated as any)[activeTab].blocks || []), newBlock];
+      }
+      return updated;
+    });
     setShowBlockAdd(false);
   };
 
   const removeBlock = useCallback((id: string) => {
-    if (activeTab === 'home') setLocalPages(prev => ({ ...prev, home: prev.home.filter(b => b.id !== id) }));
-    else if (activeTab === 'about') setLocalPages(prev => ({ ...prev, about: { ...prev.about, blocks: prev.about.blocks.filter(b => b.id !== id) } }));
+    setLocalPages(prev => {
+      const updated = { ...prev };
+      if (activeTab === 'home') updated.home = prev.home.filter(b => b.id !== id);
+      else if ((updated as any)[activeTab]) {
+        (updated as any)[activeTab].blocks = (updated as any)[activeTab].blocks.filter((b: Block) => b.id !== id);
+      }
+      return updated;
+    });
   }, [activeTab]);
 
   const moveBlock = useCallback((index: number, direction: 'up' | 'down') => {
-    const list = activeTab === 'home' ? [...localPages.home] : [...localPages.about.blocks];
-    if (direction === 'up' && index > 0) [list[index], list[index - 1]] = [list[index - 1], list[index]];
-    else if (direction === 'down' && index < list.length - 1) [list[index], list[index + 1]] = [list[index + 1], list[index]];
-    
-    if (activeTab === 'home') setLocalPages(prev => ({ ...prev, home: list }));
-    else setLocalPages(prev => ({ ...prev, about: { ...prev.about, blocks: list } }));
-  }, [activeTab, localPages]);
+    setLocalPages(prev => {
+      const updated = { ...prev };
+      const list = activeTab === 'home' ? [...prev.home] : [...((prev as any)[activeTab]?.blocks || [])];
+      
+      if (direction === 'up' && index > 0) [list[index], list[index - 1]] = [list[index - 1], list[index]];
+      else if (direction === 'down' && index < list.length - 1) [list[index], list[index + 1]] = [list[index + 1], list[index]];
+      
+      if (activeTab === 'home') updated.home = list;
+      else if ((updated as any)[activeTab]) (updated as any)[activeTab].blocks = list;
+      return updated;
+    });
+  }, [activeTab]);
 
   const updateBlockData = useCallback((id: string, newData: any) => {
-    if (activeTab === 'home') {
-      setLocalPages(prev => ({
-        ...prev,
-        home: prev.home.map(b => b.id === id ? { ...b, data: { ...b.data, ...newData } } : b)
-      }));
-    } else if (activeTab === 'about') {
-      setLocalPages(prev => ({
-        ...prev,
-        about: {
-          ...prev.about,
-          blocks: prev.about.blocks.map(b => b.id === id ? { ...b, data: { ...b.data, ...newData } } : b)
-        }
-      }));
-    }
+    setLocalPages(prev => {
+      const updated = { ...prev };
+      if (activeTab === 'home') {
+        updated.home = prev.home.map(b => b.id === id ? { ...b, data: { ...b.data, ...newData } } : b);
+      } else if ((updated as any)[activeTab]?.blocks) {
+        (updated as any)[activeTab].blocks = (updated as any)[activeTab].blocks.map((b: Block) => 
+          b.id === id ? { ...b, data: { ...b.data, ...newData } } : b
+        );
+      }
+      return updated;
+    });
   }, [activeTab]);
 
   return (
@@ -508,16 +569,16 @@ export default function PagesManagement() {
       <div className="max-w-[1600px] mx-auto px-12 mt-12">
         {activeTab !== 'home' && (
           <HeaderEditor 
-            config={localPages[activeTab as keyof PageContent].header} 
+            config={(localPages[activeTab as keyof PageContent] as any).header} 
             path={`${activeTab}.header`} 
             setLocalPages={setLocalPages}
             setShowMatPicker={setShowMatPicker}
           />
         )}
 
-        {(activeTab === 'home' || activeTab === 'about') && (
+        {activeTab !== 'contact' && (
            <div className="space-y-6">
-              {(activeTab === 'home' ? localPages.home : localPages.about.blocks || []).map((block, i) => (
+              {(activeTab === 'home' ? localPages.home : (localPages[activeTab as keyof PageContent] as any).blocks || []).map((block: any, i: number) => (
                 <BlockEditor 
                   key={block.id} 
                   block={block} 
@@ -530,7 +591,7 @@ export default function PagesManagement() {
                   categories={categories}
                 />
               ))}
-              {((activeTab === 'home' ? localPages.home : localPages.about.blocks) || []).length === 0 && (
+              {(activeTab === 'home' ? localPages.home : (localPages[activeTab as keyof PageContent] as any).blocks || []).length === 0 && (
                 <div className="py-40 bg-white rounded-[64px] border-2 border-dashed border-slate-100 flex flex-col items-center justify-center text-slate-300">
                    <i className="fas fa-cubes text-6xl mb-6"></i>
                    <p className="font-black uppercase text-[10px] tracking-[0.4em]">当前页面为空，点击上方按钮开始积木装修</p>

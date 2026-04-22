@@ -120,12 +120,15 @@ export interface PageContent {
   };
   inquiry: {
     header: PageHeaderConfig;
+    blocks?: Block[];
   };
   products: {
     header: PageHeaderConfig;
+    blocks?: Block[];
   };
   news: {
     header: PageHeaderConfig;
+    blocks?: Block[];
   };
 }
 
