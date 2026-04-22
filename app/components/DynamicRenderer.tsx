@@ -68,10 +68,10 @@ function HeroSection({ data }: { data: any }) {
   const getClass = (val?: string, def: string = '') => (!val || val.startsWith('#') ? def : val);
 
   return (
-    <section className={`relative min-h-screen flex items-center overflow-hidden ${getClass(data.bgColor, 'bg-[#0a0f1d]')}`} style={data.bgColor?.startsWith('#') ? {backgroundColor: data.bgColor} : {}}>
-      <div className="max-w-[1600px] mx-auto px-6 lg:px-24 w-full grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-center relative z-10 py-32">
+    <section className={`relative min-h-[70vh] flex items-center overflow-hidden ${getClass(data.bgColor, 'bg-[#0a0f1d]')}`} style={data.bgColor?.startsWith('#') ? {backgroundColor: data.bgColor} : {}}>
+      <div className="max-w-[1600px] mx-auto px-6 lg:px-24 w-full grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center relative z-10 py-16 lg:py-24">
         {/* Left Content */}
-        <div className="space-y-10 animate-in fade-in slide-in-from-left-12 duration-1000">
+        <div className="space-y-8 animate-in fade-in slide-in-from-left-12 duration-1000">
           <div className="space-y-6">
             <span className="inline-block px-5 py-2 rounded-full border border-blue-600/30 text-blue-500 text-[10px] font-black uppercase tracking-[0.4em]">
               {data.tag || 'FACTORY DIRECT EXCELLENCE'}
@@ -135,7 +135,7 @@ function SplitAboutSection({ data, style, className }: { data: any, style: any, 
   const getClass = (val?: string, def: string = '') => (!val || val.startsWith('#') ? def : val);
 
   return (
-    <section className={`py-24 lg:py-40 ${className || 'bg-white'}`} style={style}>
+    <section className={`py-16 lg:py-28 ${className || 'bg-white'}`} style={style}>
       <div className="max-w-[1600px] mx-auto px-6 lg:px-24">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-24 items-center">
           <div className="relative aspect-square lg:aspect-[4/5] rounded-[64px] overflow-hidden group bg-slate-100 shadow-2xl cursor-pointer" onClick={() => setShowVideo(true)}>
@@ -188,7 +188,7 @@ function CategorySection({ data, categories, style, className }: { data: any, ca
   const displayCats = selectedValues.map((v: string) => categories.find(c => c.value === v)).filter(Boolean);
 
   return (
-    <section className={`py-24 lg:py-40 ${className || 'bg-slate-50'}`} style={style}>
+    <section className={`py-16 lg:py-28 ${className || 'bg-slate-50'}`} style={style}>
       <div className="max-w-[1400px] mx-auto px-6 lg:px-12">
         <ModuleTitle title={data.title} subtitle={data.subtitle} align={data.align} titleColor={data.titleColor} subtitleColor={data.subtitleColor} />
         <div className={`mt-20 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8`}>
@@ -228,6 +228,7 @@ function CategoryCard({ cat, img }: { cat: Category, img?: string }) {
 }
 
 function FeaturedProductSection({ data, products, style, className }: { data: any, products: Product[], style: any, className: string }) {
+  const cols = data.cols || 3;
   let displayProducts = products;
   if (data.productIds && Array.isArray(data.productIds) && data.productIds.length > 0) {
     displayProducts = products.filter(p => data.productIds.includes(p.id.toString()) || data.productIds.includes(p.id));
@@ -235,11 +236,17 @@ function FeaturedProductSection({ data, products, style, className }: { data: an
     displayProducts = products.slice(0, data.count || 6);
   }
 
+  const gridColsClass = {
+    2: 'md:grid-cols-2 lg:grid-cols-2',
+    3: 'md:grid-cols-2 lg:grid-cols-3',
+    4: 'md:grid-cols-3 lg:grid-cols-4'
+  }[cols as 2 | 3 | 4] || 'lg:grid-cols-3';
+
   return (
-    <section className={`py-24 lg:py-40 ${className || 'bg-white'}`} style={style}>
+    <section className={`py-16 lg:py-28 ${className || 'bg-white'}`} style={style}>
       <div className="max-w-[1400px] mx-auto px-6 lg:px-12">
         <ModuleTitle title={data.title} subtitle={data.subtitle} align={data.align} titleColor={data.titleColor} subtitleColor={data.subtitleColor} />
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 mt-16">
+        <div className={`grid grid-cols-1 ${gridColsClass} gap-12 mt-16`}>
           {displayProducts.map((p) => (
             <ProductCard key={p.id} p={p} textColor={data.textColor} />
           ))}
@@ -255,24 +262,17 @@ function NewArrivalsSection({ data, products, style, className }: { data: any, p
   const getClass = (val?: string, def: string = '') => (!val || val.startsWith('#') ? def : val);
 
   return (
-    <section className={`py-24 lg:py-40 overflow-hidden relative ${className || 'bg-slate-900 text-white'}`} style={style}>
-      <div className="absolute top-0 right-0 w-1/2 h-full bg-blue-600/5 -skew-x-12 translate-x-1/4" />
+    <section className={`py-12 lg:py-24 overflow-hidden relative ${className || 'bg-transparent'}`} style={style}>
       <div className="max-w-[1400px] mx-auto px-6 lg:px-12 relative z-10">
-        <div className="flex flex-col lg:flex-row justify-between items-end gap-12 mb-20">
-          <div className="space-y-6">
-             <span className="text-blue-500 font-black tracking-[0.4em] uppercase text-xs">Innovation & Quality</span>
-             <h2 className={`text-5xl lg:text-7xl font-black uppercase tracking-tighter leading-[0.95] ${getClass(data.titleColor, 'text-white')}`} style={getStyle(data.titleColor)}>New <span className="text-blue-500">Arrivals</span></h2>
-          </div>
-          <Link href="/products" className="px-10 py-4 bg-blue-600 text-white font-black uppercase text-[10px] tracking-widest rounded-full hover:scale-105 transition shadow-xl shadow-blue-500/20">View All Series</Link>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <ModuleTitle title={data.title || "New Arrivals"} subtitle={data.subtitle} align={data.align} titleColor={data.titleColor} subtitleColor={data.subtitleColor} />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mt-12">
           {displayProducts.map((p) => (
-            <Link key={p.id} href={`/products/${p.seoSlug || p.id}`} className="group bg-white/5 backdrop-blur-md rounded-[48px] p-10 border border-white/10 hover:bg-white/10 transition-all shadow-xl">
-               <div className="relative aspect-square rounded-[32px] overflow-hidden mb-8 bg-white/5">
+            <Link key={p.id} href={`/products/${p.seoSlug || p.id}`} className="group bg-white rounded-[48px] p-8 border border-slate-100 hover:shadow-2xl transition-all duration-700">
+               <div className="relative aspect-square rounded-[32px] overflow-hidden mb-8 bg-slate-50">
                   <Image src={p.p_img || p.img} alt={p.name} fill className="object-contain p-6 group-hover:scale-110 transition duration-1000" />
-                  <div className="absolute top-4 left-4 bg-blue-600 text-white px-4 py-1.5 rounded-full text-[8px] font-black uppercase tracking-widest shadow-lg">NEW</div>
+                  <div className="absolute top-4 left-4 bg-blue-600 text-white px-4 py-1.5 rounded-full text-[8px] font-black uppercase tracking-widest">NEW</div>
                </div>
-               <h4 className={`text-xl font-black uppercase tracking-tighter group-hover:text-blue-500 transition ${getClass(data.textColor, 'text-white')}`} style={getStyle(data.textColor)}>{p.name}</h4>
+               <h4 className={`text-lg font-black uppercase tracking-tighter group-hover:text-blue-500 transition ${getClass(data.textColor, 'text-slate-900')}`} style={getStyle(data.textColor)}>{p.name}</h4>
             </Link>
           ))}
         </div>
@@ -302,7 +302,7 @@ function StatsSection({ data, style, className }: { data: any, style: any, class
   const getStyle = (val?: string) => (val?.startsWith('#') ? { color: val } : {});
   const getClass = (val?: string, def: string = '') => (!val || val.startsWith('#') ? def : val);
   return (
-    <section className={`py-24 lg:py-40 relative overflow-hidden ${className || 'bg-slate-900 text-white'}`} style={style}>
+    <section className={`py-16 lg:py-28 relative overflow-hidden ${className || 'bg-slate-900 text-white'}`} style={style}>
       <div className="max-w-[1400px] mx-auto px-6 lg:px-12 relative z-10 text-center">
         <ModuleTitle title={data.title} subtitle={data.subtitle} align={data.align} titleColor={data.titleColor} subtitleColor={data.subtitleColor} />
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-12 mt-20">
@@ -320,7 +320,7 @@ function StatsSection({ data, style, className }: { data: any, style: any, class
 
 function FAQSection({ data, style, className }: { data: any, style: any, className: string }) {
   return (
-    <section className={`py-24 lg:py-40 ${className || 'bg-slate-50'}`} style={style}>
+    <section className={`py-16 lg:py-28 ${className || 'bg-slate-50'}`} style={style}>
       <div className="max-w-[1000px] mx-auto px-6 lg:px-12">
         <ModuleTitle title={data.title} subtitle={data.subtitle} align={data.align} titleColor={data.titleColor} subtitleColor={data.subtitleColor} />
         <div className="mt-16 space-y-6">
@@ -345,7 +345,7 @@ function InquirySection({ data, style, className }: { data: any, style: any, cla
   const getStyle = (val?: string) => (val?.startsWith('#') ? { color: val } : {});
   const getClass = (val?: string, def: string = '') => (!val || val.startsWith('#') ? def : val);
   return (
-    <section id="inquiry" className={`py-24 lg:py-40 ${className || 'bg-white'}`} style={style}>
+    <section id="inquiry" className={`py-16 lg:py-28 ${className || 'bg-white'}`} style={style}>
       <div className="max-w-[1400px] mx-auto px-6 lg:px-12">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-24 items-start">
           <div className="space-y-12 lg:sticky lg:top-40">
@@ -367,7 +367,7 @@ function InquirySection({ data, style, className }: { data: any, style: any, cla
 
 function TrustSection({ data, style, className }: { data: any, style: any, className: string }) {
   return (
-    <section className={`py-24 lg:py-40 ${className || 'bg-white'}`} style={style}>
+    <section className={`py-16 lg:py-28 ${className || 'bg-white'}`} style={style}>
        <div className="max-w-[1400px] mx-auto px-6 lg:px-12">
           <ModuleTitle title={data.title} subtitle={data.subtitle} align={data.align} titleColor={data.titleColor} subtitleColor={data.subtitleColor} />
           <div className="grid grid-cols-2 md:grid-cols-4 gap-12 mt-20">
@@ -386,21 +386,24 @@ function TrustSection({ data, style, className }: { data: any, style: any, class
 }
 
 function ProcessSection({ data, style, className }: { data: any, style: any, className: string }) {
+  const steps = data.steps && data.steps.length > 0 ? data.steps : [
+    { title: 'Inquiry & Consultation', icon: 'fas fa-comments' },
+    { title: 'Customized Solution', icon: 'fas fa-drafting-compass' },
+    { title: 'Precision Production', icon: 'fas fa-cogs' },
+    { title: 'Global Logistics', icon: 'fas fa-ship' }
+  ];
   return (
-    <section className={`py-24 lg:py-40 ${className || 'bg-slate-50'}`} style={style}>
+    <section className={`py-16 lg:py-28 ${className || 'bg-slate-50'}`} style={style}>
       <div className="max-w-[1400px] mx-auto px-6 lg:px-12 text-center">
         <ModuleTitle title={data.title} subtitle={data.subtitle} align={data.align} titleColor={data.titleColor} subtitleColor={data.subtitleColor} />
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-16 mt-32 relative">
-          <div className="hidden md:block absolute top-[60px] left-[10%] right-[10%] h-[2px] bg-slate-200 z-0" />
-          {[
-            { n: '01', t: 'Inquiry & Consultation', i: 'fas fa-comments' },
-            { n: '02', t: 'Customized Solution', i: 'fas fa-drafting-compass' },
-            { n: '03', t: 'Precision Production', i: 'fas fa-cogs' },
-            { n: '04', t: 'Global Logistics', i: 'fas fa-ship' }
-          ].map((s, i) => (
+        <div className={`grid grid-cols-1 md:grid-cols-${Math.min(steps.length, 4)} gap-16 mt-20 relative`}>
+          {steps.length > 1 && <div className="hidden md:block absolute top-[60px] left-[10%] right-[10%] h-[2px] bg-slate-200 z-0" />}
+          {steps.map((s: any, i: number) => (
             <div key={i} className="relative z-10 space-y-8 group">
-               <div className="w-[120px] h-[120px] bg-white rounded-full flex items-center justify-center mx-auto shadow-2xl text-blue-600 text-3xl border-[12px] border-slate-50 group-hover:scale-110 group-hover:bg-blue-600 group-hover:text-white transition-all duration-700"><i className={s.i}></i></div>
-               <h4 className="text-xl font-black uppercase tracking-tighter leading-tight" style={data.textColor?.startsWith('#') ? {color: data.textColor} : {}}>{s.t}</h4>
+               <div className="w-[120px] h-[120px] bg-white rounded-full flex items-center justify-center mx-auto shadow-2xl text-blue-600 text-3xl border-[12px] border-slate-50 group-hover:scale-110 group-hover:bg-blue-600 group-hover:text-white transition-all duration-700">
+                 {s.icon?.startsWith('http') ? <Image src={s.icon} alt="" width={40} height={40} className="object-contain" /> : <i className={s.icon || 'fas fa-cog'}></i>}
+               </div>
+               <h4 className="text-xl font-black uppercase tracking-tighter leading-tight" style={data.textColor?.startsWith('#') ? {color: data.textColor} : {}}>{s.title || s.t}</h4>
             </div>
           ))}
         </div>
@@ -411,7 +414,7 @@ function ProcessSection({ data, style, className }: { data: any, style: any, cla
 
 function FactoryShowcaseSection({ data, style, className }: { data: any, style: any, className: string }) {
   return (
-    <section className={`py-24 lg:py-40 overflow-hidden ${className || 'bg-white'}`} style={style}>
+    <section className={`py-16 lg:py-28 overflow-hidden ${className || 'bg-white'}`} style={style}>
       <div className="max-w-[1600px] mx-auto px-6 lg:px-12">
         <ModuleTitle title={data.title} subtitle={data.subtitle} align={data.align} titleColor={data.titleColor} subtitleColor={data.subtitleColor} />
         <div className="grid grid-cols-12 gap-8 h-[700px] mt-20">
@@ -430,7 +433,7 @@ function FactoryShowcaseSection({ data, style, className }: { data: any, style: 
 
 function RichTextSection({ data, style, className }: { data: any, style: any, className: string }) {
   return (
-    <section className={`py-24 lg:py-40 ${className || 'bg-white'}`} style={style}>
+    <section className={`py-16 lg:py-28 ${className || 'bg-white'}`} style={style}>
       <div className="max-w-[1200px] mx-auto px-6 lg:px-12 prose-xl prose-slate max-w-none" style={data.textColor?.startsWith('#') ? {color: data.textColor} : {}}>
          <div dangerouslySetInnerHTML={{ __html: data.content }} className="rich-text-container" />
       </div>
