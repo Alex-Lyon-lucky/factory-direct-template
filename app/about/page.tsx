@@ -6,7 +6,6 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import PageHeader from '../components/PageHeader';
 import DynamicRenderer from '../components/DynamicRenderer';
-import Sidebar from '../components/Sidebar';
 
 export default function About() {
   const { pages, products, categories } = useProducts();
@@ -16,7 +15,6 @@ export default function About() {
   return (
     <main className="relative bg-white min-h-screen">
       <Navbar />
-      <Sidebar />
       
       {/* Dynamic Header */}
       <PageHeader 

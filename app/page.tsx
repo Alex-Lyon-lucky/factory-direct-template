@@ -5,7 +5,6 @@ import { useProducts } from './context/ProductContext';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import DynamicRenderer from './components/DynamicRenderer';
-import Sidebar from './components/Sidebar';
 
 export default function Home() {
   const { pages, products, categories } = useProducts();
@@ -15,7 +14,6 @@ export default function Home() {
   return (
     <main className="relative bg-white min-h-screen">
       <Navbar />
-      <Sidebar />
       
       {/* 首页全积木化渲染 */}
       <DynamicRenderer 
