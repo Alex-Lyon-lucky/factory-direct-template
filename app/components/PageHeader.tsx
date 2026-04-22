@@ -2,60 +2,66 @@
 'use client';
 
 import Image from 'next/image';
+import { PageHeaderConfig } from '../context/ProductContext';
 
 interface PageHeaderProps {
-  data: {
-    title?: string;
-    heroTitle?: string;
-    subtitle?: string;
-    heroImg?: string;
-    headerHeight?: number;
-    bgMode?: string; // 宽泛类型，解决部署时的严格匹配问题
-    bgColor?: string;
-  };
+  config?: PageHeaderConfig;
+  defaultTitle: string;
 }
 
-export default function PageHeader({ data }: PageHeaderProps) {
-  const height = data.headerHeight || 200;
-  const isImageMode = data.bgMode === 'image';
-  const title = data.title || data.heroTitle || 'Page Title';
-  const subtitle = data.subtitle || '';
+export default function PageHeader({ config, defaultTitle }: PageHeaderProps) {
+  const heightClasses = {
+    compact: 'h-[30vh] min-h-[300px]',
+    standard: 'h-[50vh] min-h-[450px]',
+    hero: 'h-[80vh] min-h-[650px]'
+  };
+
+  const alignClasses = {
+    left: 'text-left items-start',
+    center: 'text-center items-center',
+    right: 'text-right items-end'
+  };
+
+  const currentHeight = config?.height || 'standard';
+  const textAlign = config?.align || 'center';
 
   return (
-    <header 
-      className="relative flex items-center justify-center overflow-hidden transition-all duration-700 pt-20"
-      style={{ 
-        height: `${height}px`,
-        backgroundColor: data.bgColor || '#0f172a'
-      }}
-    >
-      {isImageMode && data.heroImg && (
+    <div className={`relative w-full overflow-hidden flex flex-col justify-center px-6 lg:px-24 ${heightClasses[currentHeight as keyof typeof heightClasses]} ${config?.bgColor || 'bg-[#0a0f1d]'} ${config?.textColor || 'text-white'}`}>
+      
+      {/* Background Image */}
+      {config?.bgImg && (
         <>
           <Image 
-            src={data.heroImg} 
-            alt={title} 
+            src={config.bgImg} 
+            alt={config.title || defaultTitle} 
             fill 
-            className="object-cover opacity-60"
+            className="object-cover"
             priority
           />
-          <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-[2px]"></div>
+          {/* Overlay to ensure text readability */}
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px]" />
         </>
       )}
-      
-      {/* Decorative accents */}
-      <div className="absolute top-0 right-0 w-64 h-64 bg-blue-600/10 rounded-full translate-x-32 -translate-y-32 blur-[80px]"></div>
-      <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-400/5 rounded-full -translate-x-32 translate-y-32 blur-[80px]"></div>
 
-      <div className="relative z-10 max-w-5xl mx-auto px-6 text-center animate-in fade-in slide-in-from-bottom-4 duration-1000">
-        <h2 className="text-2xl md:text-4xl font-black text-white uppercase tracking-tighter leading-none mb-3">
-          {title}
-        </h2>
-        {subtitle && (
-          <p className="text-blue-400 font-bold uppercase tracking-[0.4em] text-[8px] md:text-[10px] opacity-80 max-w-2xl mx-auto">
-            {subtitle}
-          </p>
-        )}
+      {/* Content */}
+      <div className={`relative z-10 w-full max-w-[1400px] mx-auto flex flex-col ${alignClasses[textAlign as keyof typeof alignClasses]}`}>
+        <div className="space-y-6 max-w-4xl animate-in fade-in slide-in-from-bottom-12 duration-1000">
+          <h1 className="text-4xl md:text-6xl lg:text-8xl font-black uppercase tracking-tighter leading-[0.9] drop-shadow-2xl">
+            {config?.title || defaultTitle}
+          </h1>
+          {config?.subtitle && (
+            <p className="text-sm md:text-lg lg:text-xl font-medium opacity-80 leading-relaxed tracking-wide max-w-2xl">
+              {config.subtitle}
+            </p>
+          )}
+          
+          {/* Decorative bar */}
+          <div className={`h-2 w-24 bg-blue-600 rounded-full mt-8 ${textAlign === 'center' ? 'mx-auto' : textAlign === 'right' ? 'ml-auto' : ''}`} />
+        </div>
       </div>
-    </header>
+
+      {/* Bottom Gradients */}
+      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black/20 to-transparent pointer-events-none" />
+    </div>
   );
 }

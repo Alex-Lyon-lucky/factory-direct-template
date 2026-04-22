@@ -84,114 +84,41 @@ export interface SiteSettings {
   whatsapp: string;
 }
 
-export interface PageContent {
-  home: {
-    heroTitle: string;
-    heroSubtitle: string;
-    advantages: string[];
-    heroImg?: string;
-    categoryTitle?: string;
-    categorySubtitle?: string;
-    categoryTitleColor?: string;
-    categorySubtitleColor?: string;
-    categoryAlign?: 'left' | 'center' | 'right';
-    categoryImages?: Record<string, string>;
-    featuredTitle?: string;
-    featuredSubtitle?: string;
-    featuredTitleColor?: string;
-    featuredSubtitleColor?: string;
-    featuredAlign?: 'left' | 'center' | 'right';
-    featuredCount?: number;
-    videoTitle?: string;
-    videoSubtitle?: string;
-    videoTitleColor?: string;
-    videoSubtitleColor?: string;
-    videoAlign?: 'left' | 'center' | 'right';
-    videoUrl?: string;
-    videoDesc?: string;
-    // Homepage About Us (New Version)
-    aboutTag?: string;
-    aboutTitle?: string;
-    aboutDesc?: string;
-    aboutStats?: { icon: string; value: string; label: string }[];
-    aboutBtn1Label?: string;
-    aboutBtn1Link?: string;
-    aboutBtn2Label?: string;
-    aboutBtn2Link?: string;
-    aboutVideoUrl?: string;
-    aboutVideoCover?: string;
+export interface Block {
+  id: string;
+  type: 'Hero' | 'Category' | 'FeaturedProduct' | 'SplitAbout' | 'Trust' | 'FAQ' | 'Inquiry' | 'Stats' | 'Process' | 'FactoryShowcase' | 'RichText';
+  data: any;
+}
 
-    stats?: { label: string; value: string }[];
-    statsTitle?: string;
-    statsSubtitle?: string;
-    statsTitleColor?: string;
-    statsSubtitleColor?: string;
-    statsAlign?: 'left' | 'center' | 'right';
-    trustTitle?: string;
-    trustSubtitle?: string;
-    trustTitleColor?: string;
-    trustSubtitleColor?: string;
-    trustAlign?: 'left' | 'center' | 'right';
-    trustItems?: { img: string; title: string; desc: string }[];
-    faq?: { q: string; a: string }[];
-    faqTitle?: string;
-    faqSubtitle?: string;
-    faqTitleColor?: string;
-    faqSubtitleColor?: string;
-    faqAlign?: 'left' | 'center' | 'right';
-  };
+export interface PageHeaderConfig {
+  title: string;
+  subtitle?: string;
+  bgImg?: string;
+  bgColor?: string;
+  textColor?: string;
+  height?: 'compact' | 'standard' | 'hero';
+  align?: 'left' | 'center' | 'right';
+}
+
+export interface PageContent {
+  home: Block[];
   about: {
-    title: string;
-    content: string;
-    heroImg?: string;
-    headerHeight?: number;
-    bgMode?: string;
-    bgColor?: string;
-    videoTitle?: string;
-    videoSubtitle?: string;
-    videoUrl?: string;
-    videoDesc?: string;
-    serviceTitle?: string;
-    serviceSubtitle?: string;
-    serviceTitleColor?: string;
-    serviceSubtitleColor?: string;
-    serviceAlign?: 'left' | 'center' | 'right';
-    serviceContent?: string;
-    serviceImg?: string;
-    partnersTitle?: string;
-    partnersSubtitle?: string;
-    partnersTitleColor?: string;
-    partnersSubtitleColor?: string;
-    partnersAlign?: 'left' | 'center' | 'right';
-    partners?: { img: string; name: string; desc: string }[];
+    header: PageHeaderConfig;
+    blocks: Block[];
   };
   contact: {
+    header: PageHeaderConfig;
     title: string;
     description: string;
-    headerHeight?: number;
-    bgMode?: string;
-    bgColor?: string;
   };
   inquiry: {
-    title: string;
-    subtitle?: string;
-    headerHeight?: number;
-    bgMode?: string;
-    bgColor?: string;
+    header: PageHeaderConfig;
   };
   products: {
-    title: string;
-    subtitle?: string;
-    headerHeight?: number;
-    bgMode?: string;
-    bgColor?: string;
+    header: PageHeaderConfig;
   };
   news: {
-    title: string;
-    subtitle?: string;
-    headerHeight?: number;
-    bgMode?: string;
-    bgColor?: string;
+    header: PageHeaderConfig;
   };
 }
 

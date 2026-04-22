@@ -4,165 +4,90 @@
 import { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import dynamic from 'next/dynamic';
-import { useProducts, PageContent } from '../../context/ProductContext';
+import { useProducts, Block, PageHeaderConfig, PageContent } from '../../context/ProductContext';
 
 const TiptapEditor = dynamic(() => import('../products/TiptapEditor'), { 
   ssr: false,
   loading: () => <div className="p-10 bg-slate-50 rounded-3xl animate-pulse text-[10px] font-black uppercase text-slate-400 tracking-widest text-center">载入编辑器...</div>
 });
 
-const DEFAULT_PAGES: PageContent = {
-  home: {
-    heroTitle: '', heroSubtitle: '', advantages: ['', '', '', ''], 
-    categoryTitle: '', categorySubtitle: '', categoryImages: {},
-    featuredTitle: '', featuredSubtitle: '', featuredCount: 6,
-    videoTitle: '', videoSubtitle: '', videoUrl: '', videoDesc: '',
-    stats: [{ label: '', value: '' }, { label: '', value: '' }, { label: '', value: '' }, { label: '', value: '' }],
-    trustTitle: '', trustSubtitle: '', trustItems: [], faq: [],
-    // New About Us
-    aboutTag: 'ABOUT HANGFAN',
-    aboutTitle: 'Experienced & Quality More Than 20 Years',
-    aboutDesc: '',
-    aboutStats: [
-      { icon: 'fas fa-industry', value: '20+', label: 'Years Experience' },
-      { icon: 'fas fa-users', value: '500+', label: 'Global Clients' },
-      { icon: 'fas fa-globe', value: '80+', label: 'Countries Served' },
-      { icon: 'fas fa-award', value: '50+', label: 'Industry Awards' }
-    ],
-    aboutBtn1Label: 'Learn More About Us',
-    aboutBtn1Link: '/about',
-    aboutBtn2Label: 'Request a Quote',
-    aboutBtn2Link: '/contact',
-    aboutVideoUrl: '',
-    aboutVideoCover: ''
-  },
-  about: { 
-    title: '', content: '', heroImg: '',
-    videoTitle: '', videoSubtitle: '', videoUrl: '', videoDesc: '',
-    serviceTitle: 'Professional Service', 
-    serviceSubtitle: 'Providing you with comprehensive and professional pre-sales and after-sales services',
-    serviceContent: '', serviceImg: '',
-    partnersTitle: 'Our Strategic Partners', partnersSubtitle: '', partners: []
-  },
-  contact: { title: '', description: '' },
-  products: { title: '', subtitle: '' },
-  news: { title: '', subtitle: '' },
-  inquiry: { title: '', subtitle: '' }
+const DEFAULT_HEADER: PageHeaderConfig = {
+  title: 'Page Title',
+  subtitle: 'Description goes here',
+  bgImg: '',
+  bgColor: 'bg-[#0a0f1d]',
+  textColor: 'text-white',
+  height: 'standard',
+  align: 'center'
 };
 
-// --- Sub-components moved outside to prevent re-mounting on every keystroke ---
-
-const TitleConfig = ({ 
-  prefix, 
-  localPages, 
-  onUpdate 
-}: { 
-  prefix: string, 
-  localPages: any, 
-  onUpdate: (path: string, val: any) => void 
-}) => {
-  const parts = prefix.split('.');
-  const parentKey = parts[0]; 
-  const section = parts[1];
-  
-  const parentData = localPages[parentKey] || {};
-  const title = parentData[`${section}Title`];
-  const subtitle = parentData[`${section}Subtitle`];
-  const color = parentData[`${section}TitleColor`];
-  const subColor = parentData[`${section}SubtitleColor`];
-  const align = parentData[`${section}Align`] || 'center';
-
-  return (
-    <div className="bg-slate-50/50 p-8 rounded-3xl border border-slate-100 mb-10 space-y-6">
-      <div className="flex items-center justify-between mb-4">
-        <h4 className="text-[10px] font-black uppercase text-slate-400 tracking-[0.3em]">模块标题/副标题配置</h4>
-        <div className="flex bg-white rounded-xl p-1 shadow-sm border border-slate-100">
-          {(['left', 'center', 'right'] as const).map(a => (
-            <button 
-              key={a}
-              onClick={() => onUpdate(`${parentKey}.${section}Align`, a)}
-              className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all ${align === a ? 'bg-slate-900 text-white' : 'text-slate-300 hover:text-slate-900'}`}
-            >
-              <i className={`fas fa-align-${a}`}></i>
-            </button>
-          ))}
-        </div>
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-         <div className="space-y-4">
-            <label className="block text-[8px] font-black uppercase text-slate-400 tracking-widest">主标题内容</label>
-            <input 
-              type="text" 
-              value={title || ''} 
-              onChange={e => onUpdate(`${parentKey}.${section}Title`, e.target.value)}
-              placeholder="不填则不显示"
-              className="w-full bg-white border border-slate-100 rounded-xl px-4 py-3 text-sm font-black focus:ring-2 ring-blue-500/10 outline-none"
-            />
-            <div className="flex items-center gap-3">
-              <label className="text-[8px] font-black uppercase text-slate-400 whitespace-nowrap">颜色 (Tailwind)</label>
-              <input 
-                type="text" 
-                value={color || 'text-slate-900'} 
-                onChange={e => onUpdate(`${parentKey}.${section}TitleColor`, e.target.value)}
-                className="flex-1 bg-white border border-slate-100 rounded-lg px-3 py-1 text-[10px] font-mono focus:ring-2 ring-blue-500/10 outline-none"
-              />
-            </div>
-         </div>
-         <div className="space-y-4">
-            <label className="block text-[8px] font-black uppercase text-slate-400 tracking-widest">副标题内容</label>
-            <input 
-              type="text" 
-              value={subtitle || ''} 
-              onChange={e => onUpdate(`${parentKey}.${section}Subtitle`, e.target.value)}
-              placeholder="不填则不显示"
-              className="w-full bg-white border border-slate-100 rounded-xl px-4 py-3 text-xs font-bold focus:ring-2 ring-blue-500/10 outline-none"
-            />
-            <div className="flex items-center gap-3">
-              <label className="text-[8px] font-black uppercase text-slate-400 whitespace-nowrap">颜色 (Tailwind)</label>
-              <input 
-                type="text" 
-                value={subColor || 'text-slate-400'} 
-                onChange={e => onUpdate(`${parentKey}.${section}SubtitleColor`, e.target.value)}
-                className="flex-1 bg-white border border-slate-100 rounded-lg px-3 py-1 text-[10px] font-mono focus:ring-2 ring-blue-500/10 outline-none"
-              />
-            </div>
-         </div>
-      </div>
-    </div>
-  );
+const INITIAL_PAGES: PageContent = {
+  home: [],
+  about: { header: { ...DEFAULT_HEADER, title: 'About Us' }, blocks: [] },
+  products: { header: { ...DEFAULT_HEADER, title: 'Product Center' } },
+  news: { header: { ...DEFAULT_HEADER, title: 'News & Media' } },
+  inquiry: { header: { ...DEFAULT_HEADER, title: 'Inquiry Now' } },
+  contact: { header: { ...DEFAULT_HEADER, title: 'Contact Us' }, title: '', description: '' }
 };
 
-const PagesManagement = () => {
+const BLOCK_TYPES = [
+  { type: 'Hero', label: '首屏视窗 (Hero)', icon: 'fas fa-bolt' },
+  { type: 'SplitAbout', label: '1:1 左右分栏 (Video/About)', icon: 'fas fa-play-circle' },
+  { type: 'Category', label: '产品分类格子', icon: 'fas fa-th-large' },
+  { type: 'FeaturedProduct', label: '热门产品橱窗', icon: 'fas fa-star' },
+  { type: 'Stats', label: '工厂实力数据', icon: 'fas fa-chart-bar' },
+  { type: 'Trust', label: '资质荣誉墙', icon: 'fas fa-certificate' },
+  { type: 'FAQ', label: 'FAQ 问叠问答', icon: 'fas fa-question-circle' },
+  { type: 'Inquiry', label: '快捷询盘表单', icon: 'fas fa-envelope-open-text' },
+  { type: 'Process', label: 'B2B 合作流程', icon: 'fas fa-sync' },
+  { type: 'FactoryShowcase', label: '工厂实景展示', icon: 'fas fa-industry' },
+  { type: 'RichText', label: '富文本内容块', icon: 'fas fa-align-left' }
+];
+
+export default function PagesManagement() {
   const { pages, materials, categories, refreshData } = useProducts();
-  const [localPages, setLocalPages] = useState<PageContent>(DEFAULT_PAGES);
-  const [activeTab, setActiveTab] = useState<'home' | 'about' | 'contact' | 'others'>('home');
+  const [localPages, setLocalPages] = useState<PageContent>(INITIAL_PAGES);
+  const [activeTab, setActiveTab] = useState<keyof PageContent>('home');
   const [loading, setLoading] = useState(false);
   const [showMatPicker, setShowMatPicker] = useState<{ active: boolean, target: string }>({ active: false, target: '' });
-  const [lastSelectedAboutImg, setLastSelectedAboutImg] = useState<string | null>(null);
+  const [showBlockAdd, setShowBlockAdd] = useState(false);
 
   useEffect(() => {
     if (pages && typeof pages === 'object' && !('error' in pages)) {
-      try {
-        const dbData = JSON.parse(JSON.stringify(pages));
-        setLocalPages({
-          ...DEFAULT_PAGES,
-          ...dbData,
-          home: { 
-            ...DEFAULT_PAGES.home, 
-            ...dbData.home,
-            advantages: dbData.home?.advantages || DEFAULT_PAGES.home.advantages,
-            stats: dbData.home?.stats || DEFAULT_PAGES.home.stats,
-            trustItems: dbData.home?.trustItems || [],
-            faq: dbData.home?.faq || [],
-            aboutStats: dbData.home?.aboutStats || DEFAULT_PAGES.home.aboutStats
-          },
-          about: {
-            ...DEFAULT_PAGES.about,
-            ...dbData.about,
-            partners: dbData.about?.partners || []
+      const migratedPages = { ...INITIAL_PAGES, ...pages };
+      
+      // Data Migration: If home is an object (old format), convert to blocks
+      if (migratedPages.home && !Array.isArray(migratedPages.home)) {
+        const oldHome = migratedPages.home as any;
+        migratedPages.home = [
+          { 
+            id: 'migrated-hero', 
+            type: 'Hero', 
+            data: { 
+              title: oldHome.heroTitle || '', 
+              subtitle: oldHome.heroSubtitle || '', 
+              img: oldHome.heroImg || '',
+              advantages: oldHome.advantages || []
+            } 
           }
-        });
-      } catch (e) { console.error(e); }
+        ];
+        if (oldHome.aboutTitle) {
+          migratedPages.home.push({
+            id: 'migrated-about',
+            type: 'SplitAbout',
+            data: {
+              tag: oldHome.aboutTag || 'ABOUT US',
+              title: oldHome.aboutTitle || '',
+              desc: oldHome.aboutDesc || '',
+              videoCover: oldHome.aboutVideoCover || '',
+              videoUrl: oldHome.aboutVideoUrl || '',
+              stats: oldHome.aboutStats || []
+            }
+          });
+        }
+      }
+
+      setLocalPages(migratedPages);
     }
   }, [pages]);
 
@@ -174,278 +99,288 @@ const PagesManagement = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(localPages)
       });
-      if (res.ok) { await refreshData(); alert('✅ 全站装修已成功发布！'); }
+      if (res.ok) { await refreshData(); alert('✅ 全站积木化装修已发布！'); }
     } catch (e) { alert('❌ 保存失败'); } finally { setLoading(false); }
   };
 
-  // --- useCallback to prevent unnecessary re-renders of child components ---
-  const updateField = useCallback((path: string, val: any) => {
-    const keys = path.split('.');
-    setLocalPages(prev => {
-      const updated = JSON.parse(JSON.stringify(prev));
+  const addBlock = (type: Block['type']) => {
+    const newBlock: Block = {
+      id: Date.now().toString(),
+      type,
+      data: type === 'Hero' ? { title: '', subtitle: '', advantages: ['', '', ''], img: '' } :
+            type === 'SplitAbout' ? { tag: 'ABOUT HANGFAN', title: '', desc: '', stats: [], btn1: {}, btn2: {}, videoUrl: '', videoCover: '' } :
+            type === 'Stats' ? { items: [{ label: '', value: '' }] } :
+            type === 'FAQ' ? { items: [{ q: '', a: '' }] } :
+            type === 'Trust' ? { items: [{ img: '', title: '' }] } :
+            type === 'Category' ? { title: '', subtitle: '', align: 'center' } :
+            type === 'FeaturedProduct' ? { title: '', subtitle: '', count: 6 } : {}
+    };
+
+    if (activeTab === 'home') {
+      setLocalPages({ ...localPages, home: [...(localPages.home || []), newBlock] });
+    } else if (activeTab === 'about') {
+      setLocalPages({ ...localPages, about: { ...localPages.about, blocks: [...(localPages.about.blocks || []), newBlock] } });
+    }
+    setShowBlockAdd(false);
+  };
+
+  const removeBlock = (id: string) => {
+    if (activeTab === 'home') {
+      setLocalPages({ ...localPages, home: localPages.home.filter(b => b.id !== id) });
+    } else if (activeTab === 'about') {
+      setLocalPages({ ...localPages, about: { ...localPages.about, blocks: localPages.about.blocks.filter(b => b.id !== id) } });
+    }
+  };
+
+  const moveBlock = (index: number, direction: 'up' | 'down') => {
+    const list = activeTab === 'home' ? [...localPages.home] : [...localPages.about.blocks];
+    if (direction === 'up' && index > 0) {
+      [list[index], list[index - 1]] = [list[index - 1], list[index]];
+    } else if (direction === 'down' && index < list.length - 1) {
+      [list[index], list[index + 1]] = [list[index + 1], list[index]];
+    }
+    
+    if (activeTab === 'home') setLocalPages({ ...localPages, home: list });
+    else setLocalPages({ ...localPages, about: { ...localPages.about, blocks: list } });
+  };
+
+  const updateBlockData = (id: string, newData: any) => {
+    if (activeTab === 'home') {
+      setLocalPages({ ...localPages, home: localPages.home.map(b => b.id === id ? { ...b, data: { ...b.data, ...newData } } : b) });
+    } else if (activeTab === 'about') {
+      setLocalPages({ ...localPages, about: { ...localPages.about, blocks: localPages.about.blocks.map(b => b.id === id ? { ...b, data: { ...b.data, ...newData } } : b) } });
+    }
+  };
+
+  const HeaderEditor = ({ config, path }: { config: PageHeaderConfig, path: string }) => {
+    const update = (field: keyof PageHeaderConfig, val: any) => {
+      const keys = path.split('.');
+      const updated = JSON.parse(JSON.stringify(localPages));
       let current: any = updated;
-      for (let i = 0; i < keys.length - 1; i++) {
-        if (!current[keys[i]]) current[keys[i]] = {};
-        current = current[keys[i]];
-      }
-      current[keys[keys.length - 1]] = val;
-      return updated;
-    });
-  }, []);
+      for (let i = 0; i < keys.length - 1; i++) current = current[keys[i]];
+      current[keys[keys.length - 1]] = { ...current[keys[keys.length - 1]], [field]: val };
+      setLocalPages(updated);
+    };
+
+    return (
+      <div className="bg-white p-12 rounded-[56px] border border-slate-100 shadow-sm mb-12 animate-in fade-in duration-700">
+         <div className="flex justify-between items-center mb-10">
+            <h3 className="text-xl font-black uppercase text-slate-900 tracking-tighter">页面顶部横幅 (Banner) 配置</h3>
+            <div className="flex gap-2">
+              {['compact', 'standard', 'hero'].map(h => (
+                <button key={h} onClick={() => update('height', h)} className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition ${config.height === h ? 'bg-blue-600 text-white' : 'bg-slate-50 text-slate-400'}`}>
+                  {h}
+                </button>
+              ))}
+            </div>
+         </div>
+         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            <div className="space-y-6">
+               <input type="text" placeholder="主标题" value={config.title} onChange={e => update('title', e.target.value)} className="w-full bg-slate-50 border-none rounded-2xl px-6 py-4 font-black text-sm outline-none" />
+               <input type="text" placeholder="副标题" value={config.subtitle || ''} onChange={e => update('subtitle', e.target.value)} className="w-full bg-slate-50 border-none rounded-2xl px-6 py-4 font-bold text-xs outline-none" />
+               <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-[9px] font-black text-slate-400 uppercase mb-2 block">背景颜色 (Tailwind)</label>
+                    <input type="text" value={config.bgColor || 'bg-[#0a0f1d]'} onChange={e => update('bgColor', e.target.value)} className="w-full bg-slate-50 border-none rounded-xl px-4 py-3 text-[10px] font-mono outline-none" />
+                  </div>
+                  <div>
+                    <label className="text-[9px] font-black text-slate-400 uppercase mb-2 block">文字颜色 (Tailwind)</label>
+                    <input type="text" value={config.textColor || 'text-white'} onChange={e => update('textColor', e.target.value)} className="w-full bg-slate-50 border-none rounded-xl px-4 py-3 text-[10px] font-mono outline-none" />
+                  </div>
+               </div>
+            </div>
+            <div className="space-y-4">
+               <label className="text-[9px] font-black text-slate-400 uppercase block">背景图片</label>
+               <div onClick={() => setShowMatPicker({ active: true, target: `${path}.bgImg` })} className="relative aspect-[21/9] rounded-3xl overflow-hidden bg-slate-50 border-2 border-dashed border-slate-100 flex items-center justify-center cursor-pointer group">
+                  {config.bgImg ? <Image src={config.bgImg} alt="" fill className="object-cover group-hover:scale-105 transition duration-700" /> : <i className="fas fa-image text-slate-200 text-2xl"></i>}
+               </div>
+            </div>
+         </div>
+      </div>
+    );
+  };
+
+  const BlockEditor = ({ block, index }: { block: Block, index: number }) => {
+    return (
+      <div className="bg-white p-12 rounded-[56px] border border-slate-100 shadow-sm mb-8 relative group animate-in slide-in-from-bottom-8 duration-700">
+         {/* Controls */}
+         <div className="absolute top-8 right-12 flex gap-4 opacity-0 group-hover:opacity-100 transition-all">
+            <button onClick={() => moveBlock(index, 'up')} className="w-10 h-10 bg-slate-50 text-slate-400 rounded-xl hover:bg-slate-900 hover:text-white transition"><i className="fas fa-arrow-up"></i></button>
+            <button onClick={() => moveBlock(index, 'down')} className="w-10 h-10 bg-slate-50 text-slate-400 rounded-xl hover:bg-slate-900 hover:text-white transition"><i className="fas fa-arrow-down"></i></button>
+            <button onClick={() => removeBlock(block.id)} className="w-10 h-10 bg-red-50 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition"><i className="fas fa-trash"></i></button>
+         </div>
+
+         <div className="flex items-center gap-4 mb-10">
+            <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center">
+               <i className={BLOCK_TYPES.find(t => t.type === block.type)?.icon || 'fas fa-cube'}></i>
+            </div>
+            <div>
+               <h4 className="font-black uppercase text-slate-900 text-sm tracking-tight">{BLOCK_TYPES.find(t => t.type === block.type)?.label}</h4>
+               <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mt-0.5">ID: {block.id} / Type: {block.type}</p>
+            </div>
+         </div>
+
+         <div className="space-y-8">
+            {block.type === 'Hero' && (
+               <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                  <div className="space-y-4">
+                     <input type="text" placeholder="主标题" value={block.data.title} onChange={e => updateBlockData(block.id, { title: e.target.value })} className="w-full bg-slate-50 border-none rounded-xl px-4 py-3 font-black text-sm outline-none" />
+                     <textarea placeholder="副标题" value={block.data.subtitle} onChange={e => updateBlockData(block.id, { subtitle: e.target.value })} className="w-full bg-slate-50 border-none rounded-xl px-4 py-3 text-xs outline-none" />
+                  </div>
+                  <div onClick={() => setShowMatPicker({ active: true, target: `block.${block.id}.img` })} className="relative aspect-video rounded-3xl bg-slate-50 border-2 border-dashed border-slate-100 flex items-center justify-center cursor-pointer">
+                     {block.data.img ? <Image src={block.data.img} alt="" fill className="object-cover rounded-3xl" /> : <i className="fas fa-image text-slate-200"></i>}
+                  </div>
+               </div>
+            )}
+
+            {block.type === 'SplitAbout' && (
+               <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                  <div className="space-y-4">
+                     <input type="text" placeholder="小标签 (e.g. ABOUT HANGFAN)" value={block.data.tag} onChange={e => updateBlockData(block.id, { tag: e.target.value })} className="w-full bg-slate-50 border-none rounded-xl px-4 py-3 text-[10px] font-black uppercase outline-none" />
+                     <input type="text" placeholder="大标题" value={block.data.title} onChange={e => updateBlockData(block.id, { title: e.target.value })} className="w-full bg-slate-50 border-none rounded-xl px-4 py-3 font-black text-sm outline-none" />
+                     <textarea rows={4} placeholder="描述文案" value={block.data.desc} onChange={e => updateBlockData(block.id, { desc: e.target.value })} className="w-full bg-slate-50 border-none rounded-xl px-4 py-3 text-xs outline-none" />
+                  </div>
+                  <div className="space-y-4">
+                     <div onClick={() => setShowMatPicker({ active: true, target: `block.${block.id}.videoCover` })} className="relative aspect-video rounded-3xl bg-slate-50 border-2 border-dashed border-slate-100 flex items-center justify-center cursor-pointer group">
+                        {block.data.videoCover ? <Image src={block.data.videoCover} alt="" fill className="object-cover rounded-3xl" /> : <i className="fas fa-video text-slate-200"></i>}
+                        <div className="absolute inset-0 flex items-center justify-center"><div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-xl text-blue-600"><i className="fas fa-play ml-1"></i></div></div>
+                     </div>
+                     <input type="text" placeholder="视频 URL (Youtube/Cloudinary)" value={block.data.videoUrl} onChange={e => updateBlockData(block.id, { videoUrl: e.target.value })} className="w-full bg-slate-50 border-none rounded-xl px-4 py-3 text-[10px] font-mono outline-none" />
+                  </div>
+               </div>
+            )}
+            
+            {block.type === 'Category' && (
+               <div className="grid grid-cols-2 gap-8">
+                  <input type="text" placeholder="标题" value={block.data.title} onChange={e => updateBlockData(block.id, { title: e.target.value })} className="w-full bg-slate-50 border-none rounded-xl px-4 py-3 font-black text-sm outline-none" />
+                  <input type="text" placeholder="副标题" value={block.data.subtitle} onChange={e => updateBlockData(block.id, { subtitle: e.target.value })} className="w-full bg-slate-50 border-none rounded-xl px-4 py-3 text-xs outline-none" />
+               </div>
+            )}
+
+            {block.type === 'FAQ' && (
+              <div className="space-y-4">
+                {(block.data.items || []).map((item: any, i: number) => (
+                  <div key={i} className="flex gap-4 items-start bg-slate-50 p-6 rounded-2xl relative group/item">
+                    <button onClick={() => {
+                      const newItems = block.data.items.filter((_: any, idx: number) => idx !== i);
+                      updateBlockData(block.id, { items: newItems });
+                    }} className="absolute top-2 right-2 text-slate-300 hover:text-red-500 opacity-0 group-hover/item:opacity-100 transition"><i className="fas fa-times-circle"></i></button>
+                    <div className="flex-1 space-y-3">
+                      <input type="text" placeholder="问题" value={item.q} onChange={e => {
+                        const newItems = [...block.data.items];
+                        newItems[i].q = e.target.value;
+                        updateBlockData(block.id, { items: newItems });
+                      }} className="w-full bg-white border-none rounded-xl px-4 py-2 font-black text-xs outline-none" />
+                      <textarea placeholder="回答" value={item.a} onChange={e => {
+                        const newItems = [...block.data.items];
+                        newItems[i].a = e.target.value;
+                        updateBlockData(block.id, { items: newItems });
+                      }} className="w-full bg-white border-none rounded-xl px-4 py-2 text-xs outline-none" />
+                    </div>
+                  </div>
+                ))}
+                <button onClick={() => updateBlockData(block.id, { items: [...(block.data.items || []), { q: '', a: '' }] })} className="w-full py-4 border-2 border-dashed border-slate-100 rounded-2xl text-[10px] font-black uppercase text-slate-400 hover:bg-slate-50 transition">添加问答对</button>
+              </div>
+            )}
+
+            {block.type === 'Inquiry' && (
+              <div className="p-10 bg-blue-50 rounded-3xl border border-blue-100 text-center">
+                 <i className="fas fa-envelope-open-text text-3xl text-blue-600 mb-4"></i>
+                 <p className="text-xs font-black uppercase text-blue-900 tracking-widest">询盘表单模块 (无需额外配置)</p>
+                 <p className="text-[10px] text-blue-500 mt-2">该模块将自动渲染标准的 B2B 询盘入口</p>
+              </div>
+            )}
+         </div>
+      </div>
+    );
+  };
 
   return (
     <div className="min-h-screen bg-[#f8fafc] pb-32">
+      {/* Navbar */}
       <div className="bg-white/90 backdrop-blur-xl border-b border-slate-100 sticky top-0 z-[100] px-12 py-6 flex justify-between items-center shadow-sm">
         <div>
-          <h2 className="text-2xl font-black uppercase tracking-tighter text-slate-900">超级装修中心</h2>
-          <p className="text-[10px] font-black text-blue-600 uppercase tracking-[0.4em] mt-1">可视化控制全站内容</p>
+          <h2 className="text-2xl font-black uppercase tracking-tighter text-slate-900">积木化装修中心 (Pro)</h2>
+          <p className="text-[10px] font-black text-blue-600 uppercase tracking-[0.4em] mt-1">自由添加、删除、排序全站模块</p>
         </div>
         <button onClick={handleSave} disabled={loading} className="bg-blue-600 text-white px-12 py-4 rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-blue-200 hover:scale-105 active:scale-95 transition-all">
-          {loading ? '正在同步...' : '立即发布更改'}
+          {loading ? '正在同步模块...' : '保存全站布局'}
         </button>
       </div>
 
       <div className="max-w-[1600px] mx-auto px-12 mt-12">
-        <div className="flex gap-4 mb-12">
-           {['home', 'about', 'contact', 'others'].map(id => (
-             <button key={id} onClick={() => setActiveTab(id as any)} className={`px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-widest transition-all ${activeTab === id ? 'bg-slate-900 text-white' : 'bg-white text-slate-400 hover:bg-slate-50'}`}>
-               {id === 'home' ? '首页装修' : id === 'about' ? '关于我们' : id === 'contact' ? '联系我们' : '其它页面'}
+        <div className="flex gap-4 mb-12 overflow-x-auto no-scrollbar pb-2">
+           {(['home', 'about', 'products', 'news', 'inquiry', 'contact'] as const).map(id => (
+             <button key={id} onClick={() => setActiveTab(id)} className={`px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-widest transition-all whitespace-nowrap ${activeTab === id ? 'bg-slate-900 text-white' : 'bg-white text-slate-400 hover:bg-slate-50'}`}>
+               {id === 'home' ? '首页布局' : id === 'about' ? '关于我们' : id === 'products' ? '产品列表页' : id === 'news' ? '新闻页' : id === 'inquiry' ? '询盘页' : '联系我们'}
              </button>
            ))}
         </div>
 
-        {activeTab === 'home' && (
-          <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
-            {/* 1. Hero 视窗 */}
-            <div className="bg-white p-12 rounded-[56px] shadow-sm border border-slate-100">
-               <h3 className="text-xl font-black uppercase text-slate-900 mb-10 flex items-center gap-4"><i className="fas fa-bolt text-blue-600"></i> Hero 视窗 (首屏)</h3>
-               <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-                  <div className="space-y-6">
-                    <input type="text" placeholder="主标题" value={localPages.home.heroTitle} onChange={e => updateField('home.heroTitle', e.target.value)} className="w-full bg-slate-50 border-none rounded-2xl px-6 py-4 font-black text-sm outline-none" />
-                    <textarea rows={3} placeholder="副标题" value={localPages.home.heroSubtitle} onChange={e => updateField('home.heroSubtitle', e.target.value)} className="w-full bg-slate-50 border-none rounded-2xl px-6 py-4 font-medium text-sm outline-none" />
-                    <div className="grid grid-cols-2 gap-4">
-                      {localPages.home.advantages.map((adv, i) => (
-                        <input key={i} type="text" placeholder={`优势点 ${i+1}`} value={adv} onChange={e => {
-                          const newAdv = [...localPages.home.advantages];
-                          newAdv[i] = e.target.value;
-                          updateField('home.advantages', newAdv);
-                        }} className="bg-blue-50/50 border-none rounded-xl px-4 py-3 text-[10px] font-black uppercase outline-none" />
-                      ))}
-                    </div>
-                  </div>
-                  <div onClick={() => setShowMatPicker({ active: true, target: 'home.heroImg' })} className="relative aspect-[21/9] rounded-3xl overflow-hidden bg-slate-50 border-2 border-dashed border-slate-100 flex items-center justify-center cursor-pointer">
-                    {localPages.home.heroImg ? <Image src={localPages.home.heroImg} alt="" fill className="object-cover" /> : <i className="fas fa-image text-slate-200 text-3xl"></i>}
-                  </div>
-               </div>
-            </div>
-
-            {/* 2. 核心 About Us 模块 (左右分栏样式 - 原视频模块升级) */}
-            <div className="bg-white p-12 rounded-[56px] shadow-sm border border-slate-100">
-               <h3 className="text-xl font-black uppercase text-slate-900 mb-10 flex items-center gap-4"><i className="fas fa-play-circle text-red-500"></i> 关于我们 / 视频展示模块 (左右分栏)</h3>
-               <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-                  <div className="space-y-8 bg-slate-50 p-10 rounded-[40px] border border-slate-100">
-                    <div>
-                      <label className="block text-[9px] font-black uppercase text-slate-400 mb-3 tracking-[0.2em]">顶部浅蓝标签 (Tag)</label>
-                      <input type="text" value={localPages.home.aboutTag} onChange={e => updateField('home.aboutTag', e.target.value)} className="w-full bg-white border border-slate-100 rounded-xl px-4 py-3 text-[10px] font-black uppercase tracking-widest outline-none" />
-                    </div>
-                    <div>
-                      <label className="block text-[9px] font-black uppercase text-slate-400 mb-3 tracking-[0.2em]">大标题 (Headline)</label>
-                      <input type="text" value={localPages.home.aboutTitle} onChange={e => updateField('home.aboutTitle', e.target.value)} className="w-full bg-white border border-slate-100 rounded-xl px-4 py-3 text-sm font-black outline-none" />
-                    </div>
-                    <div>
-                      <label className="block text-[9px] font-black uppercase text-slate-400 mb-3 tracking-[0.2em]">正文介绍 (Description)</label>
-                      <textarea rows={4} value={localPages.home.aboutDesc} onChange={e => updateField('home.aboutDesc', e.target.value)} className="w-full bg-white border border-slate-100 rounded-xl px-4 py-3 text-xs font-medium leading-relaxed outline-none" />
-                    </div>
-                    
-                    <div className="grid grid-cols-2 gap-6">
-                       <div>
-                          <label className="block text-[9px] font-black uppercase text-slate-400 mb-3 tracking-[0.2em]">按钮 1 (实色)</label>
-                          <input type="text" value={localPages.home.aboutBtn1Label} onChange={e => updateField('home.aboutBtn1Label', e.target.value)} placeholder="文字" className="w-full bg-white border border-slate-100 rounded-xl px-4 py-3 text-[10px] font-black uppercase mb-2 outline-none" />
-                          <input type="text" value={localPages.home.aboutBtn1Link} onChange={e => updateField('home.aboutBtn1Link', e.target.value)} placeholder="链接" className="w-full bg-white border border-slate-100 rounded-xl px-4 py-3 text-[8px] font-mono outline-none" />
-                       </div>
-                       <div>
-                          <label className="block text-[9px] font-black uppercase text-slate-400 mb-3 tracking-[0.2em]">按钮 2 (含图标)</label>
-                          <input type="text" value={localPages.home.aboutBtn2Label} onChange={e => updateField('home.aboutBtn2Label', e.target.value)} placeholder="文字" className="w-full bg-white border border-slate-100 rounded-xl px-4 py-3 text-[10px] font-black uppercase mb-2 outline-none" />
-                          <input type="text" value={localPages.home.aboutBtn2Link} onChange={e => updateField('home.aboutBtn2Link', e.target.value)} placeholder="链接" className="w-full bg-white border border-slate-100 rounded-xl px-4 py-3 text-[8px] font-mono outline-none" />
-                       </div>
-                    </div>
-                  </div>
-
-                  <div className="space-y-8">
-                     <div>
-                        <label className="block text-[9px] font-black uppercase text-slate-400 mb-3 tracking-[0.2em]">视频封面 / 航拍图 (左侧)</label>
-                        <div onClick={() => setShowMatPicker({ active: true, target: 'home.aboutVideoCover' })} className="relative aspect-video rounded-[40px] overflow-hidden bg-slate-50 border-2 border-dashed border-slate-100 flex items-center justify-center cursor-pointer group">
-                          {localPages.home.aboutVideoCover ? (
-                             <Image src={localPages.home.aboutVideoCover} alt="" fill className="object-cover group-hover:scale-105 transition duration-700" />
-                          ) : <i className="fas fa-video text-slate-200 text-3xl"></i>}
-                          <div className="absolute inset-0 flex items-center justify-center">
-                             <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center text-blue-600 shadow-xl"><i className="fas fa-play ml-1"></i></div>
-                          </div>
-                        </div>
-                     </div>
-                     <div>
-                        <label className="block text-[9px] font-black uppercase text-slate-400 mb-3 tracking-[0.2em]">实际视频 URL</label>
-                        <input type="text" value={localPages.home.aboutVideoUrl} onChange={e => updateField('home.aboutVideoUrl', e.target.value)} placeholder="Youtube or Cloudinary Link" className="w-full bg-slate-50 border-none rounded-xl px-4 py-3 text-xs font-mono outline-none" />
-                     </div>
-                     
-                     <div className="grid grid-cols-2 gap-4">
-                        {localPages.home.aboutStats?.map((stat, i) => (
-                           <div key={i} className="bg-slate-50 p-6 rounded-[32px] border border-slate-100 space-y-2">
-                              <div className="flex items-center gap-3">
-                                 <i className={`${stat.icon} text-blue-600 text-xs`}></i>
-                                 <input type="text" value={stat.icon} onChange={e => {
-                                    const newStats = [...(localPages.home.aboutStats || [])];
-                                    newStats[i].icon = e.target.value;
-                                    updateField('home.aboutStats', newStats);
-                                 }} className="bg-white border-none rounded-lg px-2 py-1 text-[8px] font-mono w-full outline-none" />
-                              </div>
-                              <input type="text" value={stat.value} onChange={e => {
-                                 const newStats = [...(localPages.home.aboutStats || [])];
-                                 newStats[i].value = e.target.value;
-                                 updateField('home.aboutStats', newStats);
-                              }} className="w-full bg-transparent border-none p-0 text-xl font-black text-slate-900 outline-none" />
-                              <input type="text" value={stat.label} onChange={e => {
-                                 const newStats = [...(localPages.home.aboutStats || [])];
-                                 newStats[i].label = e.target.value;
-                                 updateField('home.aboutStats', newStats);
-                              }} className="w-full bg-transparent border-none p-0 text-[8px] font-black uppercase text-slate-400 outline-none" />
-                           </div>
-                        ))}
-                     </div>
-                  </div>
-               </div>
-            </div>
-
-            {/* 3. 分类装修 */}
-            <div className="bg-white p-12 rounded-[56px] shadow-sm border border-slate-100">
-               <h3 className="text-xl font-black uppercase text-slate-900 mb-10 flex items-center gap-4"><i className="fas fa-th-large text-emerald-600"></i> 产品分类模块</h3>
-               <TitleConfig prefix="home.category" localPages={localPages} onUpdate={updateField} />
-               <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
-                  {categories.map(cat => (
-                    <div key={cat.id} className="space-y-4">
-                       <div onClick={() => setShowMatPicker({ active: true, target: `home.categoryImages[${cat.value}]` })} className="relative aspect-square rounded-3xl overflow-hidden bg-slate-50 border-2 border-dashed border-slate-100 flex items-center justify-center cursor-pointer">
-                         {localPages.home.categoryImages?.[cat.value] ? <Image src={localPages.home.categoryImages[cat.value]} alt="" fill className="object-cover" /> : <i className="fas fa-plus text-slate-200"></i>}
-                       </div>
-                       <p className="text-center text-[10px] font-black uppercase text-slate-400">{cat.name}</p>
-                    </div>
-                  ))}
-               </div>
-            </div>
-
-            {/* 4. 热门产品 */}
-            <div className="bg-white p-12 rounded-[56px] shadow-sm border border-slate-100">
-               <h3 className="text-xl font-black uppercase text-slate-900 mb-10 flex items-center gap-4"><i className="fas fa-star text-amber-500"></i> 热门产品展示模块</h3>
-               <TitleConfig prefix="home.featured" localPages={localPages} onUpdate={updateField} />
-               <div className="max-w-xs">
-                  <label className="block text-[9px] font-black uppercase text-slate-400 mb-4 tracking-[0.3em]">展示产品数量</label>
-                  <input type="number" value={localPages.home.featuredCount || 6} onChange={e => updateField('home.featuredCount', parseInt(e.target.value))} className="w-full bg-slate-50 border-none rounded-2xl px-6 py-4 font-black text-sm outline-none" />
-               </div>
-            </div>
-
-            {/* 5. 资质荣誉 */}
-            <div className="bg-white p-12 rounded-[56px] shadow-sm border border-slate-100">
-               <h3 className="text-xl font-black uppercase text-slate-900 mb-10 flex items-center gap-4"><i className="fas fa-certificate text-amber-600"></i> 资质荣誉模块</h3>
-               <TitleConfig prefix="home.trust" localPages={localPages} onUpdate={updateField} />
-               <div className="flex justify-end mb-8">
-                  <button onClick={() => updateField('home.trustItems', [...(localPages.home.trustItems || []), {img: '', title: '', desc: ''}])} className="bg-slate-900 text-white px-6 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest">添加证书</button>
-               </div>
-               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                  {localPages.home.trustItems?.map((item, i) => (
-                    <div key={i} className="group relative bg-slate-50 p-8 rounded-[40px] border border-transparent hover:border-blue-100 transition-all">
-                       <button onClick={() => {
-                         const newItems = localPages.home.trustItems?.filter((_, idx) => idx !== i);
-                         updateField('home.trustItems', newItems);
-                       }} className="absolute top-2 right-2 w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition shadow-lg z-10"><i className="fas fa-times"></i></button>
-                       <div onClick={() => setShowMatPicker({ active: true, target: `home.trustItems[${i}].img` })} className="relative aspect-square w-24 mx-auto mb-6 bg-white rounded-2xl shadow-sm flex items-center justify-center cursor-pointer">
-                          {item.img ? <Image src={item.img} alt="" fill className="object-contain p-2" /> : <i className="fas fa-certificate text-slate-200"></i>}
-                       </div>
-                       <input type="text" placeholder="证书名称" value={item.title} onChange={e => {
-                          const newItems = [...(localPages.home.trustItems || [])];
-                          newItems[i].title = e.target.value;
-                          updateField('home.trustItems', newItems);
-                       }} className="w-full bg-transparent border-none p-0 text-center font-black text-slate-900 text-sm mb-2 outline-none" />
-                    </div>
-                  ))}
-               </div>
-            </div>
-
-            {/* 6. FAQ 系统 */}
-            <div className="bg-white p-12 rounded-[56px] shadow-sm border border-slate-100">
-               <h3 className="text-xl font-black uppercase text-slate-900 mb-10 flex items-center gap-4"><i className="fas fa-question-circle text-blue-500"></i> FAQ 问答模块</h3>
-               <TitleConfig prefix="home.faq" localPages={localPages} onUpdate={updateField} />
-               <div className="flex justify-end mb-8">
-                  <button onClick={() => updateField('home.faq', [...(localPages.home.faq || []), {q: '', a: ''}])} className="bg-blue-600 text-white px-6 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest">添加问答</button>
-               </div>
-               <div className="space-y-4">
-                  {localPages.home.faq?.map((f, i) => (
-                    <div key={i} className="bg-slate-50 p-8 rounded-3xl relative group">
-                       <button onClick={() => {
-                         const newFaq = localPages.home.faq?.filter((_, idx) => idx !== i);
-                         updateField('home.faq', newFaq);
-                       }} className="absolute top-4 right-4 text-slate-300 hover:text-red-500 transition"><i className="fas fa-trash"></i></button>
-                       <input type="text" placeholder="输入问题" value={f.q} onChange={e => {
-                         const newFaq = [...(localPages.home.faq || [])];
-                         newFaq[i].q = e.target.value;
-                         updateField('home.faq', newFaq);
-                       }} className="w-full bg-transparent border-none p-0 font-black text-slate-900 text-sm mb-4 outline-none" />
-                       <textarea placeholder="输入回答" value={f.a} onChange={e => {
-                         const newFaq = [...(localPages.home.faq || [])];
-                         newFaq[i].a = e.target.value;
-                         updateField('home.faq', newFaq);
-                       }} className="w-full bg-transparent border-none p-0 text-xs font-medium text-slate-500 leading-relaxed outline-none" />
-                    </div>
-                  ))}
-               </div>
-            </div>
-          </div>
+        {/* Specialized Header Editor for all pages except Home (Home has its own Hero) */}
+        {activeTab !== 'home' && (
+          <HeaderEditor config={localPages[activeTab as keyof PageContent].header} path={`${activeTab}.header`} />
         )}
 
-        {/* --- OTHER TABS (ABOUT, CONTACT) --- */}
-        {activeTab === 'about' && (
-          <div className="space-y-12 animate-in fade-in duration-700">
-             <div className="bg-white p-12 rounded-[56px] shadow-sm border border-slate-100">
-                <h3 className="text-xl font-black uppercase text-slate-900 mb-10">关于我们详述 (主页面)</h3>
-                <div className="space-y-10">
-                   <input type="text" value={localPages.about.title} onChange={e => updateField('about.title', e.target.value)} className="w-full bg-slate-50 border-none rounded-2xl px-6 py-4 font-black text-sm outline-none" />
-                   <div onClick={() => setShowMatPicker({ active: true, target: 'about.heroImg' })} className="relative aspect-[21/9] rounded-3xl overflow-hidden bg-slate-50 border-2 border-dashed border-slate-100 flex items-center justify-center cursor-pointer">
-                     {localPages.about.heroImg ? <Image src={localPages.about.heroImg} alt="" fill className="object-cover" /> : <i className="fas fa-image text-slate-200"></i>}
-                   </div>
-                   <TiptapEditor content={localPages.about.content || ''} onChange={val => updateField('about.content', val)} onOpenLibrary={() => setShowMatPicker({ active: true, target: 'about.content' })} lastSelectedImage={lastSelectedAboutImg || undefined} />
+        {/* Dynamic Block List for Home and About */}
+        {(activeTab === 'home' || activeTab === 'about') && (
+           <div className="space-y-4">
+              <div className="flex justify-between items-center mb-8">
+                 <h3 className="text-xl font-black uppercase text-slate-900 tracking-tighter">当前页面积木序列</h3>
+                 <button onClick={() => setShowBlockAdd(true)} className="bg-slate-900 text-white px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl hover:scale-105 transition-all">
+                    + 添加新功能积木
+                 </button>
+              </div>
+
+              {(activeTab === 'home' ? localPages.home : localPages.about.blocks || []).map((block, i) => (
+                <BlockEditor key={block.id} block={block} index={i} />
+              ))}
+
+              {((activeTab === 'home' ? localPages.home : localPages.about.blocks) || []).length === 0 && (
+                <div className="py-32 bg-white rounded-[56px] border-2 border-dashed border-slate-100 flex flex-col items-center justify-center text-slate-300">
+                   <i className="fas fa-cubes text-6xl mb-6"></i>
+                   <p className="font-black uppercase text-xs tracking-[0.4em]">当前页面为空，请点击上方按钮添加第一个积木</p>
                 </div>
-             </div>
-             {/* Additional sections for About Page... */}
-          </div>
+              )}
+           </div>
         )}
 
+        {/* Simple Fields for Contact Page */}
         {activeTab === 'contact' && (
-           <div className="bg-white p-12 rounded-[56px] border border-slate-100 shadow-sm animate-in fade-in duration-700">
-              <h3 className="text-xl font-black uppercase text-slate-900 mb-10">联系引导配置</h3>
-              <input type="text" value={localPages.contact.title} onChange={e => updateField('contact.title', e.target.value)} className="w-full bg-slate-50 border-none rounded-2xl px-6 py-4 font-black text-sm mb-6 outline-none" />
-              <textarea rows={4} value={localPages.contact.description} onChange={e => updateField('contact.description', e.target.value)} className="w-full bg-slate-50 border-none rounded-[28px] px-8 py-6 font-medium text-sm leading-relaxed outline-none" />
-           </div>
-        )}
-
-        {activeTab === 'others' && (
-           <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-              <div className="bg-white p-12 rounded-[56px] border border-slate-100 shadow-sm">
-                 <h4 className="font-black uppercase text-xs text-slate-400 mb-8">产品中心页</h4>
-                 <input type="text" value={localPages.products.title} onChange={e => updateField('products.title', e.target.value)} className="w-full bg-slate-50 border-none rounded-xl px-6 py-4 font-black text-sm mb-4 outline-none" />
-                 <input type="text" value={localPages.products.subtitle || ''} onChange={e => updateField('products.subtitle', e.target.value)} className="w-full bg-slate-50 border-none rounded-xl px-6 py-4 font-bold text-xs outline-none" />
-              </div>
-              <div className="bg-white p-12 rounded-[56px] border border-slate-100 shadow-sm">
-                 <h4 className="font-black uppercase text-xs text-slate-400 mb-8">新闻动态页</h4>
-                 <input type="text" value={localPages.news.title} onChange={e => updateField('news.title', e.target.value)} className="w-full bg-slate-50 border-none rounded-xl px-6 py-4 font-black text-sm mb-4 outline-none" />
-                 <input type="text" value={localPages.news.subtitle || ''} onChange={e => updateField('news.subtitle', e.target.value)} className="w-full bg-slate-50 border-none rounded-xl px-6 py-4 font-bold text-xs outline-none" />
-              </div>
-           </div>
+          <div className="bg-white p-12 rounded-[56px] border border-slate-100 shadow-sm animate-in fade-in duration-700">
+             <h3 className="text-xl font-black uppercase text-slate-900 mb-10">联系引导文案</h3>
+             <input type="text" value={localPages.contact.title} onChange={e => setLocalPages({...localPages, contact: {...localPages.contact, title: e.target.value}})} className="w-full bg-slate-50 border-none rounded-2xl px-6 py-4 font-black text-sm mb-6 outline-none" />
+             <textarea rows={4} value={localPages.contact.description} onChange={e => setLocalPages({...localPages, contact: {...localPages.contact, description: e.target.value}})} className="w-full bg-slate-50 border-none rounded-[28px] px-8 py-6 font-medium text-sm leading-relaxed outline-none" />
+          </div>
         )}
       </div>
 
+      {/* Block Selector Modal */}
+      {showBlockAdd && (
+        <div className="fixed inset-0 bg-slate-900/80 backdrop-blur-xl z-[300] flex items-center justify-center p-12">
+           <div className="bg-white w-full max-w-4xl rounded-[64px] shadow-2xl p-16 animate-in zoom-in duration-500">
+              <div className="flex justify-between items-center mb-12">
+                 <h3 className="text-3xl font-black uppercase text-slate-900 tracking-tighter">选择要添加的积木</h3>
+                 <button onClick={() => setShowBlockAdd(false)} className="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-400"><i className="fas fa-times"></i></button>
+              </div>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+                 {BLOCK_TYPES.map(bt => (
+                   <button key={bt.type} onClick={() => addBlock(bt.type as any)} className="flex flex-col items-center gap-6 p-10 bg-slate-50 rounded-[40px] hover:bg-blue-600 hover:text-white group transition-all">
+                      <div className="w-16 h-16 bg-white rounded-3xl flex items-center justify-center text-2xl text-blue-600 group-hover:scale-110 transition shadow-sm"><i className={bt.icon}></i></div>
+                      <span className="font-black uppercase text-[10px] tracking-widest">{bt.label}</span>
+                   </button>
+                 ))}
+              </div>
+           </div>
+        </div>
+      )}
+
+      {/* Material Picker Modal (Persistent logic) */}
       {showMatPicker.active && (
-        <div className="fixed inset-0 bg-slate-900/80 backdrop-blur-xl z-[200] flex items-center justify-center p-6 md:p-12">
+        <div className="fixed inset-0 bg-slate-900/80 backdrop-blur-xl z-[400] flex items-center justify-center p-12">
            <div className="bg-white w-full max-w-6xl rounded-[80px] shadow-2xl h-full max-h-[900px] flex flex-col overflow-hidden relative">
               <div className="p-12 border-b border-slate-100 flex justify-between items-center">
-                  <h3 className="text-4xl font-black uppercase text-slate-900 tracking-tighter">素材库</h3>
+                  <h3 className="text-4xl font-black uppercase text-slate-900 tracking-tighter">选择素材</h3>
                   <button onClick={() => setShowMatPicker({ active: false, target: '' })} className="w-16 h-16 bg-slate-50 rounded-[28px] flex items-center justify-center text-slate-400 hover:text-red-500 transition"><i className="fas fa-times text-xl"></i></button>
               </div>
               <div className="flex-1 overflow-y-auto p-12 no-scrollbar">
@@ -453,31 +388,16 @@ const PagesManagement = () => {
                        {materials.map((mat) => (
                          <div key={mat.id} onClick={() => {
                              const target = showMatPicker.target;
-                             if (target === 'about.content') {
-                               setLastSelectedAboutImg(mat.url);
-                               setTimeout(() => setLastSelectedAboutImg(null), 100);
-                             } else if (target.includes('categoryImages[')) {
-                               const catValue = target.match(/\[(.*?)\]/)?.[1];
-                               if (catValue) {
-                                 const updatedCats = { ...(localPages.home.categoryImages || {}), [catValue]: mat.url };
-                                 updateField('home.categoryImages', updatedCats);
-                               }
-                             } else if (target.includes('trustItems[')) {
-                               const idx = parseInt(target.match(/\[(\d+)\]/)?.[1] || '0');
-                               const newTrust = [...(localPages.home.trustItems || [])];
-                               if (newTrust[idx]) {
-                                 newTrust[idx].img = mat.url;
-                                 updateField('home.trustItems', newTrust);
-                               }
-                             } else if (target.includes('partners[')) {
-                               const idx = parseInt(target.match(/\[(\d+)\]/)?.[1] || '0');
-                               const newPartners = [...(localPages.about.partners || [])];
-                               if (newPartners[idx]) {
-                                 newPartners[idx].img = mat.url;
-                                 updateField('about.partners', newPartners);
-                               }
+                             if (target.startsWith('block.')) {
+                               const [, id, field] = target.split('.');
+                               updateBlockData(id, { [field]: mat.url });
                              } else {
-                               updateField(target, mat.url);
+                               const keys = target.split('.');
+                               const updated = JSON.parse(JSON.stringify(localPages));
+                               let current: any = updated;
+                               for (let i = 0; i < keys.length - 1; i++) current = current[keys[i]];
+                               current[keys[keys.length - 1]] = mat.url;
+                               setLocalPages(updated);
                              }
                              setShowMatPicker({ active: false, target: '' });
                            }}
@@ -486,9 +406,7 @@ const PagesManagement = () => {
                             <div className="relative aspect-square w-full rounded-[40px] overflow-hidden border-4 border-white shadow-sm group-hover:shadow-2xl group-hover:border-blue-200 transition-all bg-white p-4">
                               <Image src={mat.url} alt="" fill className="object-contain p-4" />
                             </div>
-                            <span className="text-[9px] font-black uppercase text-slate-400 truncate w-full text-center tracking-widest px-2 group-hover:text-blue-600 transition-colors">
-                                {mat.name}
-                            </span>
+                            <span className="text-[9px] font-black uppercase text-slate-400 truncate w-full text-center tracking-widest px-2 group-hover:text-blue-600 transition-colors">{mat.name}</span>
                          </div>
                       ))}
                   </div>
@@ -499,5 +417,3 @@ const PagesManagement = () => {
     </div>
   );
 }
-
-export default PagesManagement;

@@ -26,19 +26,12 @@ export default function NewsPage() {
     }
   }, [searchTerm, news]);
 
-  const fallbackNews = {
-    title: "Factory Insights & Knowledge",
-    subtitle: "Latest technical guides and industry trends for professionals.",
-    headerHeight: 220,
-    bgMode: "color",
-    bgColor: "#0f172a"
-  };
-
-  const headerData = pages?.news ? { ...fallbackNews, ...pages.news } : fallbackNews;
-
   return (
     <Layout>
-      <PageHeader data={headerData} />
+      <PageHeader 
+        config={pages?.news?.header} 
+        defaultTitle="Factory Insights & Knowledge" 
+      />
 
       <main className="max-w-7xl mx-auto px-6 py-16 flex-1 w-full min-h-screen">
         <div className="flex justify-center mb-16 animate-in fade-in slide-in-from-bottom-4 duration-700">

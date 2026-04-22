@@ -42,26 +42,18 @@ export default function ProductsPage() {
   const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
   const currentItems = filteredProducts.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
-  const fallbackProducts = {
-    title: "Industrial Product Center",
-    subtitle: "Global Standards, Direct From Handan Factory Floor.",
-    headerHeight: 200,
-    bgMode: "color",
-    bgColor: "#0f172a"
-  };
-
-  const headerData = pages?.products ? { ...fallbackProducts, ...pages.products } : fallbackProducts;
-
   return (
     <Layout>
-      <PageHeader data={headerData} />
+      <PageHeader 
+        config={pages?.products?.header} 
+        defaultTitle="Industrial Product Center" 
+      />
 
       <main className="max-w-7xl mx-auto px-6 py-12 flex-1 w-full min-h-screen">
         <div className="flex flex-col lg:flex-row gap-10">
           {/* Sidebar - Category Filter */}
           <aside className="lg:w-72 space-y-8">
             <div className="bg-white p-8 rounded-[40px] border border-slate-100 shadow-sm sticky top-28 overflow-hidden group">
-              {/* Decorative light effect */}
               <div className="absolute top-0 right-0 w-24 h-24 bg-blue-50/50 rounded-full translate-x-12 -translate-y-12 transition-transform duration-1000 group-hover:scale-150"></div>
               
               <div className="relative group mb-8">
@@ -118,7 +110,6 @@ export default function ProductsPage() {
                     href={`/products/${product.seoSlug || product.id}`}
                     className="bg-white rounded-[40px] overflow-hidden border border-slate-100 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 flex flex-col group cursor-pointer relative"
                   >
-                    {/* Square Image container - reduced padding for better fit */}
                     <div className="aspect-square relative overflow-hidden bg-slate-50/30 p-8 shadow-inner group-hover:bg-white transition-colors duration-500">
                       <Image 
                         src={product.img} 
@@ -126,28 +117,22 @@ export default function ProductsPage() {
                         fill 
                         className="object-contain p-6 group-hover:scale-110 transition-transform duration-1000" 
                       />
-                      
-                      {/* Industrial Tag Overlay */}
                       <div className="absolute top-6 left-6 flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
                         <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-[7px] font-bold uppercase tracking-widest shadow-xl">FACTORY DIRECT</span>
                       </div>
                     </div>
 
-                    {/* Content Section - Compact and Clean */}
                     <div className="p-8 flex flex-col flex-1">
                       <div className="flex items-center gap-2 mb-2.5">
                           <div className="w-4 h-[2px] bg-blue-600"></div>
                           <p className="text-blue-600 text-[9px] font-bold uppercase tracking-[0.3em]">{product.cat}</p>
                       </div>
-                      
                       <h4 className="text-base font-bold uppercase tracking-tight text-slate-900 mb-2 leading-tight group-hover:text-blue-600 transition duration-300">
                         {product.name}
                       </h4>
-                      
                       <p className="text-slate-400 text-[10px] line-clamp-2 font-medium uppercase tracking-wider opacity-60 leading-relaxed mb-6">
                         {product.spec} | HIGH-PERFORMANCE FASTENER
                       </p>
-
                       <div className="mt-auto pt-5 flex justify-between items-center border-t border-slate-50">
                         <div className="flex flex-col">
                            <span className="text-[7px] font-bold text-slate-300 uppercase tracking-widest mb-0.5">Specifications</span>
@@ -158,8 +143,6 @@ export default function ProductsPage() {
                         </div>
                       </div>
                     </div>
-                    
-                    {/* Bottom Border Accent */}
                     <div className="absolute bottom-0 left-0 h-1 w-0 bg-blue-600 transition-all duration-700 group-hover:w-full"></div>
                   </Link>
                 ))
@@ -171,7 +154,6 @@ export default function ProductsPage() {
               )}
             </div>
 
-            {/* Pagination Controls - Refined */}
             {totalPages > 1 && (
                <div className="mt-16 flex justify-center items-center gap-3">
                   {[...Array(totalPages)].map((_, i) => (

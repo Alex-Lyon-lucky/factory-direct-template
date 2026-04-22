@@ -10,19 +10,12 @@ import InquiryForm from '../components/InquiryForm';
 export default function InquiryPage() {
   const { settings, pages } = useProducts();
 
-  const fallbackInquiry = {
-    title: "Direct Factory Quotation",
-    subtitle: "Streamlined B2B Sourcing for Global Hardware Distributors.",
-    headerHeight: 220,
-    bgMode: "color",
-    bgColor: "#0f172a"
-  };
-
-  const headerData = pages?.inquiry ? { ...fallbackInquiry, ...pages.inquiry } : fallbackInquiry;
-
   return (
     <Layout>
-      <PageHeader data={headerData} />
+      <PageHeader 
+        config={pages?.inquiry?.header} 
+        defaultTitle="Direct Factory Quotation" 
+      />
 
       <section className="max-w-7xl mx-auto px-6 py-24 md:-mt-16 relative z-20 animate-in fade-in slide-in-from-bottom-8 duration-1000">
          <div className="bg-white rounded-[64px] shadow-2xl overflow-hidden border border-slate-100 grid lg:grid-cols-2">
