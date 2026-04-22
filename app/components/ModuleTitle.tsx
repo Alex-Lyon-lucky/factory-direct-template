@@ -13,8 +13,8 @@ interface ModuleTitleProps {
 export default function ModuleTitle({ 
   title, 
   subtitle, 
-  titleColor = 'text-slate-900', 
-  subtitleColor = 'text-slate-400', 
+  titleColor, 
+  subtitleColor, 
   align = 'center',
   className = ''
 }: ModuleTitleProps) {
@@ -32,18 +32,34 @@ export default function ModuleTitle({
     right: 'ml-auto mr-0'
   }[align];
 
+  // Helper to handle both Tailwind classes and HEX colors
+  const getStyle = (val?: string) => {
+    if (!val) return {};
+    if (val.startsWith('#')) return { color: val };
+    return {};
+  };
+
+  const getClass = (val?: string, defaultClass: string = '') => {
+    if (!val || val.startsWith('#')) return defaultClass;
+    return val;
+  };
+
   return (
     <div className={`flex flex-col mb-16 md:mb-20 ${alignClass} ${className}`}>
       {title && (
-        <h2 className={`text-3xl md:text-5xl font-black uppercase tracking-tighter mb-6 leading-[0.9] ${titleColor}`}>
+        <h2 
+          className={`text-4xl md:text-5xl lg:text-7xl font-black uppercase tracking-tighter mb-6 leading-[0.9] ${getClass(titleColor, 'text-slate-900')}`}
+          style={getStyle(titleColor)}
+        >
           {title}
         </h2>
       )}
+      <div className={`w-24 h-2 bg-blue-600 mb-8 shadow-sm ${marginClass}`}></div>
       {subtitle && (
-        <div className={`w-20 h-1.5 bg-blue-600 mb-6 ${marginClass}`}></div>
-      )}
-      {subtitle && (
-        <p className={`text-[10px] md:text-xs font-black uppercase tracking-[0.4em] max-w-2xl ${subtitleColor}`}>
+        <p 
+          className={`text-[10px] md:text-xs font-black uppercase tracking-[0.4em] max-w-2xl leading-relaxed ${getClass(subtitleColor, 'text-slate-400')}`}
+          style={getStyle(subtitleColor)}
+        >
           {subtitle}
         </p>
       )}

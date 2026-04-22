@@ -87,7 +87,14 @@ export interface SiteSettings {
 export interface Block {
   id: string;
   type: 'Hero' | 'Category' | 'FeaturedProduct' | 'NewArrivals' | 'SplitAbout' | 'Trust' | 'FAQ' | 'Inquiry' | 'Stats' | 'Process' | 'FactoryShowcase' | 'RichText';
-  data: any;
+  data: {
+    bgColor?: string;
+    titleColor?: string;
+    subtitleColor?: string;
+    textColor?: string;
+    align?: 'left' | 'center' | 'right';
+    [key: string]: any;
+  };
 }
 
 export interface PageHeaderConfig {
