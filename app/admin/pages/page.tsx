@@ -159,42 +159,47 @@ const BlockEditor = ({ block, index, moveBlock, removeBlock, updateBlockData, se
           {block.type === 'FeatureMedia' && (
              <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
                 <div className="space-y-6">
-                   <div className="flex gap-4">
-                      <select value={block.data.mediaType || 'image'} onChange={e => updateBlockData(block.id, { mediaType: e.target.value })} className="bg-slate-50 border-none rounded-xl px-4 py-3 text-[10px] font-black uppercase outline-none">
-                         <option value="image">图片模式</option>
-                         <option value="video">视频模式</option>
-                      </select>
-                      <button onClick={() => setShowMatPicker({ active: true, target: `block.${block.id}.mediaUrl` })} className="flex-1 bg-slate-900 text-white rounded-xl text-[10px] font-black uppercase tracking-widest">
-                         {block.data.mediaUrl ? '更改素材' : '选择图片/视频'}
-                      </button>
+                   <div className="flex flex-col gap-4">
+                      <div className="flex gap-4">
+                        <select value={block.data.mediaType || 'image'} onChange={e => updateBlockData(block.id, { mediaType: e.target.value })} className="bg-slate-50 border-none rounded-xl px-4 py-3 text-[10px] font-black uppercase outline-none">
+                           <option value="image">图片模式</option>
+                           <option value="video">视频模式</option>
+                        </select>
+                        <button onClick={() => setShowMatPicker({ active: true, target: `block.${block.id}.mediaUrl` })} className="flex-1 bg-slate-900 text-white rounded-xl text-[10px] font-black uppercase tracking-widest">
+                           从素材库选择
+                        </button>
+                      </div>
+                      <input type="text" placeholder="直接粘贴素材 URL (图片或视频)" value={block.data.mediaUrl || ''} onChange={e => updateBlockData(block.id, { mediaUrl: e.target.value })} className="w-full bg-slate-50 border-none rounded-xl px-4 py-3 text-[10px] font-mono outline-none" />
                    </div>
-                   <div className="relative aspect-video rounded-[40px] bg-slate-50 border-2 border-dashed border-slate-100 flex items-center justify-center overflow-hidden">
+                   <div className="relative aspect-video rounded-[40px] bg-slate-50 border-2 border-dashed border-slate-100 flex items-center justify-center overflow-hidden group">
                       {block.data.mediaUrl ? (
-                         block.data.mediaType === 'video' ? <div className="text-[10px] font-mono p-4 text-center">{block.data.mediaUrl}</div> : <Image src={block.data.mediaUrl} alt="" fill className="object-cover" />
+                         block.data.mediaType === 'video' ? <div className="text-[10px] font-mono p-4 text-center break-all">{block.data.mediaUrl}</div> : <Image src={block.data.mediaUrl} alt="" fill className="object-cover group-hover:scale-110 transition duration-700" />
                       ) : <i className="fas fa-photo-video text-slate-200 text-3xl"></i>}
                    </div>
                 </div>
                 <div className="space-y-4">
                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">特性列表 (Features)</label>
-                   {(block.data.features || []).map((f: any, i: number) => (
-                      <div key={i} className="p-6 bg-slate-50 rounded-3xl relative group/feat space-y-3">
-                         <button onClick={() => updateBlockData(block.id, { features: block.data.features.filter((_: any, idx: number) => idx !== i) })} className="absolute top-4 right-4 text-red-400 opacity-0 group-hover/feat:opacity-100 transition"><i className="fas fa-trash-alt"></i></button>
-                         <div className="flex gap-4">
-                            <div onClick={() => setShowMatPicker({ active: true, target: `block.${block.id}.features.${i}.icon` })} className="w-12 h-12 bg-white rounded-xl flex items-center justify-center cursor-pointer border border-slate-100 shrink-0">
-                               {f.icon?.startsWith('http') ? <Image src={f.icon} alt="" width={24} height={24} className="object-contain" /> : <i className={f.icon || 'fas fa-check'}></i>}
-                            </div>
-                            <div className="flex-1 space-y-2">
-                               <input type="text" placeholder="特性名称" value={f.title} onChange={e => {
-                                 const nf = [...block.data.features]; nf[i].title = e.target.value; updateBlockData(block.id, { features: nf });
-                               }} className="w-full bg-white border-none rounded-lg px-4 py-2 font-black text-xs outline-none" />
-                               <input type="text" placeholder="描述信息 (可选)" value={f.desc} onChange={e => {
-                                 const nf = [...block.data.features]; nf[i].desc = e.target.value; updateBlockData(block.id, { features: nf });
-                               }} className="w-full bg-white border-none rounded-lg px-4 py-2 text-[10px] font-bold outline-none" />
-                            </div>
-                         </div>
-                      </div>
-                   ))}
-                   <button onClick={() => updateBlockData(block.id, { features: [...(block.data.features || []), { title: '', icon: '', desc: '' }] })} className="w-full py-4 rounded-3xl border-2 border-dashed border-slate-200 flex items-center justify-center text-slate-400 hover:bg-slate-50 transition"><i className="fas fa-plus"></i></button>
+                   <div className="grid grid-cols-1 gap-4 max-h-[400px] overflow-y-auto pr-2 no-scrollbar">
+                     {(block.data.features || []).map((f: any, i: number) => (
+                        <div key={i} className="p-6 bg-slate-50 rounded-3xl relative group/feat space-y-3 border border-transparent hover:border-slate-200 transition-all">
+                           <button onClick={() => updateBlockData(block.id, { features: block.data.features.filter((_: any, idx: number) => idx !== i) })} className="absolute top-4 right-4 w-8 h-8 bg-red-50 text-red-400 rounded-lg opacity-0 group-hover/feat:opacity-100 transition flex items-center justify-center"><i className="fas fa-trash-alt text-[10px]"></i></button>
+                           <div className="flex gap-4">
+                              <div onClick={() => setShowMatPicker({ active: true, target: `block.${block.id}.features.${i}.icon` })} className="w-12 h-12 bg-white rounded-xl flex items-center justify-center cursor-pointer border border-slate-100 shrink-0 group">
+                                 {f.icon?.startsWith('http') ? <Image src={f.icon} alt="" width={24} height={24} className="object-contain" /> : <i className={`${f.icon || 'fas fa-check'} group-hover:text-blue-500 transition`}></i>}
+                              </div>
+                              <div className="flex-1 space-y-2">
+                                 <input type="text" placeholder="特性名称" value={f.title} onChange={e => {
+                                   const nf = [...block.data.features]; nf[i].title = e.target.value; updateBlockData(block.id, { features: nf });
+                                 }} className="w-full bg-white border border-slate-100 rounded-lg px-4 py-2 font-black text-xs outline-none focus:ring-2 ring-blue-500/10" />
+                                 <input type="text" placeholder="描述信息 (可选)" value={f.desc} onChange={e => {
+                                   const nf = [...block.data.features]; nf[i].desc = e.target.value; updateBlockData(block.id, { features: nf });
+                                 }} className="w-full bg-white border border-slate-100 rounded-lg px-4 py-2 text-[10px] font-bold outline-none focus:ring-2 ring-blue-500/10" />
+                              </div>
+                           </div>
+                        </div>
+                     ))}
+                   </div>
+                   <button onClick={() => updateBlockData(block.id, { features: [...(block.data.features || []), { title: '', icon: '', desc: '' }] })} className="w-full py-4 rounded-3xl border-2 border-dashed border-slate-200 flex items-center justify-center text-slate-400 hover:bg-slate-50 transition group"><i className="fas fa-plus group-hover:scale-125 transition"></i></button>
                 </div>
              </div>
           )}
@@ -263,7 +268,7 @@ const BlockEditor = ({ block, index, moveBlock, removeBlock, updateBlockData, se
              </div>
           )}
 
-          {(block.type === 'FeaturedProduct' || block.type === 'NewArrivals') && (
+          {block.type === 'FeaturedProduct' && (
              <div className="p-8 bg-slate-50 rounded-3xl space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <input 
@@ -295,6 +300,30 @@ const BlockEditor = ({ block, index, moveBlock, removeBlock, updateBlockData, se
                      </button>
                    ))}
                    {filteredProducts.length === 0 && <p className="text-[10px] text-slate-300 font-bold uppercase w-full text-center py-4">未找到匹配产品</p>}
+                </div>
+             </div>
+          )}
+
+          {block.type === 'NewArrivals' && (
+             <div className="p-10 bg-blue-50 rounded-[40px] flex flex-col items-center justify-center text-center space-y-4">
+                <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center text-blue-600 shadow-sm mb-2 animate-bounce">
+                   <i className="fas fa-fire text-2xl"></i>
+                </div>
+                <h4 className="font-black uppercase text-slate-900 tracking-tighter">全自动新品筛选模式</h4>
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest max-w-sm">该模块已设置为“自动模式”，将根据产品的创建时间（Created At）自动筛选最新的产品进行展示，无需手动选择。</p>
+                <div className="flex gap-4 mt-2">
+                   <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-xl border border-blue-100">
+                      <span className="text-[9px] font-black text-slate-400">展示数量:</span>
+                      <input type="number" value={block.data.count || 6} onChange={e => updateBlockData(block.id, { count: parseInt(e.target.value) })} className="w-12 bg-transparent font-black text-blue-600 text-xs outline-none" />
+                   </div>
+                   <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-xl border border-blue-100">
+                      <span className="text-[9px] font-black text-slate-400">排列列数:</span>
+                      <select value={block.data.cols || 3} onChange={e => updateBlockData(block.id, { cols: parseInt(e.target.value) })} className="bg-transparent font-black text-blue-600 text-xs outline-none cursor-pointer">
+                        <option value={2}>2列</option>
+                        <option value={3}>3列</option>
+                        <option value={4}>4列</option>
+                      </select>
+                   </div>
                 </div>
              </div>
           )}
@@ -433,17 +462,32 @@ export default function PagesManagement() {
 
   useEffect(() => {
     if (pages && typeof pages === 'object' && !('error' in pages)) {
-      const migratedPages = { ...INITIAL_PAGES, ...pages };
+      // Create a deep merge to ensure all expected keys exist
+      const merged = JSON.parse(JSON.stringify(INITIAL_PAGES));
       
-      // Migration Logic for legacy structures
-      if (migratedPages.home && !Array.isArray(migratedPages.home)) {
-        const oldHome = migratedPages.home as any;
-        migratedPages.home = [];
-        if (oldHome.heroTitle) {
-          migratedPages.home.push({ id: 'mig-hero', type: 'Hero', data: { title: oldHome.heroTitle, subtitle: oldHome.heroSubtitle, img: oldHome.heroImg, advantages: oldHome.advantages || [] } });
+      Object.keys(pages).forEach(key => {
+        if (pages[key]) {
+          if (key === 'home') {
+            merged.home = Array.isArray(pages.home) ? pages.home : [];
+          } else {
+            merged[key] = { ...merged[key], ...pages[key] };
+            // Ensure blocks is always an array
+            if (merged[key].blocks && !Array.isArray(merged[key].blocks)) {
+               merged[key].blocks = [];
+            }
+          }
         }
+      });
+
+      // Legacy Migration
+      if (merged.home.length === 0 && (pages as any).home && !(pages as any).home.blocks) {
+         const oldHome = (pages as any).home;
+         if (oldHome.heroTitle) {
+            merged.home.push({ id: 'mig-hero', type: 'Hero', data: { title: oldHome.heroTitle, subtitle: oldHome.heroSubtitle, img: oldHome.heroImg, advantages: oldHome.advantages || [] } });
+         }
       }
-      setLocalPages(migratedPages);
+
+      setLocalPages(merged);
     }
   }, [pages]);
 
@@ -474,11 +518,11 @@ export default function PagesManagement() {
         tag: 'FACTORY DIRECT EXCELLENCE',
         btn1Label: 'VIEW COLLECTIONS',
         btn2Label: 'CONTACT SALES',
-        ...(type === 'FeatureMedia' ? { mediaUrl: '', mediaType: 'image', features: [{ title: 'QUALITY', icon: 'fas fa-check', desc: '' }] } :
-            type === 'Hero' ? { advantages: ['8.8/10.9/12.9 GRADE SPECIALIST', 'FULL SCALE OEM CAPABILITIES', 'GLOBAL LOGISTICS NETWORK', 'ISO 9001:2015 CERTIFIED'], img: '' } :
+        ...(type === 'Hero' ? { advantages: ['8.8/10.9/12.9 GRADE SPECIALIST', 'FULL SCALE OEM CAPABILITIES', 'GLOBAL LOGISTICS NETWORK', 'ISO 9001:2015 CERTIFIED'], img: '' } :
             type === 'SplitAbout' ? { tag: 'SINCE 1995', desc: 'Long description...', stats: [], videoUrl: '', videoCover: '' } :
             type === 'Category' ? { categories: [], images: {} } :
-            type === 'FeaturedProduct' || type === 'NewArrivals' ? { count: 6, productIds: [], cols: 3 } :
+            type === 'FeaturedProduct' ? { count: 6, productIds: [], cols: 3 } :
+            type === 'NewArrivals' ? { count: 6, cols: 3 } :
             type === 'Stats' ? { items: [{ label: 'EXPORT COUNTRIES', value: '50+' }] } :
             type === 'Trust' ? { items: [] } :
             type === 'FAQ' ? { items: [] } :
@@ -490,10 +534,10 @@ export default function PagesManagement() {
     };
 
     setLocalPages(prev => {
-      const updated = { ...prev };
-      if (activeTab === 'home') updated.home = [...prev.home, newBlock];
-      else if ((updated as any)[activeTab]) {
-        (updated as any)[activeTab].blocks = [...((updated as any)[activeTab].blocks || []), newBlock];
+      const updated = JSON.parse(JSON.stringify(prev));
+      if (activeTab === 'home') updated.home = [...updated.home, newBlock];
+      else if (updated[activeTab]) {
+        updated[activeTab].blocks = [...(updated[activeTab].blocks || []), newBlock];
       }
       return updated;
     });
@@ -502,10 +546,10 @@ export default function PagesManagement() {
 
   const removeBlock = useCallback((id: string) => {
     setLocalPages(prev => {
-      const updated = { ...prev };
-      if (activeTab === 'home') updated.home = prev.home.filter(b => b.id !== id);
-      else if ((updated as any)[activeTab]) {
-        (updated as any)[activeTab].blocks = (updated as any)[activeTab].blocks.filter((b: Block) => b.id !== id);
+      const updated = JSON.parse(JSON.stringify(prev));
+      if (activeTab === 'home') updated.home = updated.home.filter((b: any) => b.id !== id);
+      else if (updated[activeTab]) {
+        updated[activeTab].blocks = (updated[activeTab].blocks || []).filter((b: any) => b.id !== id);
       }
       return updated;
     });
@@ -513,25 +557,25 @@ export default function PagesManagement() {
 
   const moveBlock = useCallback((index: number, direction: 'up' | 'down') => {
     setLocalPages(prev => {
-      const updated = { ...prev };
-      const list = activeTab === 'home' ? [...prev.home] : [...((prev as any)[activeTab]?.blocks || [])];
+      const updated = JSON.parse(JSON.stringify(prev));
+      const list = activeTab === 'home' ? [...updated.home] : [...(updated[activeTab]?.blocks || [])];
       
       if (direction === 'up' && index > 0) [list[index], list[index - 1]] = [list[index - 1], list[index]];
       else if (direction === 'down' && index < list.length - 1) [list[index], list[index + 1]] = [list[index + 1], list[index]];
       
       if (activeTab === 'home') updated.home = list;
-      else if ((updated as any)[activeTab]) (updated as any)[activeTab].blocks = list;
+      else if (updated[activeTab]) updated[activeTab].blocks = list;
       return updated;
     });
   }, [activeTab]);
 
   const updateBlockData = useCallback((id: string, newData: any) => {
     setLocalPages(prev => {
-      const updated = { ...prev };
+      const updated = JSON.parse(JSON.stringify(prev));
       if (activeTab === 'home') {
-        updated.home = prev.home.map(b => b.id === id ? { ...b, data: { ...b.data, ...newData } } : b);
-      } else if ((updated as any)[activeTab]?.blocks) {
-        (updated as any)[activeTab].blocks = (updated as any)[activeTab].blocks.map((b: Block) => 
+        updated.home = updated.home.map((b: any) => b.id === id ? { ...b, data: { ...b.data, ...newData } } : b);
+      } else if (updated[activeTab]?.blocks) {
+        updated[activeTab].blocks = updated[activeTab].blocks.map((b: any) => 
           b.id === id ? { ...b, data: { ...b.data, ...newData } } : b
         );
       }
@@ -653,8 +697,8 @@ export default function PagesManagement() {
                                const subField = parts[3];
                                const subSubField = parts[4];
                                
-                               const blockList = activeTab === 'home' ? localPages.home : localPages.about.blocks;
-                               const block = blockList.find(b => b.id === blockId);
+                               const blockList = activeTab === 'home' ? localPages.home : (localPages[activeTab as keyof PageContent] as any).blocks || [];
+                               const block = blockList.find((b: any) => b.id === blockId);
                                
                                if (block) {
                                   let newData = JSON.parse(JSON.stringify(block.data));

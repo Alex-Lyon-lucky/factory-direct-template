@@ -78,16 +78,19 @@ function FeatureMediaSection({ data, style, className }: { data: any, style: any
                  <Image src={data.mediaUrl || '/placeholder.jpg'} alt="" fill className="object-cover group-hover:scale-105 transition duration-1000" />
                )}
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-               {(data.features || []).map((f: any, i: number) => (
-                  <div key={i} className="p-8 bg-slate-50 rounded-[40px] hover:bg-blue-600 hover:text-white group transition-all duration-500 shadow-sm hover:shadow-2xl">
-                     <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center text-2xl text-blue-600 mb-6 group-hover:scale-110 transition shadow-sm">
-                        {f.icon?.startsWith('http') ? <Image src={f.icon} alt="" width={32} height={32} /> : <i className={f.icon || 'fas fa-check'}></i>}
+            {/* Scrollable container for features to prevent extreme height */}
+            <div className="max-h-[700px] overflow-y-auto pr-4 scrollbar-thin scrollbar-thumb-slate-200">
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  {(data.features || []).map((f: any, i: number) => (
+                     <div key={i} className="p-8 bg-slate-50 rounded-[40px] hover:bg-blue-600 hover:text-white group transition-all duration-500 shadow-sm hover:shadow-2xl">
+                        <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center text-2xl text-blue-600 mb-6 group-hover:scale-110 transition shadow-sm">
+                           {f.icon?.startsWith('http') ? <Image src={f.icon} alt="" width={32} height={32} /> : <i className={f.icon || 'fas fa-check'}></i>}
+                        </div>
+                        <h4 className="text-lg font-black uppercase tracking-tighter mb-2">{f.title}</h4>
+                        <p className="text-[10px] font-bold opacity-60 uppercase tracking-widest leading-loose">{f.desc}</p>
                      </div>
-                     <h4 className="text-lg font-black uppercase tracking-tighter mb-2">{f.title}</h4>
-                     <p className="text-[10px] font-bold opacity-60 uppercase tracking-widest leading-loose">{f.desc}</p>
-                  </div>
-               ))}
+                  ))}
+               </div>
             </div>
          </div>
       </div>
@@ -228,12 +231,17 @@ function FeaturedProductSection({ data, products, style, className }: { data: an
 }
 
 function NewArrivalsSection({ data, products, style, className }: { data: any, products: Product[], style: any, className: string }) {
-  const selected = products.filter(p => data.productIds?.includes(p.id.toString()));
+  // Automatic mode: Sort by creation date descending
+  const sortedProducts = [...products].sort((a, b) => {
+    return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime();
+  });
+  
+  const selected = sortedProducts.slice(0, data.count || 6);
   const cols = data.cols || 3;
 
   return (
     <section className={`py-16 lg:py-28 ${className || 'bg-slate-900'}`} style={style}>
-      <div className="max-w-[1600px] mx-auto px-6 lg:px-12">
+      <div className="max-w-[1400px] mx-auto px-6 lg:px-12">
         <ModuleTitle title={data.title} subtitle={data.subtitle} align={data.align} titleColor={data.titleColor} subtitleColor={data.subtitleColor} />
         <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-${cols} gap-8 lg:gap-12 mt-20`}>
           {selected.map((p, i) => (
@@ -302,25 +310,38 @@ function FAQSection({ data, style, className }: { data: any, style: any, classNa
 
 function InquirySection({ data, style, className }: { data: any, style: any, className: string }) {
   return (
-    <section id="inquiry" className={`py-16 lg:py-28 ${className || 'bg-white'}`} style={style}>
+    <section id="inquiry" className={`py-16 lg:py-28 ${className || 'bg-slate-900'}`} style={style}>
       <div className="max-w-[1400px] mx-auto px-6 lg:px-12">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-24 items-center">
           <div className="space-y-12">
-            <ModuleTitle title={data.title || 'READY TO START YOUR PROJECT?'} subtitle={data.subtitle || 'Connect with our engineering team for specialized fastener solutions, material certifications, and custom OEM manufacturing requirements.'} align="left" titleColor={data.titleColor} subtitleColor={data.subtitleColor} />
-            <div className="grid grid-cols-2 gap-8">
+            <ModuleTitle 
+              title={data.title || 'READY TO START YOUR PROJECT?'} 
+              subtitle={data.subtitle || 'Connect with our engineering team for specialized fastener solutions, material certifications, and custom OEM manufacturing requirements.'} 
+              align="left" 
+              titleColor={data.titleColor || '#ffffff'} 
+              subtitleColor={data.subtitleColor || '#94a3b8'} 
+            />
+            <div className="grid grid-cols-2 gap-8 border-t border-slate-800 pt-12">
                <div className="space-y-2">
-                  <div className="text-3xl font-black text-blue-600">100%</div>
-                  <div className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Quality Guaranteed</div>
+                  <div className="text-5xl font-black text-blue-500 tracking-tighter">100%</div>
+                  <div className="text-[10px] font-black uppercase text-slate-500 tracking-widest">Quality Guaranteed</div>
                </div>
                <div className="space-y-2">
-                  <div className="text-3xl font-black text-blue-600">24H</div>
-                  <div className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Response Time</div>
+                  <div className="text-5xl font-black text-blue-500 tracking-tighter">24H</div>
+                  <div className="text-[10px] font-black uppercase text-slate-500 tracking-widest">Global Response</div>
                </div>
             </div>
+            <div className="p-8 bg-white/5 rounded-[40px] border border-white/5 space-y-4">
+               <p className="text-white font-black uppercase text-xs tracking-widest">Technical Support Helpline</p>
+               <p className="text-blue-500 text-2xl font-black">+86 (0310) 1234 5678</p>
+            </div>
           </div>
-          <div className="bg-white p-12 lg:p-16 rounded-[64px] shadow-2xl shadow-slate-200 border border-slate-50 relative overflow-hidden">
-             <div className="absolute top-0 right-0 w-32 h-32 bg-blue-600/5 rounded-full -mr-16 -mt-16 blur-2xl"></div>
-             <InquiryForm />
+          <div className="bg-white p-12 lg:p-20 rounded-[80px] shadow-2xl relative overflow-hidden">
+             <div className="absolute top-0 right-0 w-64 h-64 bg-blue-600/5 rounded-full -mr-32 -mt-32 blur-3xl"></div>
+             <div className="relative z-10">
+                <h3 className="text-3xl font-black text-slate-900 uppercase tracking-tighter mb-10">Direct Message</h3>
+                <InquiryForm />
+             </div>
           </div>
         </div>
       </div>
@@ -356,6 +377,7 @@ function ProcessSection({ data, style, className }: { data: any, style: any, cla
     { title: 'Global Logistics', icon: 'fas fa-ship' }
   ];
 
+  // Logic: 4 per row, zigzag
   const rows = [];
   for (let i = 0; i < steps.length; i += 4) {
     rows.push(steps.slice(i, i + 4));
@@ -377,14 +399,14 @@ function ProcessSection({ data, style, className }: { data: any, style: any, cla
 
                 return (
                   <div key={globalIndex} className="relative flex-1 w-full max-w-[280px] group">
-                    {/* Horizontal Line */}
+                    {/* Horizontal Line - Connected between icons */}
                     {!isLastInRow && (
-                      <div className={`hidden md:block absolute top-[60px] w-full h-[2px] bg-slate-200 z-0 ${isEvenRow ? 'right-1/2' : 'left-1/2'}`} />
+                      <div className={`hidden md:block absolute top-[60px] w-full h-[2px] bg-slate-200 z-0 ${isEvenRow ? 'right-[50%]' : 'left-[50%]'}`} />
                     )}
 
-                    {/* Vertical Line for Row Transition */}
+                    {/* Vertical Line for Row Transition - Connect from last of row to first of next row */}
                     {isLastInRow && rowIndex < rows.length - 1 && (
-                      <div className="hidden md:block absolute top-[60px] right-1/2 md:right-[60px] w-[2px] h-[120px] bg-slate-200 z-0" />
+                      <div className="hidden md:block absolute top-[60px] left-[50%] md:left-auto md:right-[50%] w-[2px] h-[150px] bg-slate-200 z-0" />
                     )}
 
                     <div className="relative z-10 space-y-6">
